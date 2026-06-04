@@ -1,0 +1,2525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blackwood Rescue Inventory</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #b3261e;
+  --accent-2: #6750a4;
+  --accent-soft: #fceeee;
+  --success-bg: #e8f5e9;
+  --success-text: #1b5e20;
+  --danger-bg: #ffebee;
+  --danger-text: #b71c1c;
+  --warning-bg: #fff8e1;
+  --warning-text: #7a4f01;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --glow: 0 0 0 rgba(0,0,0,0);
+}
+
+body.dark {
+  --bg: #060b16;
+  --surface: #0b1220;
+  --surface-2: #111c2f;
+  --card: #0f1a2b;
+  --text: #e6f7ff;
+  --muted: #93a9c7;
+  --line: #23425f;
+  --accent: #28d7ff;
+  --accent-2: #7c3cff;
+  --accent-soft: rgba(40, 215, 255, 0.09);
+  --success-bg: rgba(20, 184, 166, 0.16);
+  --success-text: #7ef9e7;
+  --danger-bg: rgba(255, 82, 119, 0.15);
+  --danger-text: #ff9aae;
+  --warning-bg: rgba(245, 158, 11, 0.16);
+  --warning-text: #ffd68a;
+  --shadow:
+    0 1px 2px rgba(0,0,0,0.75),
+    0 10px 30px rgba(0,0,0,0.42),
+    0 0 18px rgba(40, 215, 255, 0.055);
+  --glow:
+    0 0 0 1px rgba(40, 215, 255, 0.18),
+    0 0 18px rgba(40, 215, 255, 0.18);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(103,80,164,0.08), transparent 34rem),
+    var(--bg);
+  color: var(--text);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 16px 10px;
+  box-shadow:
+    0 1px 2px rgba(15,23,42,0.05),
+    0 4px 12px rgba(15,23,42,0.06);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.24rem;
+  line-height: 1.18;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.built {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  margin-top: 3px;
+}
+
+.search {
+  justify-content: center;
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+input:focus {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-2) 22%, transparent);
+}
+
+button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 9px 13px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: var(--surface-2);
+}
+
+button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+body.dark button.active {
+  color: #2b0b08;
+}
+
+.toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-inline: 11px;
+}
+
+.tabs {
+  justify-content: flex-start;
+  margin-top: 12px;
+  margin-bottom: 0px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 4px;
+  padding-bottom: 10px;
+  padding-left: 4px;
+  padding-right: 10px;
+  scroll-padding-left: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.summary:empty {
+  display: none;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.stat {
+  text-align:center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px 8px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+
+.stat strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+
+.stat-button {
+  cursor: pointer;
+  color: var(--text);
+  font: inherit;
+}
+
+.stat-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.stat-ok {
+  background: color-mix(in srgb, var(--success-bg) 42%, var(--surface));
+  border-color: color-mix(in srgb, var(--success-text) 18%, var(--line));
+}
+
+.stat-alert {
+  background: color-mix(in srgb, var(--danger-bg) 42%, var(--surface));
+  border-color: color-mix(in srgb, var(--danger-text) 22%, var(--line));
+}
+
+.stat-alert strong {
+  color: var(--danger-text);
+}
+
+.stat-ok strong {
+  color: var(--success-text);
+}
+
+#expandCollapseStat strong {
+  font-size: 1.35rem;
+}
+
+#starredStat strong {
+  color: color-mix(in srgb, var(--accent-2) 75%, var(--text));
+}
+
+.photo-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.photo-card img {
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  background: #0b1120;
+  display: block;
+}
+
+.photo-card img + img {
+  border-top: 1px solid var(--line);
+}
+
+.photo-card .photo-text {
+  text-align:center;
+  padding: 14px 16px;
+}
+
+.photo-card h2 {
+  margin: 0 0 4px;
+  font-size: 1.16rem;
+  font-weight: 600;
+}
+
+.photo-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.group {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.group-title {
+  position: relative;
+  padding: 14px 44px 14px 16px;
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  user-select: none;
+}
+.group-title::after {
+  content: "⌄";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.group.collapsed .group-title::after {
+  content: "›";
+}
+.group.collapsed .items-grid {
+  display: none;
+}
+
+.group-title h3 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.group-title small {
+  display:block;
+  text-align:center;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface-2);
+}
+
+.item {
+  position: relative;
+  padding: 12px 10px 34px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow:
+    0 1px 2px rgba(15,23,42,0.05),
+    0 4px 12px rgba(15,23,42,0.06);
+}
+
+.item.in-service {
+  background: var(--card);
+  border-color: var(--line);
+}
+
+.item.not-in-service {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--danger-text) 32%, var(--line));
+}
+
+.item:last-child { border-bottom: 1px solid var(--line); }
+
+.fav-btn {
+  position: absolute;
+  bottom: 7px;
+  left: 8px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 2px 4px;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--muted);
+}
+.fav-btn:hover {
+  transform: none;
+  background: transparent;
+}
+.fav-btn.active {
+  color: #f59e0b;
+}
+
+.status-pill {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 0.62rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.status-pill.in-service {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-pill.not-in-service {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.item-main {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.item-name {
+  text-align:center;
+  width:100%;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.22;
+  margin-bottom: 2px;
+}
+
+.qty {
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.meta {
+  text-align:center;
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 0.78rem;
+}
+
+.desc, .notes {
+  margin-top: 9px;
+  white-space: pre-wrap;
+  line-height: 1.38;
+}
+
+.desc {
+  text-align:center;
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  padding: 7px 8px;
+  border-radius: 12px;
+}
+
+.notes {
+  text-align:center;
+  color: var(--muted);
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.76rem;
+  color: var(--muted);
+  background: var(--surface);
+}
+
+.badge.status-missing, .badge.status-damaged, .badge.status-out {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.badge.status-review, .badge.status-replace {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.empty {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.footer {
+  text-align:center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 20px 4px 40px;
+}
+
+@media (min-width: 720px) {
+  /* desktop density reset */
+  .summary { grid-template-columns: repeat(3, 1fr); }
+  .items-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; }
+  .item { padding: 14px 14px 42px; }
+  .item-name { font-size: 1rem; }
+  .meta { font-size: 0.88rem; }
+  .status-pill { font-size: 0.68rem; padding: 2px 7px; }
+  h1 { font-size: 1.45rem; }
+}
+
+
+.menu-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 80;
+}
+
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: min(82vw, 320px);
+  height: 100vh;
+  background: var(--surface);
+  color: var(--text);
+  border-right: 1px solid var(--line);
+  box-shadow: 0 12px 32px rgba(15,23,42,0.24);
+  transform: translateX(-105%);
+  transition: transform 0.2s ease;
+  z-index: 90;
+  padding: 16px;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.drawer-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.drawer-subtitle {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+.truck-list {
+  display: grid;
+  gap: 8px;
+}
+
+.truck-option {
+  width: 100%;
+  border-radius: 16px;
+  text-align: left;
+  padding: 12px 14px;
+  box-shadow: none;
+}
+
+.truck-option.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+body.dark .truck-option.active {
+  color: #2b0b08;
+}
+
+.truck-option small {
+  display: block;
+  margin-top: 3px;
+  opacity: 0.78;
+}
+
+.drawer-note {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+
+body.dark {
+  background:
+    radial-gradient(circle at top left, rgba(40, 215, 255, 0.13), transparent 30rem),
+    radial-gradient(circle at top right, rgba(124, 60, 255, 0.10), transparent 28rem),
+    linear-gradient(180deg, #060b16 0%, #07111f 100%);
+}
+
+body.dark header {
+  border-bottom-color: rgba(40, 215, 255, 0.22);
+  box-shadow:
+    0 1px 0 rgba(40, 215, 255, 0.14),
+    0 8px 22px rgba(0,0,0,0.34);
+}
+
+body.dark input {
+  border-color: rgba(40, 215, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(40, 215, 255, 0.06);
+}
+
+body.dark input:focus {
+  border-color: #28d7ff;
+  box-shadow:
+    0 0 0 3px rgba(40, 215, 255, 0.18),
+    0 0 20px rgba(40, 215, 255, 0.22);
+}
+
+body.dark button {
+  border-color: rgba(40, 215, 255, 0.20);
+}
+
+body.dark button:hover {
+  box-shadow: var(--glow);
+}
+
+body.dark button.active {
+  background: rgba(40, 215, 255, 0.08);
+  color: #dff9ff;
+  border-color: #28d7ff;
+  box-shadow:
+    0 0 0 2px rgba(40, 215, 255, 0.20),
+    0 0 16px rgba(40, 215, 255, 0.22);
+}
+
+body.dark .photo-card,
+body.dark .group,
+body.dark .stat,
+body.dark .drawer {
+  border-color: rgba(40, 215, 255, 0.15);
+  box-shadow: var(--shadow);
+}
+
+body.dark .group-title {
+  background: rgba(40, 215, 255, 0.08);
+  border: 1px solid rgba(40, 215, 255, 0.42);
+  border-bottom-color: rgba(40, 215, 255, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(40, 215, 255, 0.14),
+    0 0 12px rgba(40, 215, 255, 0.12);
+}
+
+body.dark .item {
+  border-color: rgba(40, 215, 255, 0.13);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.55),
+    0 8px 20px rgba(0,0,0,0.28),
+    0 0 12px rgba(40, 215, 255, 0.045);
+}
+
+body.dark .item:hover {
+  border-color: rgba(40, 215, 255, 0.32);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.55),
+    0 10px 24px rgba(0,0,0,0.34),
+    0 0 18px rgba(40, 215, 255, 0.13);
+}
+
+body.dark .desc {
+  background: rgba(40, 215, 255, 0.028);
+  border-left-color: rgba(40, 215, 255, 0.65);
+}
+
+body.dark .status-pill.in-service {
+  box-shadow: 0 0 10px rgba(126, 249, 231, 0.18);
+}
+
+body.dark .status-pill.not-in-service {
+  box-shadow: 0 0 10px rgba(255, 154, 174, 0.18);
+}
+
+body.dark .fav-btn.active {
+  color: #ffd166;
+  text-shadow: 0 0 12px rgba(255, 209, 102, 0.45);
+}
+
+body.dark .drawer-backdrop {
+  background: rgba(0, 8, 20, 0.62);
+}
+
+
+body.dark .photo-card .photo-text {
+  background: transparent;
+  border-top: 1px solid rgba(40, 215, 255, 0.16);
+  box-shadow: none;
+}
+
+
+main {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+footer {
+  padding-bottom: calc(26px + env(safe-area-inset-bottom));
+}
+
+
+/* Palette system: applied as body.palette-blue/green/yellow/red.
+   Works with existing light/dark mode variables and keeps the app static-hosting friendly. */
+
+body.palette-blue {
+  --accent: #2563eb;
+  --accent-2: #0284c7;
+  --accent-soft: #eff6ff;
+}
+
+body.dark.palette-blue {
+  --bg: #060b16;
+  --surface: #0b1220;
+  --surface-2: #111c2f;
+  --card: #0f1a2b;
+  --text: #e6f7ff;
+  --muted: #93a9c7;
+  --line: #23425f;
+  --accent: #28d7ff;
+  --accent-2: #7c3cff;
+  --accent-soft: rgba(40, 215, 255, 0.08);
+}
+
+body.palette-green {
+  --accent: #2e7d32;
+  --accent-2: #00897b;
+  --accent-soft: #eef8ef;
+}
+
+body.dark.palette-green {
+  --bg: #06110c;
+  --surface: #0a1a12;
+  --surface-2: #10251a;
+  --card: #0f2218;
+  --text: #eafff1;
+  --muted: #a9cbb7;
+  --line: #244c35;
+  --accent: #35e081;
+  --accent-2: #00bfa5;
+  --accent-soft: rgba(53, 224, 129, 0.08);
+  --success-bg: rgba(53, 224, 129, 0.16);
+  --success-text: #a6ffd0;
+}
+
+body.palette-yellow {
+  --accent: #b7791f;
+  --accent-2: #f59e0b;
+  --accent-soft: #fff7e6;
+}
+
+body.dark.palette-yellow {
+  --bg: #121005;
+  --surface: #1c180b;
+  --surface-2: #2a230e;
+  --card: #241e0d;
+  --text: #fff8df;
+  --muted: #d9c892;
+  --line: #5f4a19;
+  --accent: #ffd34d;
+  --accent-2: #ff9f1c;
+  --accent-soft: rgba(255, 211, 77, 0.09);
+  --success-bg: rgba(46, 125, 50, 0.18);
+  --success-text: #a8f0b2;
+}
+
+body.palette-red {
+  --accent: #a63a2b;
+  --accent-2: #c2410c;
+  --accent-soft: #fff0ed;
+}
+
+body.dark.palette-red {
+  --bg: #140808;
+  --surface: #200d0d;
+  --surface-2: #2d1312;
+  --card: #2a1110;
+  --text: #fff0ee;
+  --muted: #d8aaa4;
+  --line: #66302a;
+  --accent: #ff6b57;
+  --accent-2: #ffb703;
+  --accent-soft: rgba(255, 107, 87, 0.085);
+  --success-bg: rgba(20, 184, 166, 0.14);
+  --success-text: #91f3df;
+}
+
+/* Theme-aware neon behaviour. These use current palette variables. */
+body.dark {
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 13%, transparent), transparent 30rem),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 28rem),
+    linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, black) 100%);
+}
+
+body.dark header {
+  border-bottom-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--accent) 14%, transparent),
+    0 8px 22px rgba(0,0,0,0.34);
+}
+
+body.dark input {
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+body.dark input:focus {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 20px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+body.dark button {
+  border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+body.dark button:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+body.dark button.active {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: color-mix(in srgb, var(--accent) 32%, white);
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+body.dark .photo-card,
+body.dark .group,
+body.dark .stat,
+body.dark .drawer {
+  border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.75),
+    0 10px 30px rgba(0,0,0,0.42),
+    0 0 18px color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+body.dark .group-title {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent),
+    0 0 12px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+body.dark .item {
+  border-color: color-mix(in srgb, var(--accent) 13%, transparent);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.55),
+    0 8px 20px rgba(0,0,0,0.28),
+    0 0 12px color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+body.dark .item:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.55),
+    0 10px 24px rgba(0,0,0,0.34),
+    0 0 18px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+body.dark .desc {
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
+  border-left-color: color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+body.dark .status-pill.in-service {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success-text) 18%, transparent);
+}
+
+body.dark .status-pill.not-in-service {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--danger-text) 18%, transparent);
+}
+
+body.dark .fav-btn.active {
+  color: color-mix(in srgb, var(--accent-2) 72%, #ffd166);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 45%, transparent);
+}
+
+body.dark .drawer-backdrop {
+  background: rgba(0, 8, 20, 0.62);
+}
+
+/* Theme picker in side drawer */
+.theme-section {
+  margin-top: 18px;
+}
+
+.theme-section-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.theme-list {
+  display: grid;
+  gap: 8px;
+}
+
+.theme-option {
+  width: 100%;
+  border-radius: 16px;
+  text-align: left;
+  padding: 10px 12px;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  flex: 0 0 auto;
+}
+
+.theme-dot.blue { background: linear-gradient(135deg, #28d7ff, #7c3cff); }
+.theme-dot.green { background: linear-gradient(135deg, #35e081, #00bfa5); }
+.theme-dot.yellow { background: linear-gradient(135deg, #ffd34d, #ff9f1c); }
+.theme-dot.red { background: linear-gradient(135deg, #ff6b57, #ffb703); }
+
+.theme-option.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 0 12px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* Prevent neon heading edges being clipped by their containers */
+.group {
+  overflow: visible;
+}
+
+.group-title {
+  border-radius: 20px;
+  margin: 0;
+}
+
+main {
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+}
+
+.footer {
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+
+/* Drawer/menu contrast fixes */
+.drawer,
+.drawer * {
+  color: var(--text);
+}
+
+.drawer-subtitle,
+.drawer-note,
+.theme-section-title,
+.truck-option small {
+  color: var(--muted);
+}
+
+.truck-option,
+.theme-option {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.truck-option.active,
+.theme-option.active {
+  color: var(--text);
+}
+
+body.dark .truck-option,
+body.dark .theme-option {
+  background: var(--surface);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--line));
+}
+
+body.dark .truck-option.active,
+body.dark .theme-option.active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 68%, var(--line));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+body.dark .truck-option.active small {
+  color: color-mix(in srgb, var(--text) 78%, var(--muted));
+}
+
+/* Compact dark/light mode toggle */
+#darkToggle {
+  font-size: 0.74rem;
+  padding: 6px 9px;
+  line-height: 1;
+  min-height: 30px;
+}
+
+.header-actions {
+  align-items: flex-start;
+}
+
+
+.truck-option.active,
+.theme-option.active {
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 10px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+
+/* Item detail modal: active for all items */
+.item.clickable {
+  cursor: pointer;
+}
+
+.item.clickable:hover {
+  transform: translateY(-1px);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 110;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.item-modal {
+  position: fixed;
+  left: 50%;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  transform: translate(-50%, 110%);
+  width: min(94vw, 520px);
+  max-height: min(82vh, 720px);
+  overflow: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 24px 24px 18px 18px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.32),
+    0 0 0 1px rgba(255,255,255,0.04);
+  transition: transform 0.22s ease;
+  z-index: 120;
+}
+
+.item-modal.open {
+  transform: translate(-50%, 0);
+}
+
+body.dark .item-modal {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+  box-shadow:
+    0 20px 70px rgba(0,0,0,0.62),
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 28px color-mix(in srgb, var(--accent) 11%, transparent);
+}
+
+.modal-photo {
+  width: 100%;
+  min-height: 160px;
+  max-height: 280px;
+  background:
+    linear-gradient(135deg, var(--surface-2), color-mix(in srgb, var(--accent) 5%, var(--surface-2)));
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-photo img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  display: block;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.modal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  line-height: 1.18;
+  font-weight: 650;
+  margin: 0;
+}
+
+.modal-close {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.modal-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.modal-field {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.modal-field-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 3px;
+}
+
+.modal-field-value {
+  white-space: pre-wrap;
+  line-height: 1.35;
+}
+
+.modal-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.modal-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 12px;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .modal-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .modal-field.full {
+    grid-column: 1 / -1;
+  }
+}
+
+
+
+
+.stat strong {
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.stat span {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  font-size: 0.74rem;
+}
+
+.stat {
+  border-width: 1.5px;
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.06);
+}
+
+body.dark .stat {
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.35);
+}
+
+
+.modal-pill-row {
+  align-items: center;
+}
+
+.service-toggle.service-active,
+.service-toggle.service-out {
+  box-shadow: none;
+}
+
+.modal-star-toggle {
+  flex: 0 0 auto;
+  justify-content: center;
+  font-size: 1.05rem;
+  padding: 2px 4px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.modal-star-toggle:hover {
+  transform: none;
+  background: transparent;
+}
+
+.modal-star-toggle.active {
+  color: #f59e0b;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+body.dark .modal-star-toggle.active {
+  color: color-mix(in srgb, var(--accent-2) 72%, #ffd166);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 45%, transparent);
+}
+
+
+/* Modal service buttons: active state matches tile status pill colours */
+.service-toggle {
+  background: var(--surface) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+  opacity: 0.72;
+}
+
+.service-toggle.service-active {
+  background: var(--success-bg) !important;
+  color: var(--success-text) !important;
+  border-color: color-mix(in srgb, var(--success-text) 28%, var(--line)) !important;
+  opacity: 1;
+}
+
+.service-toggle.service-out {
+  background: var(--danger-bg) !important;
+  color: var(--danger-text) !important;
+  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
+  opacity: 1;
+}
+
+body.dark .service-toggle.service-active {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success-text) 18%, transparent) !important;
+}
+
+body.dark .service-toggle.service-out {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--danger-text) 18%, transparent) !important;
+}
+
+
+/* v1.10.12 - tidy modal pills */
+.service-toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.service-toggle{
+  min-width:92px;
+  text-align:center;
+  justify-content:center;
+  align-items:center;
+  display:inline-flex;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-weight:500;
+  font-size:0.64rem;
+}
+
+.modal-star-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  line-height:1;
+  padding:0;
+  vertical-align:middle;
+}
+
+.modal-star-toggle.active,
+.modal-star-toggle{
+  transform:none !important;
+}
+
+.modal-star-toggle.active{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* v1.10.14 - modal service pills match tile status pills exactly */
+.service-toggle {
+  min-width: unset !important;
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  padding: 2px 7px !important;
+  font-size: 0.68rem !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1 !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.service-toggle:not(.service-active):not(.service-out) {
+  background: var(--surface) !important;
+  color: var(--muted) !important;
+}
+
+.service-toggle.service-active {
+  background: var(--success-bg) !important;
+  color: var(--success-text) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+.service-toggle.service-out {
+  background: var(--danger-bg) !important;
+  color: var(--danger-text) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+body.dark .service-toggle.service-active {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success-text) 18%, transparent) !important;
+}
+
+body.dark .service-toggle.service-out {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--danger-text) 18%, transparent) !important;
+}
+
+.service-toggle-row {
+  gap: 6px !important;
+  align-items: center !important;
+}
+
+
+/* v1.11.0 quiz */
+.quiz-modal {
+  width: min(94vw, 560px);
+}
+
+.quiz-panel {
+  margin-top: 12px;
+}
+
+.quiz-check {
+  display: block;
+  padding: 8px 0;
+  color: var(--text);
+}
+
+.quiz-check input {
+  width: auto;
+  margin-right: 8px;
+}
+
+.quiz-check.muted {
+  color: var(--muted);
+}
+
+.quiz-check span {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.quiz-main-btn {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.quiz-progress {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-bottom: 10px;
+}
+
+.quiz-card {
+  width: 100%;
+  min-height: 260px;
+  border-radius: 24px;
+  padding: 0;
+  perspective: 1000px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.quiz-card:hover {
+  transform: none;
+}
+
+.quiz-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 260px;
+  transition: transform 0.45s ease;
+  transform-style: preserve-3d;
+}
+
+.quiz-card.flipped .quiz-card-inner {
+  transform: rotateY(180deg);
+}
+
+.quiz-card-face {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  padding: 22px;
+  text-align: center;
+}
+
+body.dark .quiz-card-face {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.42),
+    0 0 20px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.quiz-back {
+  transform: rotateY(180deg);
+}
+
+.quiz-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.quiz-big-text {
+  font-size: clamp(1.45rem, 5vw, 2.15rem);
+  font-weight: 650;
+  line-height: 1.15;
+}
+
+.quiz-hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-top: 16px;
+}
+
+.quiz-marking {
+  margin-top: 14px;
+  justify-content: center;
+}
+
+.quiz-result-card {
+  text-align: center;
+}
+
+.quiz-score {
+  font-size: 2.2rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.quiz-end-buttons {
+  justify-content: center;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+
+/* v1.11.2 - raise quiz modal slightly */
+.quiz-modal.open {
+  top: 46vh !important;
+  transform: translate(-50%, -46%) !important;
+}
+
+
+/* v1.11.8 - unified modal positioning */
+.item-modal.open,
+.quiz-modal.open {
+  top: 46vh !important;
+  transform: translate(-50%, -46%) !important;
+}
+
+/* Future-proof any modal using common modal classes */
+.modal.open,
+.dialog.open,
+.floating-card.open {
+  top: 46vh !important;
+  transform: translate(-50%, -46%) !important;
+}
+
+
+/* v1.11.11 - allow item modal to expand down for long descriptions */
+.item-modal {
+  max-height: calc(92vh - env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.item-modal.open {
+  top: 46vh !important;
+  bottom: auto !important;
+  transform: translate(-50%, -46%) !important;
+}
+
+/* Give long description fields room before the modal itself needs to scroll */
+.modal-field.full .modal-field-value {
+  max-height: none;
+}
+
+/* But keep extremely long content usable on short screens */
+@media (max-height: 720px) {
+  .item-modal {
+    max-height: calc(88vh - env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media print {
+  header { position: static; }
+  .search, .tabs, .summary, .header-actions { display:none; }
+  body { background:white; color: #000; }
+  .group, .photo-card { break-inside: avoid; box-shadow: none; }
+  .items-grid { background: white; }
+}
+</style>
+</head>
+<body>
+
+<div id="quizBackdrop" class="modal-backdrop"></div>
+<section id="quizModal" class="item-modal quiz-modal" aria-modal="true" role="dialog" aria-label="Item location quiz">
+  <div class="modal-body">
+    <div class="modal-top">
+      <h2 class="modal-title">Item Location Quiz</h2>
+      <button id="quizCloseBtn" class="modal-close" type="button" aria-label="Close quiz">×</button>
+    </div>
+
+    <div id="quizSetup" class="quiz-panel">
+      <div class="modal-field full">
+        <div class="modal-field-label">Select trucks</div>
+        <label class="quiz-check"><input type="checkbox" class="quiz-truck" value="Blackwood Rescue" checked> Blackwood Rescue</label>
+        <label class="quiz-check muted"><input type="checkbox" disabled> Blackwood 34P <span>Coming later</span></label>
+        <label class="quiz-check muted"><input type="checkbox" disabled> CAFS 24 <span>Coming later</span></label>
+      </div>
+      <button id="generateQuizBtn" class="stat stat-button quiz-main-btn" type="button">
+        <strong>10</strong><span>Generate Quiz</span>
+      </button>
+    </div>
+
+    <div id="quizRun" class="quiz-panel" style="display:none;">
+      <div class="quiz-progress" id="quizProgress"></div>
+      <button id="quizCard" class="quiz-card" type="button">
+        <div class="quiz-card-inner">
+          <div class="quiz-card-face quiz-front">
+            <div class="quiz-label">Item</div>
+            <div id="quizItemName" class="quiz-big-text"></div>
+            <div class="quiz-hint">Tap card to reveal location</div>
+          </div>
+          <div class="quiz-card-face quiz-back">
+            <div class="quiz-label">Location</div>
+            <div id="quizLocation" class="quiz-big-text"></div>
+            <div class="quiz-hint">Self mark below</div>
+          </div>
+        </div>
+      </button>
+
+      <div id="quizMarking" class="service-toggle-row quiz-marking" style="display:none;">
+        <button id="quizIncorrectBtn" class="service-toggle service-out" type="button">Incorrect</button>
+        <button id="quizCorrectBtn" class="service-toggle service-active" type="button">Correct</button>
+      </div>
+    </div>
+
+    <div id="quizResults" class="quiz-panel" style="display:none;">
+      <div class="modal-field full quiz-result-card">
+        <div class="modal-field-label">Result</div>
+        <div id="quizScore" class="quiz-score"></div>
+      </div>
+      <div class="service-toggle-row quiz-end-buttons">
+        <button id="quizStartOverBtn" class="service-toggle" type="button">Start over</button>
+        <button id="quizRegenerateBtn" class="service-toggle service-active" type="button">Regenerate quiz</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div id="drawerBackdrop" class="drawer-backdrop"></div>
+<aside id="drawer" class="drawer" aria-label="Appliance menu">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title">Appliances</div>
+      <div class="drawer-subtitle">Switch inventory view</div>
+    </div>
+    <button id="closeDrawerBtn" type="button" aria-label="Close menu">×</button>
+  </div>
+
+  <div class="truck-list">
+    <button class="truck-option active" type="button" data-truck="Blackwood Rescue">
+      Blackwood Rescue
+      <small>Current inventory</small>
+    </button>
+    <button class="truck-option" type="button" data-truck="Blackwood 34P">
+      Blackwood 34P
+      <small>Coming later</small>
+    </button>
+    <button class="truck-option" type="button" data-truck="CAFS 24">
+      CAFS 24
+      <small>Coming later</small>
+    </button>
+  </div>
+
+
+  <div class="theme-section">
+    <div class="theme-section-title">Theme palette</div>
+    <div class="theme-list">
+      <button class="theme-option" type="button" data-palette="blue">
+        <span class="theme-dot blue"></span>
+        Rescue Blue
+      </button>
+      <button class="theme-option" type="button" data-palette="green">
+        <span class="theme-dot green"></span>
+        Safe Green
+      </button>
+      <button class="theme-option" type="button" data-palette="yellow">
+        <span class="theme-dot yellow"></span>
+        CFS Yellow
+      </button>
+      <button class="theme-option" type="button" data-palette="red">
+        <span class="theme-dot red"></span>
+        Brick Red
+      </button>
+    </div>
+  </div>
+
+
+  <div class="theme-section quiz-section">
+    <div class="theme-section-title">Training</div>
+    <button id="openQuizBtn" class="theme-option" type="button">
+      <span class="theme-dot blue"></span>
+      Item Location Quiz
+    </button>
+  </div>
+
+  <div class="drawer-note">
+    This menu is ready for future multi-appliance inventories. For now, Blackwood Rescue is the active dataset.
+  </div>
+</aside>
+
+<div id="itemModalBackdrop" class="modal-backdrop"></div>
+<section id="itemModal" class="item-modal" aria-modal="true" role="dialog" aria-label="Item details">
+  <div id="modalPhoto" class="modal-photo"></div>
+  <div class="modal-body">
+    <div class="modal-top">
+      <h2 id="modalTitle" class="modal-title"></h2>
+      <button id="modalClose" class="modal-close" type="button" aria-label="Close item details">×</button>
+    </div>
+    <div id="modalMeta" class="meta"></div>
+    <div id="modalPills" class="modal-pill-row">
+      <div class="service-toggle-row">
+        <button id="modalInServiceBtn" class="service-toggle" type="button">In service</button>
+        <button id="modalOutServiceBtn" class="service-toggle" type="button">Out of service</button>
+      </div>
+    </div>
+<div id="modalDetails" class="modal-detail-grid"></div>
+    
+  </div>
+</section>
+
+
+<header>
+  <div class="header-top">
+    <button id="menuBtn" class="menu-btn" type="button" aria-label="Open appliance menu">☰</button>
+    <div style="flex:1;">
+      <h1 id="title">Inventory</h1>
+      <div class="built" id="subtitle"></div>
+    </div>
+    <div class="header-actions"><button id="darkToggle" class="toggle-pill" type="button">Dark</button></div>
+  </div>
+  <div class="search">
+    <input id="search" placeholder="Search item, locker, description, category, tags..." autocomplete="off">
+    <button id="clearBtn">Clear</button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+
+<main>
+  <section class="summary" id="summary"></section>
+  <section id="lockerPhoto"></section>
+  <section id="results"></section>
+  <div class="footer">
+    Edit the Excel workbook as the master source, then regenerate this app. Photos should sit in the /photos folder.
+  </div>
+</main>
+
+<script>
+const DATA = {"appliance": "Blackwood Rescue", "records": [{"id": "BR-0001", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "BOLT CUTTERS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0002", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "SLEDGEHAMMER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0003", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "SHOVEL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0004", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "JEMMY BAR", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0005", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "SIDE STABILISER w/ratchets in bag", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0006", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "SHADE WINDER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0007", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "HALLIGAN TOOL [x1]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0008", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "STABFAST KIT, BAGS x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0009", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "STOP/SLOW BAT- w/ handles [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0010", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "ACCESS TOOL KIT", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0011", "appliance": "Blackwood Rescue", "locker": "Locker 1", "section": "", "subsection": "", "item": "BATTERY POWERED LIGHTS [x4]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_1.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 1"}, {"id": "BR-0012", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "BAG OF ROPE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0013", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "BAG w/ BLANKETS & Trauma Teddies x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0014", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "AIRBAG RESTRAINT SYSTEM", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0015", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "GLASS MANAGER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0016", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "SOFT PROTECTION SHEETS x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0017", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "Disposable line - red", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0018", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "TOP", "subsection": "", "item": "Clear Windscreen Protection Roll x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > TOP"}, {"id": "BR-0019", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "MIDDLE", "subsection": "", "item": "BAG, SOFT & PVC SHARPS PROTECTION", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > MIDDLE"}, {"id": "BR-0020", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "MIDDLE", "subsection": "", "item": "FIRST AID KIT 02, DEFIB", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > MIDDLE"}, {"id": "BR-0021", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "MIDDLE", "subsection": "", "item": "PVC GLOVES x2 pr (In decon. bag)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > MIDDLE"}, {"id": "BR-0022", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "MIDDLE", "subsection": "", "item": "DECONTAMINATION BAG", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > MIDDLE"}, {"id": "BR-0023", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Tray 1", "subsection": "", "item": "Step Wedges - blue x4", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Tray 1"}, {"id": "BR-0024", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Tray 1", "subsection": "", "item": "Wheel Chocks - red x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Tray 1"}, {"id": "BR-0025", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "GREEN STAGING SHEET X1", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0026", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "90 x 90 Blocks- purple x2 each", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0027", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "90 x 45 Blocks- yellow x3 each", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0028", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "Large Wedges - red x3 each", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0029", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "Small Wedges - Green x3 each", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0030", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "Hardwood Wedges x5 each", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0031", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Trays 2, 3, 4", "subsection": "", "item": "Rubber Mallet x2 total", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Trays 2, 3, 4"}, {"id": "BR-0032", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Metal Box", "subsection": "", "item": "90 x 90 Blocks- purple x9", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Metal Box"}, {"id": "BR-0033", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Metal Box", "subsection": "", "item": "90 x 45 Blocks - yellow x2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Metal Box"}, {"id": "BR-0034", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Metal Box", "subsection": "", "item": "Small Wedges - green x1", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Metal Box"}, {"id": "BR-0035", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Metal Box", "subsection": "", "item": "Large Wedge - red x1", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Metal Box"}, {"id": "BR-0036", "appliance": "Blackwood Rescue", "locker": "Locker 2", "section": "Metal Box", "subsection": "", "item": "LARGE RATCHET STRAPS [x4]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_2.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 2 > Metal Box"}, {"id": "BR-0037", "appliance": "Blackwood Rescue", "locker": "Locker 3", "section": "", "subsection": "", "item": "LONG HARDWOOD CHOCKS x6", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_3.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 3"}, {"id": "BR-0038", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "CROWBAR (behind botton drawer)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0039", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HYDRAULIC HOSE [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0040", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "RED & GREEN SALVAGE SHEETS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0041", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "LITTLE GIANT LADDER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0042", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "STOKES LITTER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0043", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "EXTRICATION BOARD", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0044", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "EXTRICATION BOARD STRAPS [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0045", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "SCENE SCREEN IN BLACK BAG", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0046", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "LIGHT TRIPODS WITH CABLES [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0047", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HYDRAULIC FLUID", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0048", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "FUEL CONTAINER –10lt, UNLEADED (RED)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0049", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "SPOUT – for fuel containers [x1]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0050", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "FUNNEL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0051", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "CHAINSAW BAR OIL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0052", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "PEDAL CUTTER (LUCAS IN BOX)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0053", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HARD PROTECTION BOARDS [x6]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0054", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HOLMATRO LARGE RAM (1510mm)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0055", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HOLMATRO SMALL RAM (1285mm)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0056", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HAND PUMP", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0057", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HOLMATRO CUTTERS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0058", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HOLMATRO SPREADERS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0059", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "MINI CUTTERS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0060", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "MAIN RESCUE PUMP", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0061", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "AUXILIARY RESCUE PUMP", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0062", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "HOLMATRO CHAINS (ORANGE BOX)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0063", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "BLACK PLASTIC CASE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0064", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "AIRBAG CONTROLS", "quantity": "", "category": "", "description": "HOSES, red & yellow x 1 of each\nSHORT HOSE w/ shut off valves x2\nSMALL AIR BAG\nLARGE AIR BAGS x2", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0069", "appliance": "Blackwood Rescue", "locker": "Locker 4", "section": "", "subsection": "", "item": "BA CYLINDER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_4.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 4"}, {"id": "BR-0070", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "DEBRIS BAGS w/ cable ties", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0071", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "DRUM OF ABSORBENT", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0072", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "BAG OF ABSORBENT", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0073", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "HAZARD TAPE [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0074", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "PLUG & DIKE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0075", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "TRAFFIC CONES [x10]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0076", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "BAG OF E-FLARES [x4]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0077", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "CO2 EXTINGUISHER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0078", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "DRY CHEM EXTINGUISHER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0079", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "FOAM EXTINGUISHER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0080", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "RAIN COAT PANTS x 6", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0081", "appliance": "Blackwood Rescue", "locker": "Locker 6", "section": "", "subsection": "", "item": "BROOM [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_6.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 6"}, {"id": "BR-0082", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "RECIP SAW & CORDLESS DRILL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0083", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "DRILL BIT SET RED Milwaukee", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0084", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "DRILL BIT SET RED 25 PIECE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0085", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "DREMEL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0086", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "SOCKET SET", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0087", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Top Drawer", "subsection": "", "item": "SILICON SPRAY CAN & WD40 SPRAY CAN", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Top Drawer"}, {"id": "BR-0088", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "CHAINSAW BOX containing", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0089", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Chaps", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0090", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Helmet w/ earmuffs", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0091", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Ear Plugs", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0092", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Chainsaw spanner", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0093", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Spare Chain [x1]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0094", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "File and guide", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0095", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "EXTENSION CORD & RCD", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0096", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "CHAINSAW (Electric) with Battery", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0097", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "QUICKCUT (Electric) with Battery", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0098", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Middle Drawer", "subsection": "", "item": "Stihl Box with 2x Batteries and charger", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Middle Drawer"}, {"id": "BR-0099", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "TOOLBOX (orange) containing", "quantity": "", "category": "", "description": "Cold Chisel\nAllen Key Set\nPhilips Head Screwdrivers [x3]\nFlat Blade Screwdrivers [x4]\nLarge Tapered Spikes [x2]\nSmall Tapered Spikes [x2]\nadjustable Spanner 375mm\nadjustable Spanner 300mm\nadjustable spanner 250mm\nadjustable spanner 150mm\nwire cutter\nUniversal Shears\nCombination Pliers\nMulti Grips\nStanley Knife\nSpare blades – Stanley knife\nRoll Duct Tape\nSpeed Brace\nChainsaw Spanner\nClaw Hammer\nHacksaw & spare blade\nSockets (27mm, 30mm, 32mm)\nRoll of Webbing\nroll of electrical tape\nCable cutter\nneedle nose pliers\nWindscreen Knife\nMini Jimmy Bar\n11 piece Torx set\nHolmatro line pressure release tool", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0130", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "WINCH w/ lever", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0131", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "WINCH CABLE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0132", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "WINCH STRAPS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0133", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "RAM SUPPORT/SILL CLAMP", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0134", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "GO JACKS [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0135", "appliance": "Blackwood Rescue", "locker": "Locker 5", "section": "Bottom Drawer", "subsection": "", "item": "WHEEL CHOCKS [x2]", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "locker_5.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Locker 5 > Bottom Drawer"}, {"id": "BR-0136", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "DRIVERS LOG BOOK", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0137", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "ISUZU OWNER MANUAL", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0138", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "APPLIANCE SERVICE BOOK", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0139", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "MAGLIGHT x 2", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0140", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "GRN Radio - Portable", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0141", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "VHF RADIO - Portable", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0142", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "RESCUE Vests x 2 (Officer and Driver)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0143", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Rescue Gloves", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0144", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Nitrile Gloves", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0145", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Glasses", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0146", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Dust Mask", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0147", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Black Center Pouch", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0148", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "GRN Battery x 1", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0149", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "OIC NOTEBOOK – Red", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0150", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "MULTI CHARGER PACK", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0151", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "CAMERA", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0152", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "RED POUCH with RING CUTTER", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0153", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "BP Fuel Card (center consol slot)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0154", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "Shell Fuel Card (center consol slot)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0155", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Front Seat", "subsection": "", "item": "PENCIL CASE containing", "quantity": "", "category": "", "description": "Chinagraph pencil\nPoint Marker Pen\nT-Cards\nMatches\nAirbag Warning stickers\nVHF Quick reference guide\nSite attendance book A5\nSturt Group calling cards\nMitcham Council Keys\nOnko Park Keys\nNPWS Keys\nSIMS Key\nRED CFS Key", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Front Seat"}, {"id": "BR-0169", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "RCR CREW COMPOSITION x 4 (roof)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0170", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "VHF Battery x 4", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0171", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "VHF RADIO – Portable x 3", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0172", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "MAGLIGHT CONES x 3", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0173", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "Rural TIC & spare Battery", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0174", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "BIO WASTE DISPOSAL BAGS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0175", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "RESCUE Vests x 4 (Rear)", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0176", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "Rescue Gloves", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0177", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "Nitrile Gloves", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0178", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "Glasses", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0179", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "Dust Mask", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0180", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "RADIO BELT w/ working torch", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0181", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "BOX OF NITRILE GLOVES", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0182", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "BOX OF SURGICAL MASKS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0183", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "JACK WHEEL BRACE w/ Handles", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0184", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "PRIMARY ENTRY KIT [x2]", "quantity": "", "category": "", "description": "Rescue Knife\nEmergency Hammer\n200mm Adjustable Spanner\nPhilips Head Screwdriver\nFlat Blade Screwdriver\nCable Cutters\nSeat belt webbing\nUniversal Shears\nTrim Removal tool [x3 total]", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0194", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "YELLOW POUCH LAMINATED MAPS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0195", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "UBD STREET DIRECTORY", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0196", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "DIRECTIONS BOOK – White, A5", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0197", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "DANGEROUS GOODS GUIDE", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0198", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "RESCUERS GUIDE TO AIRBAGS", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0199", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "A3 LAMINATED NATIONAL PARKS MAP", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0200", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "CFS MAP BOOK", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}, {"id": "BR-0201", "appliance": "Blackwood Rescue", "locker": "Cabin", "section": "Rear Seats", "subsection": "", "item": "BAG, CLEAR SAFETY GLASSES", "quantity": "", "category": "", "description": "", "status": "In service", "photo": "cabin.jpg", "extraPhoto": "", "lastChecked": "", "checkedBy": "", "tags": "", "notes": "", "location": "Cabin > Rear Seats"}], "lockers": ["Cabin", "Locker 1", "Locker 2", "Locker 3", "Locker 4", "Locker 5", "Locker 6"], "lockerPhotos": {"Cabin": {"photo": "cabin_front.jpg", "title": "Cabin", "description": ""}, "Locker 1": {"photo": "locker_1.jpg", "title": "Locker 1", "description": ""}, "Locker 2": {"photo": "locker_2.jpg", "title": "Locker 2", "description": ""}, "Locker 3": {"photo": "locker_3.jpg", "title": "Locker 3", "description": ""}, "Locker 4": {"photo": "locker_4.jpg", "title": "Locker 4", "description": ""}, "Locker 5": {"photo": "locker_5.jpg", "title": "Locker 5", "description": ""}, "Locker 6": {"photo": "locker_6.jpg", "title": "Locker 6", "description": ""}}, "built": "2026-06-04 16:17", "version": "v1.12.0"};
+let activeLocker = "Home";
+// Always start on Home when the app loads.
+let homeCollapsed = true;
+let groupCollapsedState = {};
+let favourites = new Set();
+
+try {
+  favourites = new Set(JSON.parse(localStorage.getItem("inventoryFavourites") || "[]"));
+} catch(e) {
+  favourites = new Set();
+}
+
+function saveFavourites() {
+  try {
+    localStorage.setItem("inventoryFavourites", JSON.stringify([...favourites]));
+  } catch(e) {}
+}
+
+function itemKey(r) {
+  return r.id || [r.locker, r.section, r.subsection, r.item].join("|");
+}
+
+function toggleFavourite(key) {
+  if (favourites.has(key)) {
+    favourites.delete(key);
+  } else {
+    favourites.add(key);
+  }
+  saveFavourites();
+  render();
+}
+
+const title = document.getElementById("title");
+const subtitle = document.getElementById("subtitle");
+const tabsEl = document.getElementById("tabs");
+const summaryEl = document.getElementById("summary");
+const resultsEl = document.getElementById("results");
+const searchEl = document.getElementById("search");
+const photoEl = document.getElementById("lockerPhoto");
+const clearBtn = document.getElementById("clearBtn");
+const darkToggle = document.getElementById("darkToggle");
+
+function setTheme(mode) {
+  const dark = mode === "dark";
+  document.body.classList.toggle("dark", dark);
+  if (darkToggle) darkToggle.textContent = dark ? "Dark" : "Light";
+  try { localStorage.setItem("inventoryTheme", mode); } catch(e) {}
+}
+
+function setPalette(palette) {
+  const valid = ["blue", "green", "yellow", "red"];
+  const chosen = valid.includes(palette) ? palette : "blue";
+  document.body.classList.remove("palette-blue", "palette-green", "palette-yellow", "palette-red");
+  document.body.classList.add("palette-" + chosen);
+  document.querySelectorAll(".theme-option").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.palette === chosen);
+  });
+  try { localStorage.setItem("inventoryPalette", chosen); } catch(e) {}
+}
+
+try {
+  const savedTheme = localStorage.getItem("inventoryTheme");
+  if (savedTheme) {
+    setTheme(savedTheme);
+  } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    setTheme("dark");
+  } else {
+    setTheme("light");
+  }
+} catch(e) {
+  setTheme("light");
+}
+
+try {
+  setPalette(localStorage.getItem("inventoryPalette") || "blue");
+} catch(e) {
+  setPalette("blue");
+}
+
+document.querySelectorAll(".theme-option").forEach(btn => {
+  btn.addEventListener("click", () => setPalette(btn.dataset.palette));
+});
+
+if (darkToggle) {
+  darkToggle.addEventListener("click", () => {
+    setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+  });
+}
+
+
+const menuBtn = document.getElementById("menuBtn");
+const drawer = document.getElementById("drawer");
+const drawerBackdrop = document.getElementById("drawerBackdrop");
+const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+
+function openDrawer() {
+  drawer.classList.add("open");
+  drawerBackdrop.classList.add("open");
+}
+
+function closeDrawer() {
+  drawer.classList.remove("open");
+  drawerBackdrop.classList.remove("open");
+}
+
+if (menuBtn) menuBtn.addEventListener("click", openDrawer);
+if (closeDrawerBtn) closeDrawerBtn.addEventListener("click", closeDrawer);
+if (drawerBackdrop) drawerBackdrop.addEventListener("click", closeDrawer);
+
+document.querySelectorAll(".truck-option").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".truck-option").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    closeDrawer();
+  });
+});
+
+
+title.textContent = DATA.appliance + " Inventory";
+
+function esc(s) {
+  return (s || "").toString().replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function norm(s) {
+  return (s || "").toString().toLowerCase();
+}
+
+function statusClass(s) {
+  const n = norm(s);
+  if (n.includes("missing")) return "status-missing";
+  if (n.includes("damaged")) return "status-damaged";
+  if (n.includes("out")) return "status-out";
+  if (n.includes("review")) return "status-review";
+  if (n.includes("replace")) return "status-replace";
+  return "";
+}
+
+function isInService(s) {
+  const n = norm(s).trim();
+  return n === "" || n === "in service";
+}
+
+function tileStatusClass(s) {
+  return isInService(s) ? "in-service" : "not-in-service";
+}
+
+function statusPillClass(s) {
+  return isInService(s) ? "in-service" : "not-in-service";
+}
+
+function recordMatches(r, q) {
+  if (!q) return true;
+  const blob = [
+    r.item, r.locker, r.section, r.subsection, r.location,
+    r.description, r.category, r.status, r.tags, r.notes, r.quantity
+  ].join(" ");
+  return norm(blob).includes(q);
+}
+
+function makeTabs() {
+  tabsEl.innerHTML = "";
+  ["Home", ...DATA.lockers, "Out of Service"].forEach(locker => {
+    const btn = document.createElement("button");
+    btn.textContent = locker;
+    btn.className = locker === activeLocker ? "active" : "";
+    btn.onclick = () => {
+      activeLocker = locker;
+      searchEl.value = "";
+      makeTabs();
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function filteredRecords() {
+  const q = norm(searchEl.value.trim());
+  return DATA.records.filter(r => {
+    const favouriteOk = activeLocker === "★" ? favourites.has(itemKey(r)) : true;
+    const outOfServiceOk = activeLocker === "Out of Service" ? !isInService(getEffectiveStatus(r)) : true;
+    const lockerOk = activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service" || r.locker === activeLocker;
+    return lockerOk && favouriteOk && outOfServiceOk && recordMatches(r, q);
+  });
+}
+
+function renderSummary(records) {
+  if (activeLocker !== "Home") {
+    summaryEl.innerHTML = "";
+    return;
+  }
+
+  const starredCount = records.filter(r => favourites.has(itemKey(r))).length;
+  const outOfServiceCount = records.filter(r => {
+    const n = norm(getEffectiveStatus(r));
+    return n && !isInService(n);
+  }).length;
+  summaryEl.innerHTML = `
+    <button class="stat stat-button" type="button" id="starredStat"><strong>${starredCount}</strong><span>Starred Items</span></button>
+    <button class="stat stat-button" type="button" id="expandCollapseStat"><strong>${homeCollapsed ? "＋" : "−"}</strong><span>${homeCollapsed ? "Expand All" : "Collapse All"}</span></button>
+    <button class="stat stat-button ${outOfServiceCount === 0 ? "stat-ok" : "stat-alert"}" type="button" id="outOfServiceStat"><strong>${outOfServiceCount}</strong><span>Out of Service</span></button>
+  `;
+
+  const starredBtn = document.getElementById("starredStat");
+  if (starredBtn) {
+    starredBtn.addEventListener("click", () => {
+      activeLocker = "★";
+      searchEl.value = "";
+      makeTabs();
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    });
+  }
+
+  const expandBtn = document.getElementById("expandCollapseStat");
+  if (expandBtn) {
+    expandBtn.addEventListener("click", () => {
+      homeCollapsed = !homeCollapsed;
+
+      // Clear manual per-group states when user chooses a global Home expand/collapse action.
+      Object.keys(groupCollapsedState).forEach(key => {
+        if (key.startsWith("Home::")) delete groupCollapsedState[key];
+      });
+
+      render();
+    });
+  }
+
+  const oosBtn = document.getElementById("outOfServiceStat");
+  if (oosBtn) {
+    oosBtn.addEventListener("click", () => {
+      activeLocker = "Out of Service";
+      searchEl.value = "";
+      makeTabs();
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    });
+  }
+}
+
+function renderPhoto() {
+  photoEl.innerHTML = "";
+  if (activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service") return;
+  const lp = DATA.lockerPhotos[activeLocker] || {};
+  if (!lp.photo) return;
+  if (activeLocker === "Cabin") {
+    const front = "photos/cabin_front.jpg";
+    const rear = "photos/cabin_rear.jpg";
+    photoEl.innerHTML = `
+      <div class="photo-card">
+        <img src="${esc(front)}" alt="Cabin front photo" onerror="this.style.display='none';">
+        <img src="${esc(rear)}" alt="Cabin rear photo" onerror="this.style.display='none';">
+        <div class="photo-text">
+          <h2>Cabin</h2>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const src = "photos/" + lp.photo;
+  photoEl.innerHTML = `
+    <div class="photo-card">
+      <img src="${esc(src)}" alt="${esc(activeLocker)} photo" onerror="this.style.display='none'; this.parentElement.querySelector('.missing-photo').style.display='block';">
+      <div class="missing-photo photo-text" style="display:none;">
+        <h2>${esc(activeLocker)}</h2>
+        <p>No photo found yet. Add <strong>${esc(src)}</strong> to the photos folder.</p>
+      </div>
+      <div class="photo-text">
+        <h2>${esc(lp.title || activeLocker)}</h2>
+        ${lp.description ? `<p>${esc(lp.description)}</p>` : ``}
+      </div>
+    </div>
+  `;
+}
+
+function groupRecords(records) {
+  const groups = {};
+  records.forEach(r => {
+    const key = r.location || r.locker || "Unspecified";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+  return groups;
+}
+
+function customGroupSortKey(name) {
+  const n = name.toLowerCase();
+
+  // Main physical locker order for All view and search results
+  let lockerRank = 99;
+  if (n.includes("cabin")) lockerRank = 0;
+  else {
+    const m = n.match(/locker\s*(\d+)/);
+    if (m) lockerRank = Number(m[1]);
+  }
+
+  // Section order within lockers
+  let sectionRank = 99;
+
+  // Generic top/middle/bottom order
+  if (n.includes("top")) sectionRank = Math.min(sectionRank, 0);
+  if (n.includes("middle") || n.includes("midd")) sectionRank = Math.min(sectionRank, 1);
+  if (n.includes("bottom")) sectionRank = Math.min(sectionRank, 2);
+
+  // Locker 2 desired physical order
+  if (n.includes("locker 2")) {
+    if (n.includes("top")) sectionRank = 0;
+    else if (n.includes("middle") || n.includes("midd")) sectionRank = 1;
+    else if (n.includes("tray 1")) sectionRank = 2;
+    else if (n.includes("tray 2")) sectionRank = 3;
+    else if (n.includes("tray 3")) sectionRank = 4;
+    else if (n.includes("tray 4")) sectionRank = 5;
+  }
+
+  // Locker 5 desired physical order
+  if (n.includes("locker 5")) {
+    if (n.includes("top")) sectionRank = 0;
+    else if (n.includes("middle") || n.includes("midd")) sectionRank = 1;
+    else if (n.includes("bottom")) sectionRank = 2;
+  }
+
+  return String(lockerRank).padStart(2, "0") + "-" + String(sectionRank).padStart(2, "0") + "-" + n;
+}
+
+
+const itemModalBackdrop = document.getElementById("itemModalBackdrop");
+const itemModal = document.getElementById("itemModal");
+const modalClose = document.getElementById("modalClose");
+const modalPhoto = document.getElementById("modalPhoto");
+const modalTitle = document.getElementById("modalTitle");
+const modalMeta = document.getElementById("modalMeta");
+const modalPills = document.getElementById("modalPills");
+const modalDetails = document.getElementById("modalDetails");
+const modalInServiceBtn = document.getElementById("modalInServiceBtn");
+const modalOutServiceBtn = document.getElementById("modalOutServiceBtn");
+
+let modalCurrentItemKey = null;
+let localItemEdits = {};
+
+try {
+  localItemEdits = JSON.parse(localStorage.getItem("inventoryItemEdits") || "{}");
+} catch(e) {
+  localItemEdits = {};
+}
+
+function saveLocalItemEdits() {
+  try {
+    localStorage.setItem("inventoryItemEdits", JSON.stringify(localItemEdits));
+  } catch(e) {}
+}
+
+function getExcelDescription(r) {
+  return r.description ?? "";
+}
+
+function getEffectiveStatus(r) {
+  const key = itemKey(r);
+  return localItemEdits[key]?.status ?? r.status ?? "In service";
+}
+
+function setModalServiceStatus(status) {
+  if (!modalCurrentItemKey) return;
+  if (!localItemEdits[modalCurrentItemKey]) localItemEdits[modalCurrentItemKey] = {};
+  localItemEdits[modalCurrentItemKey].status = status;
+  saveLocalItemEdits();
+  render();
+  updateModalServiceButtons(status);
+}
+
+function updateModalServiceButtons(status) {
+  const inService = isInService(status);
+  const inBtn = document.getElementById("modalInServiceBtn");
+  const outBtn = document.getElementById("modalOutServiceBtn");
+
+  if (inBtn) {
+    inBtn.classList.toggle("service-active", inService);
+    inBtn.classList.remove("service-out");
+    inBtn.setAttribute("aria-pressed", String(inService));
+  }
+
+  if (outBtn) {
+    outBtn.classList.toggle("service-out", !inService);
+    outBtn.classList.remove("service-active");
+    outBtn.setAttribute("aria-pressed", String(!inService));
+  }
+}
+
+function updateModalStarButton() {
+  const starBtn = document.getElementById("modalStarBtn");
+  if (!starBtn || !modalCurrentItemKey) return;
+  const isFav = favourites.has(modalCurrentItemKey);
+  starBtn.classList.toggle("active", isFav);
+  starBtn.setAttribute("aria-pressed", String(isFav));
+  starBtn.textContent = isFav ? "★" : "☆";
+}
+
+function modalField(label, value, full=false) {
+  if (!value) return "";
+  return `
+    <div class="modal-field ${full ? "full" : ""}">
+      <div class="modal-field-label">${esc(label)}</div>
+      <div class="modal-field-value">${esc(value)}</div>
+    </div>
+  `;
+}
+
+function openItemModal(r) {
+  if (!r) return;
+
+  modalCurrentItemKey = itemKey(r);
+  const excelDescription = getExcelDescription(r);
+  const effectiveStatus = getEffectiveStatus(r);
+
+  modalTitle.textContent = r.item || "Item details";
+  modalMeta.textContent = [r.locker, r.section, r.subsection].filter(Boolean).join(" • ");
+  updateModalServiceButtons(effectiveStatus);
+
+  const photoName = r.extraPhoto || "";
+  if (photoName) {
+    const src = "photos/items/" + photoName;
+    modalPhoto.innerHTML = `<img src="${esc(src)}" alt="${esc(r.item)} photo" onerror="this.parentElement.innerHTML='No item photo found yet.<br><small>Add ${esc(src)}</small>';">`;
+  } else {
+    const safeName = (r.item || "item").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+    modalPhoto.innerHTML = `Item photo placeholder<br><small>Optional later: photos/items/${esc(safeName)}.jpg</small>`;
+  }
+
+  const existingToggle = `
+    <div class="service-toggle-row">
+      <button id="modalInServiceBtn" class="service-toggle" type="button">In service</button>
+      <button id="modalOutServiceBtn" class="service-toggle" type="button">Out of service</button>
+      <button id="modalStarBtn" class="modal-star-toggle" type="button" aria-label="Star item">☆</button>
+    </div>
+  `;
+  const pillBits = [existingToggle];
+  if (r.quantity) pillBits.push(`<span class="badge">Qty ${esc(r.quantity)}</span>`);
+  if (r.category) pillBits.push(`<span class="badge">${esc(r.category)}</span>`);
+  modalPills.innerHTML = pillBits.join("");
+  const inBtn = modalPills.querySelector("#modalInServiceBtn");
+  const outBtn = modalPills.querySelector("#modalOutServiceBtn");
+  const starBtn = modalPills.querySelector("#modalStarBtn");
+
+  if (inBtn) inBtn.addEventListener("click", () => setModalServiceStatus("In service"));
+  if (outBtn) outBtn.addEventListener("click", () => setModalServiceStatus("Out of service"));
+  if (starBtn) {
+    starBtn.addEventListener("click", () => {
+      toggleFavourite(modalCurrentItemKey);
+      updateModalStarButton();
+    });
+  }
+
+  updateModalServiceButtons(effectiveStatus);
+  updateModalStarButton();
+
+  modalDetails.innerHTML = [
+    modalField("Location", r.location, true),
+    modalField("Appliance", DATA.appliance),
+    modalField("Excel description", r.description, true),
+    modalField("Notes", r.notes, true),
+    modalField("Search tags", r.tags, true),
+    modalField("Last checked", r.lastChecked),
+    modalField("Checked by", r.checkedBy),
+  ].join("");
+
+  itemModalBackdrop.classList.add("open");
+  itemModal.classList.add("open");
+}
+
+function closeItemModal() {
+  itemModalBackdrop.classList.remove("open");
+  itemModal.classList.remove("open");
+}
+
+if (modalClose) modalClose.addEventListener("click", closeItemModal);
+if (itemModalBackdrop) itemModalBackdrop.addEventListener("click", closeItemModal);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeItemModal();
+});
+
+function toggleGroup(section, title) {
+  const isCollapsed = section.classList.toggle("collapsed");
+  title.setAttribute("aria-expanded", String(!isCollapsed));
+
+  const key = section.dataset.groupKey;
+  if (key) {
+    groupCollapsedState[key] = isCollapsed;
+  }
+}
+
+function renderResults(records) {
+  resultsEl.innerHTML = "";
+
+  if (activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service") {
+    const heading = document.createElement("section");
+    heading.className = "photo-card";
+    const headingTitle = activeLocker === "★" ? "★ Starred Items" : (activeLocker === "Out of Service" ? "Out of Service" : "All Items");
+    heading.innerHTML = `
+      <div class="photo-text">
+        <h2>${headingTitle}</h2>
+        <p>${records.length} item${records.length === 1 ? "" : "s"}</p>
+      </div>
+    `;
+    resultsEl.appendChild(heading);
+  }
+
+  if (!records.length) {
+    resultsEl.innerHTML = `<div class="empty">No matching items found.</div>`;
+    return;
+  }
+  const groups = groupRecords(records);
+  Object.keys(groups)
+    .sort((a,b) => customGroupSortKey(a).localeCompare(customGroupSortKey(b), undefined, {numeric:true}))
+    .forEach(group => {
+    const items = groups[group];
+    const section = document.createElement("section");
+    section.className = "group";
+    const groupStateKey = activeLocker + "::" + group;
+    section.dataset.groupKey = groupStateKey;
+    section.innerHTML = `
+      <div class="group-title" role="button" tabindex="0" aria-expanded="true" title="Tap to collapse/expand">
+        <h3>${esc(group)}</h3>
+        <small>${items.length} item${items.length === 1 ? "" : "s"}</small>
+      </div>
+      <div class="items-grid"></div>
+    `;
+    const title = section.querySelector(".group-title");
+    title.addEventListener("click", () => toggleGroup(section, title));
+    title.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleGroup(section, title);
+      }
+    });
+    const hasSavedGroupState = Object.prototype.hasOwnProperty.call(groupCollapsedState, groupStateKey);
+    const shouldCollapseGroup = hasSavedGroupState ? groupCollapsedState[groupStateKey] : (activeLocker === "Home" && homeCollapsed);
+
+    if (shouldCollapseGroup) {
+      section.classList.add("collapsed");
+      title.setAttribute("aria-expanded", "false");
+    } else {
+      section.classList.remove("collapsed");
+      title.setAttribute("aria-expanded", "true");
+    }
+    const grid = section.querySelector(".items-grid");
+    items.forEach(r => {
+      const badges = [];
+      if (r.category) badges.push(`<span class="badge">${esc(r.category)}</span>`);
+      if (r.lastChecked) badges.push(`<span class="badge">Checked ${esc(r.lastChecked)}</span>`);
+      if (r.checkedBy) badges.push(`<span class="badge">By ${esc(r.checkedBy)}</span>`);
+      const div = document.createElement("div");
+      const effectiveStatus = getEffectiveStatus(r);
+      const excelDescription = getExcelDescription(r);
+      div.className = "item " + tileStatusClass(effectiveStatus) + " clickable";
+      const favKey = itemKey(r);
+      const isFav = favourites.has(favKey);
+      div.innerHTML = `
+        <button class="fav-btn ${isFav ? "active" : ""}" type="button" title="Favourite item" aria-label="Favourite item">${isFav ? "★" : "☆"}</button>
+        ${effectiveStatus ? `<div class="status-pill ${statusPillClass(effectiveStatus)}">${esc(effectiveStatus)}</div>` : `<div class="status-pill in-service">In service</div>`}
+        <div class="item-main">
+          <div class="item-name">${esc(r.item)}</div>
+          ${r.quantity ? `<div class="qty">Qty ${esc(r.quantity)}</div>` : ""}
+        </div>
+        <div class="meta">${esc([r.locker, r.section, r.subsection].filter(Boolean).join(" • "))}</div>
+        ${excelDescription ? `<div class="desc">${esc(excelDescription)}</div>` : ""}
+        ${r.notes ? `<div class="notes">${esc(r.notes)}</div>` : ""}
+        ${badges.length ? `<div class="badge-row">${badges.join("")}</div>` : ""}
+      `;
+      div.querySelector(".fav-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleFavourite(favKey);
+      });
+      div.addEventListener("click", () => openItemModal(r));
+      grid.appendChild(div);
+    });
+    resultsEl.appendChild(section);
+  });
+}
+
+function render() {
+  const records = filteredRecords();
+  renderSummary(records);
+  renderPhoto();
+  renderResults(records);
+}
+
+searchEl.addEventListener("input", () => {
+  activeLocker = "Home";
+  makeTabs();
+  render();
+});
+clearBtn.addEventListener("click", () => {
+  searchEl.value = "";
+  render();
+  searchEl.focus();
+});
+
+
+
+
+function initialiseQuizFeature() {
+  const openQuizBtn = document.getElementById("openQuizBtn");
+  const quizBackdrop = document.getElementById("quizBackdrop");
+  const quizModal = document.getElementById("quizModal");
+  const quizCloseBtn = document.getElementById("quizCloseBtn");
+  const quizSetup = document.getElementById("quizSetup");
+  const quizRun = document.getElementById("quizRun");
+  const quizResults = document.getElementById("quizResults");
+  const generateQuizBtn = document.getElementById("generateQuizBtn");
+  const quizCard = document.getElementById("quizCard");
+  const quizProgress = document.getElementById("quizProgress");
+  const quizItemName = document.getElementById("quizItemName");
+  const quizLocation = document.getElementById("quizLocation");
+  const quizMarking = document.getElementById("quizMarking");
+  const quizCorrectBtn = document.getElementById("quizCorrectBtn");
+  const quizIncorrectBtn = document.getElementById("quizIncorrectBtn");
+  const quizScore = document.getElementById("quizScore");
+  const quizStartOverBtn = document.getElementById("quizStartOverBtn");
+  const quizRegenerateBtn = document.getElementById("quizRegenerateBtn");
+
+  let quizItems = [];
+  let quizIndex = 0;
+  let quizCorrect = 0;
+  let quizFlipped = false;
+
+  function openQuizModal() {
+    if (typeof closeDrawer === "function") closeDrawer();
+    quizBackdrop.classList.add("open");
+    quizModal.classList.add("open");
+    showQuizSetup();
+  }
+
+  function closeQuizModal() {
+    quizBackdrop.classList.remove("open");
+    quizModal.classList.remove("open");
+  }
+
+  function showQuizSetup() {
+    quizSetup.style.display = "";
+    quizRun.style.display = "none";
+    quizResults.style.display = "none";
+    quizItems = [];
+    quizIndex = 0;
+    quizCorrect = 0;
+    quizFlipped = false;
+  }
+
+  function selectedQuizTrucks() {
+    return [...document.querySelectorAll(".quiz-truck:checked")].map(x => x.value);
+  }
+
+  function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function generateQuiz() {
+    const trucks = selectedQuizTrucks();
+    const pool = DATA.records.filter(r =>
+      trucks.includes(r.appliance || DATA.appliance) &&
+      r.item &&
+      r.location
+    );
+
+    quizItems = shuffleArray(pool).slice(0, 10);
+    quizIndex = 0;
+    quizCorrect = 0;
+
+    if (!quizItems.length) {
+      quizScore.textContent = "No quiz items available";
+      quizSetup.style.display = "none";
+      quizRun.style.display = "none";
+      quizResults.style.display = "";
+      return;
+    }
+
+    quizSetup.style.display = "none";
+    quizResults.style.display = "none";
+    quizRun.style.display = "";
+    showQuizCard();
+  }
+
+  function showQuizCard() {
+    quizFlipped = false;
+    quizCard.classList.remove("flipped");
+    quizMarking.style.display = "none";
+
+    const item = quizItems[quizIndex];
+    quizProgress.textContent = `Question ${quizIndex + 1} of ${quizItems.length}`;
+    quizItemName.textContent = item.item;
+    quizLocation.textContent = item.location;
+  }
+
+  function flipQuizCard() {
+    if (quizFlipped) return;
+    quizFlipped = true;
+    quizCard.classList.add("flipped");
+    quizMarking.style.display = "flex";
+  }
+
+  function markQuiz(correct) {
+    if (correct) quizCorrect += 1;
+    quizIndex += 1;
+
+    if (quizIndex >= quizItems.length) {
+      showQuizResults();
+    } else {
+      showQuizCard();
+    }
+  }
+
+  function showQuizResults() {
+    quizRun.style.display = "none";
+    quizSetup.style.display = "none";
+    quizResults.style.display = "";
+    quizScore.textContent = `${quizCorrect} / ${quizItems.length}`;
+  }
+
+  if (openQuizBtn) openQuizBtn.addEventListener("click", openQuizModal);
+  if (quizCloseBtn) quizCloseBtn.addEventListener("click", closeQuizModal);
+  if (quizBackdrop) quizBackdrop.addEventListener("click", closeQuizModal);
+  if (generateQuizBtn) generateQuizBtn.addEventListener("click", generateQuiz);
+  if (quizCard) quizCard.addEventListener("click", flipQuizCard);
+  if (quizCorrectBtn) quizCorrectBtn.addEventListener("click", () => markQuiz(true));
+  if (quizIncorrectBtn) quizIncorrectBtn.addEventListener("click", () => markQuiz(false));
+  if (quizStartOverBtn) quizStartOverBtn.addEventListener("click", showQuizSetup);
+  if (quizRegenerateBtn) quizRegenerateBtn.addEventListener("click", generateQuiz);
+}
+
+initialiseQuizFeature();
+
+makeTabs();
+render();
+</script>
+</body>
+</html>

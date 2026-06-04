@@ -1,0 +1,4 @@
+QR code idea:
+- For now, QR codes can point to the same index.html file if hosted in a shared drive or web location.
+- Later, we can create direct locker URLs such as index.html#locker=Locker%204.
+- Once photos are final, we can also generate printable QR labels for each locker.
