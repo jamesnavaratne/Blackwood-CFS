@@ -1611,6 +1611,18 @@ body.dark .quiz-card-face {
   .items-grid { background: white; }
 }
 </style>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<meta name="theme-color" content="#06142d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+if ('serviceWorker' in navigator) {
+ window.addEventListener('load', ()=>navigator.serviceWorker.register('./service-worker.js'));
+}
+</script>
+
 </head>
 <body>
 
@@ -1728,7 +1740,7 @@ body.dark .quiz-card-face {
     </button>
   </div>
 
-  <div class="drawer-note">
+  <div class="drawer-note"><strong>Version:</strong> v1.13.0 GitHub Release Candidate<br>
     This menu is ready for future multi-appliance inventories. For now, Blackwood Rescue is the active dataset.
   </div>
 </aside>
