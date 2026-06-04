@@ -1,0 +1,19 @@
+Upload the CONTENTS of this ZIP to the root of your GitHub repository.
+
+Important root files:
+- index.html
+- manifest.json
+- service-worker.js
+- icon.png
+- icons/ folder
+- locker/cabin JPG files
+- README files
+
+Do not upload the ZIP itself.
+
+After upload, check:
+https://jamesnavaratne.github.io/Blackwood-CFS/manifest.json
+
+It should show JSON text, not 404.
+
+Then delete the old phone home-screen shortcut and add it again.
