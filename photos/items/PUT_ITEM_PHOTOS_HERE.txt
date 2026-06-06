@@ -1,0 +1,2 @@
+Optional item photos for modal detail pages go here.
+Use filenames referenced by Extra_Photo_File in Excel, or suggested names shown in the modal.
