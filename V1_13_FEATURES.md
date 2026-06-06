@@ -67,3 +67,9 @@ v1.13.15
 v1.13.16
 - Item photo preview now fills horizontally, crops from the top, and can be tapped to enlarge.
 - Item tiles now show a small image indicator beside the star when an item photo exists.
+
+v1.13.17
+- Cabin front and rear photos now display side-by-side.
+- Tile photo indicator now sits in line with the favourite star.
+- Item photo thumbnail now fits neatly in the item modal and crops from the top.
+- Enlarged photo modal now appears above the item modal.

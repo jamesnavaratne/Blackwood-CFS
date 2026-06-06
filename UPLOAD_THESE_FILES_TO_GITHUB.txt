@@ -1,9 +1,22 @@
-Upload the CONTENTS of this ZIP to the root of your GitHub repository.
+Release v1.13.17 – Cabin Gallery + Item Photo Fixes
 
-This version adds automatic item-photo fallback:
-- If extraPhoto is set in the data, the app uses that filename.
-- If extraPhoto is blank, the app tries photos/items/<sanitised_item_name>.jpg.
+Recommended upload method:
+- Upload/replace the entire ZIP contents in the GitHub repository root.
 
-Example:
-RCR CREW COMPOSITION x 4 (roof)
-→ photos/items/rcr_crew_composition_x_4_roof.jpg
+Files modified in this build:
+- index.html
+- service-worker.js
+- V1_13_FEATURES.md
+- UPLOAD_THESE_FILES_TO_GITHUB.txt
+
+Files not intentionally modified:
+- manifest.json
+- icons/
+- photos/
+- Excel workbook
+- README/QR notes
+
+After upload:
+- Wait 1-2 minutes for GitHub Pages.
+- Refresh the website.
+- If old layout persists, clear site data once or test in Incognito.
