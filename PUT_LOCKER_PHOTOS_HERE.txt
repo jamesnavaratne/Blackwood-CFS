@@ -1,1 +1,0 @@
-Put locker photos here. Use filenames from the Photo_File column, e.g. locker_1.jpg, locker_3.jpg, cabin.jpg.
