@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blackwood CFS</title>
+<title>Blackwood Rescue Inventory</title>
 
 <style>
 :root {
@@ -1603,462 +1603,6 @@ body.dark .quiz-card-face {
   }
 }
 
-
-/* v1.13.2 UI refinements */
-.menu-btn, #menuBtn, .hamburger, button[aria-label*="menu" i], button[aria-label*="open" i] {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-.menu-btn svg, #menuBtn svg, .hamburger svg {
-  display: block !important;
-  margin: auto !important;
-}
-.photo-card { cursor: pointer; padding: 10px !important; }
-.photo-card img, .locker-photo img, .hero-photo img {
-  max-height: 170px !important;
-  object-fit: cover !important;
-}
-.photo-card::after {
-  content: "Tap photo to enlarge";
-  display: block;
-  color: var(--muted);
-  font-size: 0.72rem;
-  text-align: center;
-  margin-top: 6px;
-}
-.photo-card.no-enlarge-hint::after,
-.photo-card:has(.photo-text:only-child)::after {
-  content: "";
-  display: none;
-}
-.photo-modal {
-  width: min(96vw, 820px) !important;
-  max-height: calc(92vh - env(safe-area-inset-bottom)) !important;
-  overflow: auto !important;
-}
-.photo-modal-image-wrap { padding: 10px; }
-.photo-modal-image-wrap img {
-  width: 100%;
-  max-height: 74vh;
-  object-fit: contain;
-  border-radius: 18px;
-  display: block;
-  background: #000;
-}
-.photo-modal-caption {
-  padding: 0 14px 14px;
-  color: var(--muted);
-  text-align: center;
-  font-size: 0.86rem;
-}
-.item-modal.open, .quiz-modal.open, .photo-modal.open {
-  top: 46vh !important;
-  transform: translate(-50%, -46%) !important;
-}
-
-
-/* v1.13.3 - desktop hamburger optical alignment fix */
-button[aria-label="Open menu"],
-button[aria-label="Menu"],
-#menuBtn,
-.menu-btn {
-  width: 48px !important;
-  height: 48px !important;
-  min-width: 48px !important;
-  min-height: 48px !important;
-  padding: 0 !important;
-  display: inline-grid !important;
-  place-items: center !important;
-  line-height: 0 !important;
-}
-
-button[aria-label="Open menu"] svg,
-button[aria-label="Menu"] svg,
-#menuBtn svg,
-.menu-btn svg {
-  width: 24px !important;
-  height: 24px !important;
-  display: block !important;
-  margin: 0 !important;
-  transform: translateX(0.5px);
-}
-
-button[aria-label="Open menu"] svg *,
-button[aria-label="Menu"] svg *,
-#menuBtn svg *,
-.menu-btn svg * {
-  vector-effect: non-scaling-stroke;
-}
-
-/* If the hamburger is text/CSS bars instead of SVG */
-button[aria-label="Open menu"] span,
-button[aria-label="Menu"] span,
-#menuBtn span,
-.menu-btn span {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-
-/* v1.13.4 - issue reporting + quiz hints */
-.issue-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 10px 0 12px;
-}
-
-.issue-option {
-  justify-content: center;
-  text-align: center;
-}
-
-.issue-option.active {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-}
-
-.issue-textarea {
-  width: 100%;
-  min-height: 86px;
-  resize: vertical;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-  padding: 10px 12px;
-  font: inherit;
-  outline: none;
-}
-
-.issue-textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
-.issue-report-box {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 0.86rem;
-  line-height: 1.35;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px;
-  color: var(--text);
-  max-height: 220px;
-  overflow: auto;
-}
-
-.issue-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-  justify-content: center;
-}
-
-.issue-hint {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.35;
-  margin-top: 8px;
-  text-align: center;
-}
-
-.quiz-progress-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.quiz-progress-row .quiz-progress {
-  margin: 0 !important;
-}
-
-.quiz-hint-pill {
-  min-width: unset !important;
-  width: auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 2px 7px !important;
-  font-size: 0.68rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid var(--line) !important;
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
-}
-
-.quiz-hint-pill.active {
-  background: var(--accent-soft) !important;
-  color: var(--accent) !important;
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--line)) !important;
-}
-
-.quiz-hint-value {
-  color: var(--accent);
-  font-size: 0.82rem;
-  text-align: center;
-  min-height: 1.1em;
-  margin-bottom: 8px;
-}
-
-
-/* v1.13.5 - issue pill on item tiles */
-.issue-tile-btn {
-  position: absolute;
-  left: 34px;
-  bottom: 10px;
-  min-width: unset !important;
-  width: auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 2px 6px !important;
-  font-size: 0.62rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
-  opacity: 0.88;
-}
-
-.issue-tile-btn:hover,
-.issue-tile-btn:focus {
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-  color: var(--danger-text) !important;
-  background: var(--danger-bg) !important;
-  transform: none !important;
-}
-
-.item {
-  position: relative;
-}
-
-
-/* v1.13.6 - Report Issue moved into item modal */
-.modal-report-issue-btn {
-  min-width: unset !important;
-  width: auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 2px 7px !important;
-  font-size: 0.68rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid var(--line) !important;
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
-}
-
-.modal-report-issue-btn:hover,
-.modal-report-issue-btn:focus {
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-  color: var(--danger-text) !important;
-  background: var(--danger-bg) !important;
-  transform: none !important;
-}
-
-.issue-option.active {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-  opacity: 1 !important;
-}
-
-/* Ensure old tile issue pill styling cannot display */
-.issue-tile-btn {
-  display: none !important;
-}
-
-
-/* v1.13.7 - Report Issue bottom action */
-.modal-bottom-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 14px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
-}
-
-.modal-bottom-actions .modal-report-issue-btn {
-  min-width: unset !important;
-  width: auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 4px 10px !important;
-  font-size: 0.72rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid var(--line) !important;
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
-}
-
-.modal-bottom-actions .modal-report-issue-btn:hover,
-.modal-bottom-actions .modal-report-issue-btn:focus {
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-  color: var(--danger-text) !important;
-  background: var(--danger-bg) !important;
-  transform: none !important;
-}
-
-
-/* v1.13.8 - issue modal stack/actions fix */
-#issueModalBackdrop {
-  z-index: 210 !important;
-}
-
-#issueModal {
-  z-index: 220 !important;
-}
-
-.issue-actions {
-  justify-content: center !important;
-}
-
-#emailIssueBtn {
-  min-width: 118px !important;
-}
-
-.issue-option.active,
-.issue-option[aria-pressed="true"] {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  border-color: color-mix(in srgb, var(--danger-text) 28%, var(--line)) !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-}
-
-.issue-option:not(.active) {
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  border-color: var(--line) !important;
-}
-
-
-/* v1.13.9 - issue type pills match Out of Service red pill */
-.issue-options {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  gap: 6px !important;
-}
-
-.issue-option {
-  min-width: unset !important;
-  width: auto !important;
-  flex: 0 0 auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 2px 7px !important;
-  font-size: 0.68rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  background: var(--surface) !important;
-  color: var(--muted) !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-}
-
-.issue-option.active,
-.issue-option[aria-pressed="true"] {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  border-color: rgba(0,0,0,0.08) !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-}
-
-body.dark .issue-option.active,
-body.dark .issue-option[aria-pressed="true"] {
-  box-shadow: 0 0 10px color-mix(in srgb, var(--danger-text) 18%, transparent) !important;
-}
-
-
-/* v1.13.10 - exact red out-of-service style for active issue type */
-.issue-options {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-}
-
-.issue-option {
-  min-width: unset !important;
-  width: auto !important;
-  flex: 0 0 auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  padding: 2px 6px !important;
-  font-size: 0.62rem !important;
-  font-weight: 400 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.issue-option:not(.active):not(.service-out) {
-  background: transparent !important;
-  color: var(--muted) !important;
-  border-color: var(--line) !important;
-}
-
-.issue-option.active,
-.issue-option.service-out,
-.issue-option[aria-pressed="true"] {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  border-color: rgba(0,0,0,0.08) !important;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--danger-text) 18%, transparent) !important;
-  opacity: 1 !important;
-}
-
-.issue-option.active:hover,
-.issue-option.service-out:hover,
-.issue-option[aria-pressed="true"]:hover {
-  background: var(--danger-bg) !important;
-  color: var(--danger-text) !important;
-  transform: none !important;
-}
-
 @media print {
   header { position: static; }
   .search, .tabs, .summary, .header-actions { display:none; }
@@ -2093,57 +1637,6 @@ if ('serviceWorker' in navigator) {
 </head>
 <body>
 
-<div id="issueModalBackdrop" class="modal-backdrop"></div>
-<section id="issueModal" class="item-modal issue-modal" aria-modal="true" role="dialog" aria-label="Log item issue">
-  <div class="modal-body">
-    <div class="modal-top">
-      <h2 id="issueModalTitle" class="modal-title">Report Item Issue</h2>
-      <button id="issueModalClose" class="modal-close" type="button" aria-label="Close issue form">×</button>
-    </div>
-
-    <div class="modal-field full">
-      <div class="modal-field-label">Issue type</div>
-      <div class="issue-options">
-        <button class="service-toggle issue-option" type="button" data-issue-type="Not in service">Not in service</button>
-        <button class="service-toggle issue-option" type="button" data-issue-type="Damaged">Damaged</button>
-        <button class="service-toggle issue-option" type="button" data-issue-type="Missing">Missing</button>
-        <button class="service-toggle issue-option" type="button" data-issue-type="Other">Other</button>
-      </div>
-    </div>
-
-    <div class="modal-field full">
-      <div class="modal-field-label">Extra notes</div>
-      <textarea id="issueNotes" class="issue-textarea" placeholder="Optional: add detail, e.g. damaged handle, missing from tray, used at incident, needs replacement..."></textarea>
-    </div>
-
-    <div class="modal-field full">
-      <div class="modal-field-label">Email preview</div>
-      <div id="issueReportText" class="issue-report-box"></div>
-      <div class="issue-hint">Open an item, then tap Report Issue to create this report and send it by email.</div>
-    </div>
-
-    <div class="issue-actions">
-      <button id="emailIssueBtn" class="service-toggle service-active" type="button">Send Email</button>
-    </div>
-  </div>
-</section>
-
-
-<div id="photoModalBackdrop" class="modal-backdrop"></div>
-<section id="photoModal" class="item-modal photo-modal" aria-modal="true" role="dialog" aria-label="Expanded photo">
-  <div class="modal-body">
-    <div class="modal-top">
-      <h2 id="photoModalTitle" class="modal-title">Photo</h2>
-      <button id="photoModalClose" class="modal-close" type="button" aria-label="Close photo">×</button>
-    </div>
-    <div class="photo-modal-image-wrap">
-      <img id="photoModalImg" src="" alt="">
-    </div>
-    <div id="photoModalCaption" class="photo-modal-caption"></div>
-  </div>
-</section>
-
-
 <div id="quizBackdrop" class="modal-backdrop"></div>
 <section id="quizModal" class="item-modal quiz-modal" aria-modal="true" role="dialog" aria-label="Item location quiz">
   <div class="modal-body">
@@ -2165,7 +1658,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div id="quizRun" class="quiz-panel" style="display:none;">
-      <div class="quiz-progress-row"><div class="quiz-progress" id="quizProgress"></div><button id="quizHintBtn" class="quiz-hint-pill" type="button">Hint</button></div><div id="quizHintValue" class="quiz-hint-value"></div>
+      <div class="quiz-progress" id="quizProgress"></div>
       <button id="quizCard" class="quiz-card" type="button">
         <div class="quiz-card-inner">
           <div class="quiz-card-face quiz-front">
@@ -2258,7 +1751,7 @@ if ('serviceWorker' in navigator) {
     </button>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v1.13.12<br>
+  <div class="drawer-note"><strong>Version:</strong> v1.13.0 GitHub Release Candidate<br>
     This menu is ready for future multi-appliance inventories. For now, Blackwood Rescue is the active dataset.
   </div>
 </aside>
@@ -2279,9 +1772,6 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 <div id="modalDetails" class="modal-detail-grid"></div>
-    <div class="modal-bottom-actions">
-      <button id="modalReportIssueBtn" class="modal-report-issue-btn" type="button">Report Issue</button>
-    </div>
     
   </div>
 </section>
@@ -2651,7 +2141,6 @@ const modalTitle = document.getElementById("modalTitle");
 const modalMeta = document.getElementById("modalMeta");
 const modalPills = document.getElementById("modalPills");
 const modalDetails = document.getElementById("modalDetails");
-const modalReportIssueBtn = document.getElementById("modalReportIssueBtn");
 const modalInServiceBtn = document.getElementById("modalInServiceBtn");
 const modalOutServiceBtn = document.getElementById("modalOutServiceBtn");
 
@@ -2768,7 +2257,8 @@ function openItemModal(r) {
       updateModalStarButton();
     });
   }
-updateModalServiceButtons(effectiveStatus);
+
+  updateModalServiceButtons(effectiveStatus);
   updateModalStarButton();
 
   modalDetails.innerHTML = [
@@ -2788,15 +2278,6 @@ updateModalServiceButtons(effectiveStatus);
 function closeItemModal() {
   itemModalBackdrop.classList.remove("open");
   itemModal.classList.remove("open");
-}
-
-
-if (modalReportIssueBtn) {
-  modalReportIssueBtn.addEventListener("click", () => {
-    if (!modalCurrentItemKey) return;
-    const item = DATA.records.find(r => itemKey(r) === modalCurrentItemKey);
-    if (item && typeof window.openIssueModal === "function") window.openIssueModal(item);
-  });
 }
 
 if (modalClose) modalClose.addEventListener("click", closeItemModal);
@@ -2879,7 +2360,6 @@ function renderResults(records) {
       const effectiveStatus = getEffectiveStatus(r);
       const excelDescription = getExcelDescription(r);
       div.className = "item " + tileStatusClass(effectiveStatus) + " clickable";
-      div.dataset.itemKey = itemKey(r);
       const favKey = itemKey(r);
       const isFav = favourites.has(favKey);
       div.innerHTML = `
@@ -2939,8 +2419,6 @@ function initialiseQuizFeature() {
   const quizProgress = document.getElementById("quizProgress");
   const quizItemName = document.getElementById("quizItemName");
   const quizLocation = document.getElementById("quizLocation");
-const quizHintBtn = document.getElementById("quizHintBtn");
-const quizHintValue = document.getElementById("quizHintValue");
   const quizMarking = document.getElementById("quizMarking");
   const quizCorrectBtn = document.getElementById("quizCorrectBtn");
   const quizIncorrectBtn = document.getElementById("quizIncorrectBtn");
@@ -3023,8 +2501,6 @@ const quizHintValue = document.getElementById("quizHintValue");
     quizProgress.textContent = `Question ${quizIndex + 1} of ${quizItems.length}`;
     quizItemName.textContent = item.item;
     quizLocation.textContent = item.location;
-  if (quizHintValue) quizHintValue.textContent = "";
-  if (quizHintBtn) quizHintBtn.classList.remove("active");
   }
 
   function flipQuizCard() {
@@ -3056,21 +2532,7 @@ const quizHintValue = document.getElementById("quizHintValue");
   if (quizCloseBtn) quizCloseBtn.addEventListener("click", closeQuizModal);
   if (quizBackdrop) quizBackdrop.addEventListener("click", closeQuizModal);
   if (generateQuizBtn) generateQuizBtn.addEventListener("click", generateQuiz);
-  if (quizHintBtn) quizHintBtn.addEventListener("click", (event) => {
-  event.stopPropagation();
-  const item = quizItems[quizIndex];
-  if (!item) return;
-  const truck = item.appliance || DATA.appliance || "Blackwood CFS";
-  const showing = quizHintValue && quizHintValue.textContent;
-  if (showing) {
-    quizHintValue.textContent = "";
-    quizHintBtn.classList.remove("active");
-  } else {
-    quizHintValue.textContent = truck;
-    quizHintBtn.classList.add("active");
-  }
-});
-if (quizCard) quizCard.addEventListener("click", flipQuizCard);
+  if (quizCard) quizCard.addEventListener("click", flipQuizCard);
   if (quizCorrectBtn) quizCorrectBtn.addEventListener("click", () => markQuiz(true));
   if (quizIncorrectBtn) quizIncorrectBtn.addEventListener("click", () => markQuiz(false));
   if (quizStartOverBtn) quizStartOverBtn.addEventListener("click", showQuizSetup);
@@ -3078,139 +2540,6 @@ if (quizCard) quizCard.addEventListener("click", flipQuizCard);
 }
 
 initialiseQuizFeature();
-
-
-function initialisePhotoModalFeature() {
-  const photoModal = document.getElementById("photoModal");
-  const photoModalBackdrop = document.getElementById("photoModalBackdrop");
-  const photoModalClose = document.getElementById("photoModalClose");
-  const photoModalImg = document.getElementById("photoModalImg");
-  const photoModalTitle = document.getElementById("photoModalTitle");
-  const photoModalCaption = document.getElementById("photoModalCaption");
-
-  function openPhotoModal(src, title, caption) {
-    if (!src) return;
-    photoModalImg.src = src;
-    photoModalImg.alt = title || "Expanded photo";
-    photoModalTitle.textContent = title || "Photo";
-    photoModalCaption.textContent = caption || "";
-    photoModalBackdrop.classList.add("open");
-    photoModal.classList.add("open");
-  }
-
-  function closePhotoModal() {
-    photoModalBackdrop.classList.remove("open");
-    photoModal.classList.remove("open");
-    setTimeout(() => { photoModalImg.src = ""; }, 150);
-  }
-
-  if (photoModalClose) photoModalClose.addEventListener("click", closePhotoModal);
-  if (photoModalBackdrop) photoModalBackdrop.addEventListener("click", closePhotoModal);
-
-  document.addEventListener("click", (event) => {
-    const card = event.target.closest(".photo-card");
-    if (!card) return;
-    const img = card.querySelector("img");
-    if (!img || !img.src) return;
-    const title = card.querySelector("h2")?.textContent || img.alt || "Photo";
-    const caption = card.querySelector("p")?.textContent || "";
-    openPhotoModal(img.currentSrc || img.src, title, caption);
-  });
-}
-initialisePhotoModalFeature();
-
-
-const ISSUE_REPORT_EMAIL = "james.navaratne@gmail.com";
-
-function initialiseIssueReportingFeature() {
-  const issueModal = document.getElementById("issueModal");
-  const issueModalBackdrop = document.getElementById("issueModalBackdrop");
-  const issueModalClose = document.getElementById("issueModalClose");
-  const issueModalTitle = document.getElementById("issueModalTitle");
-  const issueNotes = document.getElementById("issueNotes");
-  const issueReportText = document.getElementById("issueReportText");
-  const emailIssueBtn = document.getElementById("emailIssueBtn");
-
-  let issueItem = null;
-  let issueType = "Not in service";
-
-  function buildIssueReport() {
-    if (!issueItem) return "";
-
-    const now = new Date();
-    const appliance = issueItem.appliance || DATA.appliance || "Blackwood CFS";
-    const location = issueItem.location || [issueItem.locker, issueItem.section, issueItem.subsection].filter(Boolean).join(" > ");
-    const status = getEffectiveStatus(issueItem) || issueItem.status || "Unknown";
-    const notes = issueNotes.value ? issueNotes.value.trim() : "";
-
-    return [
-      `Issue: ${issueType}`,
-      `Item: ${issueItem.item || "Unknown item"}`,
-      `Location: ${location || "Unknown location"}`,
-      `Truck/appliance: ${appliance}`,
-      `Current app status: ${status}`,
-      ``,
-      notes ? `Details from reporter:` : `Details from reporter:`,
-      notes || `No extra details added.`,
-      ``,
-      issueItem.description ? `Item description in app: ${issueItem.description}` : ``,
-      issueItem.id ? `Inventory reference: ${issueItem.id}` : ``,
-      ``,
-      `Reported via the Blackwood CFS Inventory app on ${now.toLocaleString()}.`
-    ].filter(line => line !== "").join("\n");
-  }
-
-  function updateIssueReport() {
-    issueReportText.textContent = buildIssueReport();
-  }
-
-  function setIssueType(type) {
-    issueType = type;
-    document.querySelectorAll(".issue-option").forEach(btn => {
-      const active = btn.dataset.issueType === issueType;
-      btn.classList.toggle("active", active);
-      btn.classList.toggle("service-out", active);
-      btn.setAttribute("aria-pressed", String(active));
-    });
-    updateIssueReport();
-  }
-
-  function openIssueModal(item) {
-    issueItem = item;
-    issueType = "Not in service";
-    issueNotes.value = "";
-    issueModalTitle.textContent = `Report Issue: ${item.item || "Item"}`;
-    issueModalBackdrop.classList.add("open");
-    issueModal.classList.add("open");
-    setIssueType(issueType);
-    updateIssueReport();
-  }
-
-  function closeIssueModal() {
-    issueModalBackdrop.classList.remove("open");
-    issueModal.classList.remove("open");
-  }
-
-  window.openIssueModal = openIssueModal;
-
-  document.querySelectorAll(".issue-option").forEach(btn => {
-    btn.addEventListener("click", () => setIssueType(btn.dataset.issueType));
-  });
-
-  if (issueNotes) issueNotes.addEventListener("input", updateIssueReport);
-  if (issueModalClose) issueModalClose.addEventListener("click", closeIssueModal);
-  if (issueModalBackdrop) issueModalBackdrop.addEventListener("click", closeIssueModal);
-if (emailIssueBtn) {
-    emailIssueBtn.addEventListener("click", () => {
-      const subject = encodeURIComponent(`Inventory issue – ${issueItem?.item || "Item"} (${issueType})`);
-      const body = encodeURIComponent(buildIssueReport());
-      const to = encodeURIComponent(ISSUE_REPORT_EMAIL || "");
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-    });
-  }
-}
-
-initialiseIssueReportingFeature();
 
 makeTabs();
 render();
