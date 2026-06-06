@@ -56,3 +56,14 @@ v1.13.12
 v1.13.13
 - Cleaned leftover hidden issue-tile CSS/reference from prior experiment.
 - Confirmed Report Issue lives only inside the item modal.
+
+v1.13.14
+- Item modals now automatically try photos/items/<item_name>.jpg when extraPhoto is blank.
+- This enables convention-based item photos such as photos/items/rcr_crew_composition_x_4_roof.jpg.
+
+v1.13.15
+- Locker/cabin thumbnail previews now anchor to the top of the photo instead of the centre.
+
+v1.13.16
+- Item photo preview now fills horizontally, crops from the top, and can be tapped to enlarge.
+- Item tiles now show a small image indicator beside the star when an item photo exists.

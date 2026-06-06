@@ -1,12 +1,9 @@
 Upload the CONTENTS of this ZIP to the root of your GitHub repository.
 
-Use GitHub Desktop if possible:
-1. Extract this ZIP.
-2. Copy all extracted files/folders into your local Blackwood-CFS repo folder.
-3. Commit.
-4. Push.
+This version adds automatic item-photo fallback:
+- If extraPhoto is set in the data, the app uses that filename.
+- If extraPhoto is blank, the app tries photos/items/<sanitised_item_name>.jpg.
 
-After upload/push:
-- Wait 1-2 minutes for GitHub Pages.
-- Refresh the site.
-- If old content persists, clear site data once.
+Example:
+RCR CREW COMPOSITION x 4 (roof)
+→ photos/items/rcr_crew_composition_x_4_roof.jpg
