@@ -1,7 +1,7 @@
 {
-  "name": "Blackwood Rescue Inventory",
-  "short_name": "BR Inventory",
-  "description": "Blackwood Rescue appliance inventory app",
+  "name": "Blackwood CFS",
+  "short_name": "Blackwood CFS",
+  "description": "Blackwood CFS appliance inventory app",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

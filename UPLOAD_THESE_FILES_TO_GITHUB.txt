@@ -1,0 +1,12 @@
+Upload the CONTENTS of this ZIP to the root of your GitHub repository.
+
+Use GitHub Desktop if possible:
+1. Extract this ZIP.
+2. Copy all extracted files/folders into your local Blackwood-CFS repo folder.
+3. Commit.
+4. Push.
+
+After upload/push:
+- Wait 1-2 minutes for GitHub Pages.
+- Refresh the site.
+- If old content persists, clear site data once.
