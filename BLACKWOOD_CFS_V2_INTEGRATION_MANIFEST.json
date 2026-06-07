@@ -1,0 +1,61 @@
+{
+  "build": "Blackwood CFS v2.0 integrated multi-appliance",
+  "base_zip": "Blackwood_CFS_v2.0_standard_folders_appliance_switching.zip",
+  "master_excel": "Blackwood_CFS_Master_Inventory_with_34P_and_CAFS24_Rescue_Unchanged.xlsx",
+  "built": "2026-06-07 17:04",
+  "appliances": {
+    "Blackwood Rescue": {
+      "items": 145,
+      "locations": [
+        "Cabin",
+        "Locker 1",
+        "Locker 2",
+        "Locker 3",
+        "Locker 4",
+        "Locker 5",
+        "Locker 6"
+      ]
+    },
+    "34P": {
+      "items": 142,
+      "locations": [
+        "Cabin",
+        "P1",
+        "P2",
+        "P3",
+        "D1",
+        "D3",
+        "P4",
+        "P5",
+        "P Reel",
+        "Pump Panel",
+        "D Reel",
+        "D4",
+        "D5",
+        "Crew Deck",
+        "D2"
+      ]
+    },
+    "CAFS 24": {
+      "items": 115,
+      "locations": [
+        "Cabin",
+        "D-Tube",
+        "D1",
+        "D2",
+        "Rear",
+        "P1",
+        "P2",
+        "Pump Panel",
+        "P-Tube",
+        "P3"
+      ]
+    }
+  },
+  "photo_roots": {
+    "Blackwood Rescue": "photos/rescue",
+    "34P": "photos/34p",
+    "CAFS 24": "photos/cafs24"
+  },
+  "note": "Excel location names are used as gospel; no generic Locker 1-6 conversion has been applied."
+}

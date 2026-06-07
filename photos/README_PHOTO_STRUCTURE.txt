@@ -2,14 +2,12 @@ Blackwood CFS v2.0 photo structure
 
 Use these exact folders:
 
-photos/rescue/lockers/
-photos/rescue/items/
-photos/34p/lockers/
-photos/34p/items/
-photos/cafs24/lockers/
-photos/cafs24/items/
+photos/rescue/lockers/   Blackwood Rescue locker/location photos
+photos/rescue/items/     Blackwood Rescue item photos
+photos/34p/lockers/      34P locker/location photos
+photos/34p/items/        34P item photos
+photos/cafs24/lockers/   CAFS 24 locker/location photos
+photos/cafs24/items/     CAFS 24 item photos
 
-Locker overview photos use names like locker_1.jpg, locker_2.jpg, locker_3.jpg, locker_4.jpg, locker_5.jpg, locker_6.jpg.
-Cabin overview photos use cabin_front.jpg and cabin_rear.jpg.
-
-The app captions show the full path. Use that displayed path as the instruction for where to place future photos.
+The app displays the full expected file path whenever a photo is missing.
+Use that displayed File: path as the guide for where to add the image.
