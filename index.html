@@ -2593,6 +2593,74 @@ body.dark .photo-indicator-btn.has-photo {
   margin-top: 0.16rem;
 }
 
+
+/* v2.0 appliance landing page */
+.v2-appliance-home {
+  min-height: calc(100vh - 2rem);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+}
+.v2-appliance-home.open {
+  display: flex;
+}
+.v2-appliance-home-card {
+  width: min(720px, 100%);
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.055);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.24);
+  padding: clamp(1.2rem, 5vw, 2.4rem);
+}
+.v2-appliance-home-kicker {
+  font-size: 0.78rem;
+  opacity: 0.78;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.v2-appliance-home h1 {
+  margin: 0 0 1.4rem;
+  line-height: 1.08;
+  font-size: clamp(1.85rem, 7vw, 3rem);
+}
+.v2-appliance-home-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.v2-appliance-home-pill {
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: inherit;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.v2-appliance-home-pill:hover {
+  background: rgba(255,255,255,0.13);
+}
+.v2-appliance-home-quiz {
+  margin-top: 0.9rem;
+  width: min(360px, 100%);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: inherit;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+.v2-app-hidden-for-home {
+  display: none !important;
+}
+
 </style>
 
 
@@ -4171,6 +4239,183 @@ render();
   document.addEventListener("DOMContentLoaded", function(){
     addHamburgerGlobalSearch();
     patchScrollToTop();
+  });
+})();
+</script>
+<script>
+// v2.0 appliance landing page + global quiz randomisation patch
+(function(){
+  const V2_HOME_APPS = [
+    { key: "rescue", dataTruck: "Blackwood Rescue", label: "Blackwood Rescue" },
+    { key: "34p", dataTruck: "34P", label: "Blackwood 34P" },
+    { key: "cafs24", dataTruck: "CAFS 24", label: "CAFS 24" }
+  ];
+
+  function norm(value){
+    const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (v.includes("34p")) return "34p";
+    if (v.includes("cafs")) return "cafs24";
+    if (v.includes("rescue")) return "rescue";
+    return v || "rescue";
+  }
+
+  function appFor(value){
+    const n = norm(value);
+    return V2_HOME_APPS.find(a => a.key === n) || V2_HOME_APPS[0];
+  }
+
+  function shuffle(array){
+    const arr = array.slice();
+    if (window.crypto && crypto.getRandomValues) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const r = new Uint32Array(1);
+        crypto.getRandomValues(r);
+        const j = r[0] % (i + 1);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    } else {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    return arr;
+  }
+
+  function selectedQuizTrucksGlobal(){
+    const checked = Array.from(document.querySelectorAll(".quiz-truck:checked")).map(x => x.value);
+    return checked.length ? checked : V2_HOME_APPS.map(a => a.dataTruck);
+  }
+
+  function globalQuizPool(){
+    if (!window.APPLIANCES) return [];
+    const trucks = selectedQuizTrucksGlobal();
+    const pool = trucks.flatMap(truck => {
+      const app = appFor(truck);
+      const direct = window.APPLIANCES[app.dataTruck];
+      if (direct && Array.isArray(direct.records)) return direct.records;
+      const matchKey = Object.keys(window.APPLIANCES).find(k => norm(k) === app.key);
+      const found = matchKey ? window.APPLIANCES[matchKey] : null;
+      return found && Array.isArray(found.records) ? found.records : [];
+    }).filter(r => r && r.item && r.location);
+    return shuffle(pool);
+  }
+
+  function patchQuizRandomisation(){
+    // Directly patch exposed quiz builders where present.
+    const names = ["createQuiz", "startQuiz", "generateQuiz", "buildQuiz", "newQuiz"];
+    names.forEach(name => {
+      if (typeof window[name] !== "function" || window[name].v2RandomGlobalWrapped) return;
+      const original = window[name];
+      const wrapped = function(){
+        const pool = globalQuizPool();
+        window.v2GlobalQuizPool = pool;
+        window.QUIZ_POOL = pool;
+        window.QUIZ_ITEMS = pool;
+        window.filteredQuizItems = pool;
+        return original.apply(this, arguments);
+      };
+      wrapped.v2RandomGlobalWrapped = true;
+      window[name] = wrapped;
+    });
+
+    // Prepare fresh pool before any quiz/start/create button handler runs.
+    document.addEventListener("click", function(e){
+      const btn = e.target && e.target.closest ? e.target.closest("button, a, input[type='button'], input[type='submit']") : null;
+      if (!btn) return;
+      const label = [btn.textContent, btn.value, btn.id, btn.className].join(" ");
+      if (/quiz|start|create|generate/i.test(label)) {
+        const pool = globalQuizPool();
+        window.v2GlobalQuizPool = pool;
+        window.QUIZ_POOL = pool;
+        window.QUIZ_ITEMS = pool;
+        window.filteredQuizItems = pool;
+      }
+    }, true);
+  }
+
+  function switchToAppliance(app){
+    const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
+    if (btn && typeof btn.click === "function") btn.click();
+    hideHome();
+    setTimeout(() => {
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch(e) { window.scrollTo(0,0); }
+    }, 80);
+  }
+
+  function openQuizFromHome(){
+    hideHome();
+    const menuQuiz = Array.from(document.querySelectorAll("button, a")).find(el => /quiz/i.test(el.textContent || ""));
+    if (menuQuiz && typeof menuQuiz.click === "function") {
+      setTimeout(() => menuQuiz.click(), 80);
+      return;
+    }
+    const quizEl = document.querySelector(".quiz-modal, #quizModal, [class*='quiz']");
+    if (quizEl) quizEl.classList.add("open");
+  }
+
+  function ensureHome(){
+    if (document.querySelector(".v2-appliance-home")) return;
+
+    const home = document.createElement("section");
+    home.className = "v2-appliance-home open";
+    home.innerHTML = `
+      <div class="v2-appliance-home-card">
+        <div class="v2-appliance-home-kicker">Blackwood CFS</div>
+        <h1>Blackwood Country Fire Service Appliances</h1>
+        <div class="v2-appliance-home-pills">
+          ${V2_HOME_APPS.map(app => `<button type="button" class="v2-appliance-home-pill" data-v2-home-truck="${app.key}">${app.label}</button>`).join("")}
+        </div>
+        <button type="button" class="v2-appliance-home-quiz">Quiz</button>
+      </div>
+    `;
+
+    document.body.prepend(home);
+
+    home.querySelectorAll("[data-v2-home-truck]").forEach(btn => {
+      btn.addEventListener("click", () => switchToAppliance(appFor(btn.dataset.v2HomeTruck)));
+    });
+    home.querySelector(".v2-appliance-home-quiz").addEventListener("click", openQuizFromHome);
+
+    hideMainAppForHome();
+  }
+
+  function hideMainAppForHome(){
+    const home = document.querySelector(".v2-appliance-home");
+    if (!home || !home.classList.contains("open")) return;
+    Array.from(document.body.children).forEach(child => {
+      if (child === home) return;
+      if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
+      child.classList.add("v2-app-hidden-for-home");
+    });
+  }
+
+  function hideHome(){
+    const home = document.querySelector(".v2-appliance-home");
+    if (home) home.classList.remove("open");
+    Array.from(document.body.children).forEach(child => child.classList.remove("v2-app-hidden-for-home"));
+  }
+
+  function returnHomeOnHomeTab(){
+    document.addEventListener("click", function(e){
+      const target = e.target && e.target.closest ? e.target.closest("button, a, [role='tab']") : null;
+      if (!target) return;
+      const text = (target.textContent || "").trim().toLowerCase();
+      if (text === "home") {
+        const home = document.querySelector(".v2-appliance-home");
+        if (home) {
+          home.classList.add("open");
+          hideMainAppForHome();
+          setTimeout(() => { try { window.scrollTo({top:0, behavior:"smooth"}); } catch(e) { window.scrollTo(0,0); } }, 40);
+        }
+      }
+    }, true);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    patchQuizRandomisation();
+    ensureHome();
+    returnHomeOnHomeTab();
   });
 })();
 </script>
