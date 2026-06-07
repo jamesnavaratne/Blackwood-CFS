@@ -1,0 +1,54 @@
+{
+  "source_workbook": "Blackwood_CFS_Master_Inventory_with_34P_and_CAFS24_Rescue_Unchanged.xlsx",
+  "built": "2026-06-07 17:46",
+  "appliances": {
+    "Blackwood Rescue": {
+      "items": 145,
+      "locations": [
+        "Locker 1",
+        "Locker 2",
+        "Locker 3",
+        "Locker 4",
+        "Locker 6",
+        "Locker 5",
+        "Cabin"
+      ]
+    },
+    "34P": {
+      "items": 142,
+      "locations": [
+        "Cabin",
+        "P1",
+        "P2",
+        "P3",
+        "D1",
+        "D2",
+        "D3",
+        "P4",
+        "P5",
+        "P Reel",
+        "Pump Panel",
+        "D Reel",
+        "D5",
+        "D4",
+        "Crew Deck"
+      ]
+    },
+    "CAFS 24": {
+      "items": 115,
+      "locations": [
+        "Cabin",
+        "D-Tube",
+        "D1",
+        "D2",
+        "Rear",
+        "P1",
+        "P2",
+        "Pump Panel",
+        "P-Tube",
+        "P3"
+      ]
+    }
+  },
+  "note": "index.html APPLIANCES object regenerated directly from the combined Excel workbook in this ZIP. Main location tabs and item section headings now come from Master Inventory columns C-E."
+}
