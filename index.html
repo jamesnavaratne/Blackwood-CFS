@@ -4037,5 +4037,133 @@ render();
   });
 })();
 </script>
+<script>
+// v2.0 targeted quiz checkbox appliance mapping fix
+(function(){
+  function norm(value){
+    const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (v.includes("34p") || v === "pumper") return "34P";
+    if (v.includes("cafs")) return "CAFS 24";
+    if (v.includes("rescue")) return "Blackwood Rescue";
+    return value || "Blackwood Rescue";
+  }
+
+  function getApplianceData(key){
+    const canonical = norm(key);
+    if (window.APPLIANCES && window.APPLIANCES[canonical]) return window.APPLIANCES[canonical];
+    if (window.APPLIANCES) {
+      const foundKey = Object.keys(window.APPLIANCES).find(k => norm(k) === canonical);
+      if (foundKey) return window.APPLIANCES[foundKey];
+    }
+    return null;
+  }
+
+  function getRecordsForAppliances(keys){
+    const selected = (keys && keys.length ? keys : ["Blackwood Rescue"]).map(norm);
+    const records = [];
+    selected.forEach(function(key){
+      const app = getApplianceData(key);
+      if (app && Array.isArray(app.records)) records.push.apply(records, app.records);
+    });
+    return records;
+  }
+
+  function selectedQuizApplianceKeys(){
+    // First target quiz-specific checkboxes/buttons if they exist.
+    const likelyQuizControls = Array.from(document.querySelectorAll(
+      'input[type="checkbox"], input[type="radio"], button, option, select'
+    ));
+
+    const picked = [];
+
+    likelyQuizControls.forEach(function(el){
+      const text = [
+        el.value,
+        el.dataset ? el.dataset.appliance : "",
+        el.dataset ? el.dataset.truck : "",
+        el.dataset ? el.dataset.quizAppliance : "",
+        el.textContent,
+        el.closest && el.closest("label") ? el.closest("label").textContent : ""
+      ].filter(Boolean).join(" ");
+
+      if (!/rescue|34p|cafs/i.test(text)) return;
+
+      const isSelected =
+        (el.matches && el.matches('input[type="checkbox"], input[type="radio"]') && el.checked) ||
+        (el.matches && el.matches('option') && el.selected) ||
+        (el.classList && (el.classList.contains("active") || el.classList.contains("selected"))) ||
+        (el.getAttribute && el.getAttribute("aria-pressed") === "true");
+
+      if (isSelected) picked.push(norm(text));
+    });
+
+    // If none selected, use current DATA appliance.
+    if (!picked.length && window.DATA && window.DATA.appliance) picked.push(norm(window.DATA.appliance));
+
+    return Array.from(new Set(picked));
+  }
+
+  function buildQuizPoolFromSelected(){
+    const keys = selectedQuizApplianceKeys();
+    const records = getRecordsForAppliances(keys).filter(function(r){
+      return r && (r.item || r.name || r.Item || r.Name);
+    });
+    window.v2QuizSelectedAppliances = keys;
+    window.v2QuizPool = records;
+    return records;
+  }
+
+  // Expose stable helpers for the existing quiz code.
+  window.v2BuildQuizPool = buildQuizPoolFromSelected;
+  window.v2GetRecordsForAppliances = getRecordsForAppliances;
+
+  // Patch common quiz creation/generation functions by giving them the correct pool first.
+  [
+    "createQuiz", "startQuiz", "generateQuiz", "buildQuiz", "newQuiz",
+    "createQuizItems", "buildQuizItems", "generateQuizItems"
+  ].forEach(function(fnName){
+    if (typeof window[fnName] !== "function" || window[fnName].v2QuizPoolWrapped) return;
+    const original = window[fnName];
+    const wrapped = function(){
+      const pool = buildQuizPoolFromSelected();
+
+      // Temporarily expose likely variable names used by quiz code.
+      const oldQuizPool = window.QUIZ_POOL;
+      const oldQuizItems = window.QUIZ_ITEMS;
+      const oldFiltered = window.filteredQuizItems;
+
+      window.QUIZ_POOL = pool;
+      window.QUIZ_ITEMS = pool;
+      window.filteredQuizItems = pool;
+
+      try {
+        return original.apply(this, arguments);
+      } finally {
+        // Keep v2QuizPool available, but don't permanently overwrite app globals if they existed.
+        if (oldQuizPool !== undefined) window.QUIZ_POOL = oldQuizPool;
+        if (oldQuizItems !== undefined) window.QUIZ_ITEMS = oldQuizItems;
+        if (oldFiltered !== undefined) window.filteredQuizItems = oldFiltered;
+      }
+    };
+    wrapped.v2QuizPoolWrapped = true;
+    window[fnName] = wrapped;
+  });
+
+  // Last-resort interception: when a user clicks a quiz create/start button,
+  // prepare the pool before the original click handler runs.
+  document.addEventListener("click", function(e){
+    const target = e.target && e.target.closest ? e.target.closest("button, a, input[type='button'], input[type='submit']") : null;
+    if (!target) return;
+    const label = [target.textContent, target.value, target.id, target.className].join(" ");
+    if (/quiz|start|create|generate/i.test(label)) {
+      buildQuizPoolFromSelected();
+    }
+  }, true);
+
+  document.addEventListener("DOMContentLoaded", function(){
+    buildQuizPoolFromSelected();
+  });
+})();
+</script>
 </body>
 </html>

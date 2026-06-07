@@ -1,0 +1,3 @@
+Targeted fix for quiz appliance checkbox mapping.
+Maps Rescue -> Blackwood Rescue, 34P -> 34P, CAFS 24/CAFS -> CAFS 24.
+Builds quiz pool from selected appliance records before quiz creation.
