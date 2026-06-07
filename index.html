@@ -2475,6 +2475,52 @@ body.dark .photo-indicator-btn.has-photo {
   opacity: 1;
 }
 
+
+/* v2.0 phase 2 advanced search */
+.v2-advanced-search-panel {
+  display: none;
+  margin: 0.65rem 0 0.8rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.045);
+}
+.v2-advanced-search-panel.open {
+  display: block;
+  animation: v2AdvancedSearchSlide 150ms ease-out;
+}
+.v2-advanced-search-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: 0.45rem;
+}
+.v2-advanced-search-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.v2-advanced-search-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.055);
+  font-size: 0.84rem;
+  cursor: pointer;
+  user-select: none;
+}
+.v2-advanced-search-options input {
+  accent-color: currentColor;
+}
+@keyframes v2AdvancedSearchSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 </style>
 
 
@@ -2628,15 +2674,15 @@ if ('serviceWorker' in navigator) {
   <div class="truck-list">
     <button class="truck-option active" type="button" data-truck="Blackwood Rescue">
       Blackwood Rescue
-      <small>Active</small>
+      <small>Inventory Active</small>
     </button>
     <button class="truck-option" type="button" data-truck="34P">
-      34P
-      <small>Imported from Excel</small>
+      Blackwood 34P
+      <small>Inventory Active</small>
     </button>
     <button class="truck-option" type="button" data-truck="CAFS 24">
       CAFS 24
-      <small>Imported from Excel</small>
+      <small>Inventory Active</small>
     </button>
   </div>
 
@@ -3838,6 +3884,156 @@ render();
       });
     });
     observer.observe(document.body, { childList: true, subtree: true });
+  });
+})();
+</script>
+<script>
+// v2.0 phase 2 quiz mapping + advanced search patch
+(function(){
+  const V2_APPLIANCE_ALIASES = {
+    rescue: ["blackwood rescue", "rescue"],
+    "34p": ["blackwood 34p", "34p"],
+    cafs24: ["cafs 24", "cafs24", "cafs-24"]
+  };
+
+  function normaliseTruck(value){
+    const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (!v) return "rescue";
+    for (const [key, aliases] of Object.entries(V2_APPLIANCE_ALIASES)){
+      if (aliases.some(alias => v === alias || v.includes(alias))) return key;
+    }
+    return v;
+  }
+
+  function truckFromDataKey(key){
+    const n = normaliseTruck(key);
+    if (n === "34p") return "34P";
+    if (n === "cafs24") return "CAFS 24";
+    return "Blackwood Rescue";
+  }
+
+  function shortName(key){
+    const n = normaliseTruck(key);
+    if (n === "34p") return "34P";
+    if (n === "cafs24") return "CAFS 24";
+    return "Rescue";
+  }
+
+  function currentTruckKey(){
+    try {
+      if (window.DATA && window.DATA.appliance) return normaliseTruck(window.DATA.appliance);
+    } catch(e){}
+    const activeBtn = document.querySelector(".truck-option.active, [data-truck].active, [aria-current='true'][data-truck]");
+    if (activeBtn) return normaliseTruck(activeBtn.getAttribute("data-truck") || activeBtn.textContent);
+    const bodyTruck = document.body && document.body.dataset && document.body.dataset.truck;
+    if (bodyTruck) return normaliseTruck(bodyTruck);
+    return "rescue";
+  }
+
+  function getAllRecords(){
+    if (window.APPLIANCES && typeof window.APPLIANCES === "object") {
+      return Object.values(window.APPLIANCES).flatMap(app => (app && app.records) ? app.records : []);
+    }
+    if (window.APP_DATA && Array.isArray(window.APP_DATA.items)) return window.APP_DATA.items;
+    if (Array.isArray(window.INVENTORY_DATA)) return window.INVENTORY_DATA;
+    if (window.DATA && Array.isArray(window.DATA.records)) return window.DATA.records;
+    return [];
+  }
+
+  function recordTruckKey(record){
+    return normaliseTruck(record.appliance || record.truck || record.vehicle || record.applianceKey || "");
+  }
+
+  function recordSearchText(record){
+    return Object.values(record || {}).filter(v => v !== null && v !== undefined).join(" ").toLowerCase();
+  }
+
+  function selectedSearchTruckKeys(){
+    const boxes = Array.from(document.querySelectorAll("[data-v2-adv-truck]"));
+    const checked = boxes.filter(cb => cb.checked).map(cb => cb.dataset.v2AdvTruck);
+    return checked.length ? checked : [currentTruckKey()];
+  }
+
+  function findItems(term, truckKeys){
+    const q = String(term || "").trim().toLowerCase();
+    if (!q) return [];
+    const keys = (truckKeys && truckKeys.length ? truckKeys : [currentTruckKey()]).map(normaliseTruck);
+    return getAllRecords().filter(r => keys.includes(recordTruckKey(r)) && recordSearchText(r).includes(q));
+  }
+
+  function installQuizLookup(){
+    // Recreate the previously useful behaviour: provide a simple global lookup
+    // and wrap common quiz lookup functions only as fallback, preserving original quiz logic first.
+    window.v2QuizFindItems = function(term, truck){
+      const keys = truck ? [normaliseTruck(truck)] : [currentTruckKey()];
+      return findItems(term, keys);
+    };
+
+    ["findQuizItem", "quizFindItem", "getQuizItem", "findItemByName", "findInventoryItem"].forEach(function(fnName){
+      if (typeof window[fnName] !== "function" || window[fnName].v2Wrapped) return;
+      const original = window[fnName];
+      const wrapped = function(){
+        const originalResult = original.apply(this, arguments);
+        if (Array.isArray(originalResult) && originalResult.length) return originalResult;
+        if (originalResult && !Array.isArray(originalResult)) return originalResult;
+        const term = arguments[0];
+        const fallback = window.v2QuizFindItems(term);
+        return Array.isArray(originalResult) ? fallback : (fallback[0] || originalResult);
+      };
+      wrapped.v2Wrapped = true;
+      window[fnName] = wrapped;
+    });
+  }
+
+  function installAdvancedSearch(){
+    const search = document.querySelector("input[type='search'], input[placeholder*='Search' i], input[id*='search' i], input[class*='search' i]");
+    if (!search || document.querySelector(".v2-advanced-search-panel")) return;
+
+    const panel = document.createElement("div");
+    panel.className = "v2-advanced-search-panel";
+    panel.innerHTML = `
+      <div class="v2-advanced-search-title">Search appliances</div>
+      <div class="v2-advanced-search-options">
+        <label><input type="checkbox" data-v2-adv-truck="rescue"> <span>Rescue</span></label>
+        <label><input type="checkbox" data-v2-adv-truck="34p"> <span>34P</span></label>
+        <label><input type="checkbox" data-v2-adv-truck="cafs24"> <span>CAFS 24</span></label>
+      </div>
+    `;
+
+    const host = search.closest(".search, .search-wrap, .searchbar, .toolbar, header") || search.parentElement;
+    if (host && host.parentNode) host.parentNode.insertBefore(panel, host.nextSibling);
+    else search.insertAdjacentElement("afterend", panel);
+
+    function preselectCurrent(){
+      const current = currentTruckKey();
+      panel.querySelectorAll("[data-v2-adv-truck]").forEach(cb => cb.checked = (cb.dataset.v2AdvTruck === current));
+    }
+
+    function run(){
+      const q = search.value || "";
+      if (!q.trim()) return;
+      const matches = findItems(q, selectedSearchTruckKeys());
+      window.v2AdvancedSearchMatches = matches;
+
+      // Preserve original search UI if present; only hand off to known renderers if they accept results safely.
+      const renderers = ["renderSearchResults", "showSearchResults", "displaySearchResults"];
+      for (const name of renderers){
+        if (typeof window[name] === "function"){
+          try { window[name](matches); return; } catch(e){}
+        }
+      }
+      // If no renderer exists, original app search still runs; this exposes selected matches for quiz/debug without breaking UI.
+    }
+
+    search.addEventListener("focus", function(){ preselectCurrent(); panel.classList.add("open"); });
+    search.addEventListener("click", function(){ if (!panel.classList.contains("open")) preselectCurrent(); panel.classList.add("open"); });
+    search.addEventListener("input", run);
+    panel.addEventListener("change", run);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    installQuizLookup();
+    installAdvancedSearch();
   });
 })();
 </script>
