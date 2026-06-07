@@ -96,3 +96,8 @@ v1.13.22 STABLE
 - Replaced missing item-photo wording with filename helper only.
 - Replaced tile photo indicator glyph with a cleaner monochrome image icon.
 - Kept v1.13.21 photo loading spinner, enlarged modal and pan/zoom behaviour unchanged.
+
+v1.13.23 STABLE
+- Removed unwanted "No photo found yet" wording from locker/location photo areas.
+- Kept item-photo filename helper behaviour for future item photo uploads.
+- Made item tile photo icon permanently highlighted when an item photo exists.

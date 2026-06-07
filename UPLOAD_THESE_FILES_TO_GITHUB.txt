@@ -1,4 +1,4 @@
-Release v1.13.22 STABLE – Photo Icon + Filename Helper
+Release v1.13.23 STABLE – Locker Photo Placeholder Cleanup + Highlighted Photo Icon
 
 Recommended upload method:
 - Upload/replace the entire ZIP contents in the GitHub repository root.
