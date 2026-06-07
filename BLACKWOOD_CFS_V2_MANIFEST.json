@@ -1,0 +1,54 @@
+{
+  "version": "v2.0",
+  "base_zip": "Pre version 2.0 (2).zip",
+  "changes": [
+    "standardised photo folders to photos/rescue, photos/34p, photos/cafs24",
+    "remapped Rescue locker and item photo paths",
+    "enabled hamburger appliance switching",
+    "added empty scaffold datasets for Blackwood 34P and CAFS 24"
+  ],
+  "photo_structure": [
+    "photos/rescue/lockers",
+    "photos/rescue/items",
+    "photos/34p/lockers",
+    "photos/34p/items",
+    "photos/cafs24/lockers",
+    "photos/cafs24/items"
+  ],
+  "moved_photos": [
+    {
+      "from": "photos/cabin_front.jpg",
+      "to": "photos/rescue/lockers/cabin_front.jpg"
+    },
+    {
+      "from": "photos/cabin_rear.jpg",
+      "to": "photos/rescue/lockers/cabin_rear.jpg"
+    },
+    {
+      "from": "photos/locker_1.jpg",
+      "to": "photos/rescue/lockers/locker_1.jpg"
+    },
+    {
+      "from": "photos/locker_2.jpg",
+      "to": "photos/rescue/lockers/locker_2.jpg"
+    },
+    {
+      "from": "photos/locker_3.jpg",
+      "to": "photos/rescue/lockers/locker_3.jpg"
+    },
+    {
+      "from": "photos/locker_5.jpg",
+      "to": "photos/rescue/lockers/locker_5.jpg"
+    },
+    {
+      "from": "photos/locker_6.jpg",
+      "to": "photos/rescue/lockers/locker_6.jpg"
+    },
+    {
+      "from": "photos/items/rcr_crew_composition_x_4_roof.jpg",
+      "to": "photos/rescue/items/rcr_crew_composition_x_4_roof.jpg"
+    }
+  ],
+  "original_index_sha256": "fc380ecb04dba9e3f33c627011cab29da5569a2613bb0bd969e5b6ddc1626d78",
+  "new_index_sha256": "a32788a06d83088a75a740e4bdd9d8f43fa89a96f27cce48c87d8f61fc66f767"
+}
