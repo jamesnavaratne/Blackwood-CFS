@@ -1,0 +1,49 @@
+{
+  "fix": "Escaped embedded APPLIANCES data correctly and restored DATA startup assignment",
+  "js_syntax_check": "passed",
+  "counts": {
+    "Blackwood Rescue": 145,
+    "34P": 142,
+    "CAFS 24": 115
+  },
+  "lockers": {
+    "Blackwood Rescue": [
+      "Cabin",
+      "Locker 1",
+      "Locker 2",
+      "Locker 3",
+      "Locker 4",
+      "Locker 5",
+      "Locker 6"
+    ],
+    "34P": [
+      "Cabin",
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P Reel",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5",
+      "D Reel",
+      "Pump Panel",
+      "Crew Deck"
+    ],
+    "CAFS 24": [
+      "Cabin",
+      "P1",
+      "P2",
+      "Pump Panel",
+      "P-Tube",
+      "P3",
+      "D-Tube",
+      "D1",
+      "D2",
+      "Rear"
+    ]
+  }
+}
