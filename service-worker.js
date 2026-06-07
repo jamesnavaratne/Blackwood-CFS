@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v1-13-23';
+const CACHE_NAME = 'blackwood-cfs-v1-13-24';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
