@@ -2455,6 +2455,26 @@ body.dark .photo-indicator-btn.has-photo {
   .group, .photo-card { break-inside: avoid; box-shadow: none; }
   .items-grid { background: white; }
 }
+
+/* v2.0 conservative photo anti-flash patch */
+.photo-modal img,
+.modal img,
+#photoModal img,
+.locker-photo-modal img,
+.item-photo-modal img {
+  opacity: 0;
+  transition: opacity 160ms ease-in;
+  background: transparent;
+}
+
+.photo-modal img.photo-ready,
+.modal img.photo-ready,
+#photoModal img.photo-ready,
+.locker-photo-modal img.photo-ready,
+.item-photo-modal img.photo-ready {
+  opacity: 1;
+}
+
 </style>
 
 
@@ -3770,6 +3790,56 @@ initialiseIssueReportingFeature();
 
 makeTabs();
 render();
+</script>
+<script>
+// v2.0 conservative photo anti-flash patch
+(function(){
+  function revealWhenReady(img){
+    if (!img || img.dataset.v2PhotoFlashBound === "1") return;
+    img.dataset.v2PhotoFlashBound = "1";
+    img.classList.remove("photo-ready");
+    img.setAttribute("decoding", "async");
+
+    function reveal(){
+      img.classList.add("photo-ready");
+    }
+
+    if (img.complete && img.naturalWidth > 0) {
+      if (img.decode) {
+        img.decode().then(reveal).catch(reveal);
+      } else {
+        reveal();
+      }
+    } else {
+      img.addEventListener("load", function(){
+        if (img.decode) {
+          img.decode().then(reveal).catch(reveal);
+        } else {
+          reveal();
+        }
+      }, { once: true });
+      img.addEventListener("error", reveal, { once: true });
+    }
+  }
+
+  function scan(root){
+    (root || document).querySelectorAll("img").forEach(revealWhenReady);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scan(document);
+    const observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        m.addedNodes.forEach(function(node){
+          if (node.nodeType !== 1) return;
+          if (node.matches && node.matches("img")) revealWhenReady(node);
+          scan(node);
+        });
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+})();
 </script>
 </body>
 </html>

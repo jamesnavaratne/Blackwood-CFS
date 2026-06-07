@@ -1,0 +1,3 @@
+Recovery build made from the user-confirmed working ZIP: Blackwood_CFS_v2.0_excel_gospel_rebuild.zip
+Only change applied: conservative photo anti-flash patch.
+No changes made to hamburger switching, locker tabs, starred items, item tiles, inventory data, or search/menu logic.
