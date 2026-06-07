@@ -2971,7 +2971,7 @@ function renderPhoto() {
       <img src="${esc(src)}" alt="${esc(activeLocker)} photo" onerror="this.style.display='none'; this.parentElement.querySelector('.missing-photo').style.display='block';">
       <div class="missing-photo photo-text" style="display:none;">
         <h2>${esc(activeLocker)}</h2>
-        <p>. Add <strong>${esc(src)}</strong>.</p>
+        <p>File: ${esc(src)}</p>
       </div>
       <div class="photo-text">
         <h2>${esc(lp.title || activeLocker)}</h2>
@@ -3627,7 +3627,7 @@ function initialisePhotoModalFeature() {
     if (!img || !img.src || img.style.display === "none") return;
 
     const title = img.alt || card.querySelector("h2")?.textContent || "Photo";
-    const caption = card.querySelector("p")?.textContent || "";
+    const caption = `File: ${img.getAttribute("src") || ""}`;
     openPhotoModal(img.currentSrc || img.src, title, caption);
   });
 }
