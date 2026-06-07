@@ -1,4 +1,4 @@
-Release v1.13.21 – Photo Modal Polish + Pan Zoom
+Release v1.13.22 STABLE – Photo Icon + Filename Helper
 
 Recommended upload method:
 - Upload/replace the entire ZIP contents in the GitHub repository root.

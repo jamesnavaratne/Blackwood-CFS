@@ -91,3 +91,8 @@ v1.13.21
 - Added a minimum visible photo loading spinner before enlarged photo modal opens.
 - Smoothed enlarged photo modal fade-in to reduce flashing.
 - Changed double-tap zoom to a scrollable width-based zoom so users can pan around the image properly.
+
+v1.13.22 STABLE
+- Replaced missing item-photo wording with filename helper only.
+- Replaced tile photo indicator glyph with a cleaner monochrome image icon.
+- Kept v1.13.21 photo loading spinner, enlarged modal and pan/zoom behaviour unchanged.
