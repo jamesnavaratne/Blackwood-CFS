@@ -1,0 +1,3 @@
+Adds hamburger Global Search modal.
+Global Search counts matching items per appliance, then routes into the selected appliance's normal search.
+Also scrolls to top on page load, Home, appliance switching and search-clear style actions.
