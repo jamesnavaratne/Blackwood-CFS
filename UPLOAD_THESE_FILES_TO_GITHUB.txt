@@ -1,4 +1,4 @@
-Release v1.13.17 – Cabin Gallery + Item Photo Fixes
+Release v1.13.20 – Universal Photo Modal Zoom
 
 Recommended upload method:
 - Upload/replace the entire ZIP contents in the GitHub repository root.
@@ -19,4 +19,4 @@ Files not intentionally modified:
 After upload:
 - Wait 1-2 minutes for GitHub Pages.
 - Refresh the website.
-- If old layout persists, clear site data once or test in Incognito.
+- If old behaviour persists, clear site data once or test in Incognito.

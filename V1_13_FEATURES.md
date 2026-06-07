@@ -73,3 +73,16 @@ v1.13.17
 - Tile photo indicator now sits in line with the favourite star.
 - Item photo thumbnail now fits neatly in the item modal and crops from the top.
 - Enlarged photo modal now appears above the item modal.
+
+v1.13.18
+- Added photo preload before opening enlarged photo modal.
+- Added subtle loading spinner to reduce first-open modal flashing.
+
+v1.13.19
+- Fixed Cabin side-by-side thumbnails so the tapped image opens, not always the first image.
+- Added double-tap/double-click zoom for enlarged photos.
+
+v1.13.20
+- Generalised double-tap/double-click zoom behaviour to the shared enlarged photo modal.
+- All enlarged locker, cabin and item photos now use the same photo-modal behaviour.
+- Zoom resets and scroll position resets when a new enlarged photo opens.
