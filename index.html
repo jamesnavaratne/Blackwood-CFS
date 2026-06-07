@@ -2455,6 +2455,24 @@ body.dark .photo-indicator-btn.has-photo {
   .group, .photo-card { break-inside: avoid; box-shadow: none; }
   .items-grid { background: white; }
 }
+
+/* v2.0 locker/item photo anti-flash patch */
+.photo-modal img,
+.modal img,
+#photoModal img,
+.locker-photo-modal img {
+  opacity: 0;
+  transition: opacity 160ms ease-in;
+  background: transparent;
+}
+
+.photo-modal img.photo-ready,
+.modal img.photo-ready,
+#photoModal img.photo-ready,
+.locker-photo-modal img.photo-ready {
+  opacity: 1;
+}
+
 </style>
 
 
@@ -3770,6 +3788,61 @@ initialiseIssueReportingFeature();
 
 makeTabs();
 render();
+</script>
+<script>
+// v2.0 locker/item photo anti-flash patch
+(function(){
+  function prepareModalImages(root){
+    const scope = root || document;
+    const imgs = scope.querySelectorAll('img');
+    imgs.forEach(function(img){
+      if (img.dataset.v2AntiFlashBound === "1") return;
+      img.dataset.v2AntiFlashBound = "1";
+      img.classList.remove('photo-ready');
+      img.setAttribute('decoding', 'async');
+
+      const reveal = function(){
+        img.classList.add('photo-ready');
+      };
+
+      if (img.complete && img.naturalWidth > 0) {
+        if (img.decode) {
+          img.decode().then(reveal).catch(reveal);
+        } else {
+          reveal();
+        }
+      } else {
+        img.addEventListener('load', function(){
+          if (img.decode) {
+            img.decode().then(reveal).catch(reveal);
+          } else {
+            reveal();
+          }
+        });
+        img.addEventListener('error', reveal);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    prepareModalImages(document);
+
+    const observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(mutation){
+        mutation.addedNodes.forEach(function(node){
+          if (node.nodeType !== 1) return;
+          if (node.matches && node.matches('img')) {
+            prepareModalImages(node.parentElement || document);
+          } else {
+            prepareModalImages(node);
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+})();
 </script>
 </body>
 </html>
