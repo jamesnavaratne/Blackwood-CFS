@@ -1,3 +1,0 @@
-Implements dedicated global multi-appliance search mode.
-Search results are rendered separately from the locker/tab grid.
-Checkboxes filter results across Rescue, 34P and CAFS 24.

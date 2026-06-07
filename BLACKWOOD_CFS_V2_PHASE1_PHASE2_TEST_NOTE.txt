@@ -1,4 +1,0 @@
-Built from confirmed working flash-only base.
-Applied Phase 1: appliance names/subheadings only.
-Applied Phase 2: conservative quiz lookup fallback + advanced search panel.
-No inventory rebuild, no Excel rebuild, no tab/tile/star render changes.
