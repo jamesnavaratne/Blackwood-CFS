@@ -1,0 +1,46 @@
+{
+  "base_zip": "Pre version 2.0 (2).zip",
+  "purpose": "Blackwood CFS v2.0 clean photo folder structure prep",
+  "rescue_listings_function_appearance_intent": "unchanged except photo src path remapping",
+  "original_index_sha256": "fc380ecb04dba9e3f33c627011cab29da5569a2613bb0bd969e5b6ddc1626d78",
+  "new_index_sha256": "a29087f2121e7a79753a34cc570e0387d26ff17eb45f9efc1e27cf88610d3ca4",
+  "new_photo_structure": [
+    "photos/blackwood-rescue/lockers/",
+    "photos/blackwood-rescue/items/",
+    "photos/34p/lockers/",
+    "photos/34p/items/",
+    "photos/cafs-24/lockers/",
+    "photos/cafs-24/items/"
+  ],
+  "rescue_photos_copied_to_new_structure": [
+    {
+      "from": "photos/cabin_front.jpg",
+      "to": "photos/blackwood-rescue/items/cabin_front.jpg"
+    },
+    {
+      "from": "photos/cabin_rear.jpg",
+      "to": "photos/blackwood-rescue/items/cabin_rear.jpg"
+    },
+    {
+      "from": "photos/locker_1.jpg",
+      "to": "photos/blackwood-rescue/lockers/locker_1.jpg"
+    },
+    {
+      "from": "photos/locker_2.jpg",
+      "to": "photos/blackwood-rescue/lockers/locker_2.jpg"
+    },
+    {
+      "from": "photos/locker_3.jpg",
+      "to": "photos/blackwood-rescue/lockers/locker_3.jpg"
+    },
+    {
+      "from": "photos/locker_5.jpg",
+      "to": "photos/blackwood-rescue/lockers/locker_5.jpg"
+    },
+    {
+      "from": "photos/locker_6.jpg",
+      "to": "photos/blackwood-rescue/lockers/locker_6.jpg"
+    }
+  ],
+  "compatibility_note": "Original root-level photos have been left in place during transition."
+}

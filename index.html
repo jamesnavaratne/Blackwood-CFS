@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!--
+Blackwood CFS v2.0 photo folder structure:
+photos/blackwood-rescue/lockers/  = Blackwood Rescue locker photos
+photos/blackwood-rescue/items/    = Blackwood Rescue item photos
+photos/34p/lockers/               = 34P locker photos
+photos/34p/items/                 = 34P item photos
+photos/cafs-24/lockers/           = CAFS 24 locker photos
+photos/cafs-24/items/             = CAFS 24 item photos
+-->
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blackwood CFS</title>
@@ -2949,8 +2959,8 @@ function renderPhoto() {
   const lp = DATA.lockerPhotos[activeLocker] || {};
   if (!lp.photo) return;
   if (activeLocker === "Cabin") {
-    const front = "photos/cabin_front.jpg";
-    const rear = "photos/cabin_rear.jpg";
+    const front = "photos/blackwood-rescue/items/cabin_front.jpg";
+    const rear = "photos/blackwood-rescue/items/cabin_rear.jpg";
     photoEl.innerHTML = `
       <div class="photo-card cabin-photo-card">
         <div class="cabin-photo-grid">
