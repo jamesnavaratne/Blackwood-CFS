@@ -1,4 +1,4 @@
-Release v1.13.20 – Universal Photo Modal Zoom
+Release v1.13.21 – Photo Modal Polish + Pan Zoom
 
 Recommended upload method:
 - Upload/replace the entire ZIP contents in the GitHub repository root.

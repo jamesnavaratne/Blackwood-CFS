@@ -86,3 +86,8 @@ v1.13.20
 - Generalised double-tap/double-click zoom behaviour to the shared enlarged photo modal.
 - All enlarged locker, cabin and item photos now use the same photo-modal behaviour.
 - Zoom resets and scroll position resets when a new enlarged photo opens.
+
+v1.13.21
+- Added a minimum visible photo loading spinner before enlarged photo modal opens.
+- Smoothed enlarged photo modal fade-in to reduce flashing.
+- Changed double-tap zoom to a scrollable width-based zoom so users can pan around the image properly.
