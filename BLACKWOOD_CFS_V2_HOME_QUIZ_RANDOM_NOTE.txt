@@ -1,3 +1,0 @@
-Adds appliance landing page before entering inventory.
-Adds global quiz randomisation helper from selected quiz appliance checkboxes.
-Built on hamburger global search version.

@@ -2719,6 +2719,67 @@ body.dark .photo-indicator-btn.has-photo {
   margin: 0.65rem 0;
 }
 
+
+/* v2.0 safer photo fade: no decode(), lower browser/GPU stress */
+.photo-modal img,
+.modal img,
+#photoModal img,
+.locker-photo-modal img,
+.item-photo-modal img {
+  opacity: 0;
+  transition: opacity 140ms ease-in;
+  background: transparent;
+}
+.photo-modal img.photo-ready,
+.modal img.photo-ready,
+#photoModal img.photo-ready,
+.locker-photo-modal img.photo-ready,
+.item-photo-modal img.photo-ready {
+  opacity: 1;
+}
+
+
+/* v2.0 system home + SEARCH menu polish */
+.v2-system-home-search {
+  margin-top: 1.1rem;
+  width: min(360px, 100%);
+  border: 1px solid rgba(34,197,94,0.38);
+  border-radius: 999px;
+  background: rgba(34,197,94,0.09);
+  color: inherit;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 0 20px rgba(34,197,94,0.10);
+}
+.v2-system-home-search:hover {
+  background: rgba(34,197,94,0.15);
+  border-color: rgba(250,204,21,0.55);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 0 24px rgba(250,204,21,0.16);
+}
+.v2-menu-section-heading-search {
+  margin: 1.15rem 0 0.45rem;
+  font-size: 0.78rem;
+  opacity: 0.78;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+
+/* v2.0 STEP 2b main appliance heading link only */
+.v2-main-appliance-heading-system-home {
+  cursor: pointer;
+}
+.v2-main-appliance-heading-system-home:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 </style>
 
 
@@ -4043,56 +4104,6 @@ makeTabs();
 render();
 </script>
 <script>
-// v2.0 conservative photo anti-flash patch
-(function(){
-  function revealWhenReady(img){
-    if (!img || img.dataset.v2PhotoFlashBound === "1") return;
-    img.dataset.v2PhotoFlashBound = "1";
-    img.classList.remove("photo-ready");
-    img.setAttribute("decoding", "async");
-
-    function reveal(){
-      img.classList.add("photo-ready");
-    }
-
-    if (img.complete && img.naturalWidth > 0) {
-      if (img.decode) {
-        img.decode().then(reveal).catch(reveal);
-      } else {
-        reveal();
-      }
-    } else {
-      img.addEventListener("load", function(){
-        if (img.decode) {
-          img.decode().then(reveal).catch(reveal);
-        } else {
-          reveal();
-        }
-      }, { once: true });
-      img.addEventListener("error", reveal, { once: true });
-    }
-  }
-
-  function scan(root){
-    (root || document).querySelectorAll("img").forEach(revealWhenReady);
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    scan(document);
-    const observer = new MutationObserver(function(mutations){
-      mutations.forEach(function(m){
-        m.addedNodes.forEach(function(node){
-          if (node.nodeType !== 1) return;
-          if (node.matches && node.matches("img")) revealWhenReady(node);
-          scan(node);
-        });
-      });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
-})();
-</script>
-<script>
 // v2.0 hamburger global search + top-scroll patch
 (function(){
   const APPS = [
@@ -4457,27 +4468,9 @@ render();
     if (home) home.classList.remove("open");
     Array.from(document.body.children).forEach(child => child.classList.remove("v2-app-hidden-for-home"));
   }
-
-  function returnHomeOnHomeTab(){
-    document.addEventListener("click", function(e){
-      const target = e.target && e.target.closest ? e.target.closest("button, a, [role='tab']") : null;
-      if (!target) return;
-      const text = (target.textContent || "").trim().toLowerCase();
-      if (text === "home") {
-        const home = document.querySelector(".v2-appliance-home");
-        if (home) {
-          home.classList.add("open");
-          hideMainAppForHome();
-          setTimeout(() => { try { window.scrollTo({top:0, behavior:"smooth"}); } catch(e) { window.scrollTo(0,0); } }, 40);
-        }
-      }
-    }, true);
-  }
-
   document.addEventListener("DOMContentLoaded", function(){
     patchQuizRandomisation();
     ensureHome();
-    returnHomeOnHomeTab();
   });
 })();
 </script>
@@ -4785,6 +4778,463 @@ render();
   document.addEventListener("DOMContentLoaded", function(){
     setTimeout(placeGlobalSearchOnce, 100);
   });
+})();
+</script>
+
+<script>
+// v2.0 safer photo fade: load-only, no decode(), no observer loop
+(function(){
+  function bind(img){
+    if (!img || img.dataset.v2SafePhotoFadeBound === "1") return;
+    img.dataset.v2SafePhotoFadeBound = "1";
+    img.classList.remove("photo-ready");
+    function ready(){ img.classList.add("photo-ready"); }
+    if (img.complete && img.naturalWidth > 0) ready();
+    else {
+      img.addEventListener("load", ready, { once: true });
+      img.addEventListener("error", ready, { once: true });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    document.addEventListener("click", function(){
+      setTimeout(function(){
+        document.querySelectorAll(".photo-modal img, .modal img, #photoModal img, .locker-photo-modal img, .item-photo-modal img").forEach(bind);
+      }, 40);
+    }, true);
+  });
+})();
+</script>
+
+<script>
+// v2.0 STEP 1: Global Search placement/opening only
+(function(){
+  function findGlobalSearchModal(){
+    return document.querySelector(".v2-global-search-modal");
+  }
+
+  function ensureGlobalSearchModalExists(){
+    let modal = findGlobalSearchModal();
+    if (modal) return modal;
+
+    // If the app's modal script hasn't created it yet, create the same modal structure expected by the working search code.
+    modal = document.createElement("div");
+    modal.className = "v2-global-search-modal";
+    modal.innerHTML = `
+      <div class="v2-global-search-dialog" role="dialog" aria-modal="true" aria-label="Global inventory search">
+        <div class="v2-global-search-head">
+          <h2>Global Search</h2>
+          <button type="button" class="v2-global-search-close" aria-label="Close">×</button>
+        </div>
+        <div class="v2-global-search-row">
+          <input class="v2-global-search-input" type="search" placeholder="Search all appliances e.g. ladder">
+          <button type="button" class="v2-global-search-submit">Search</button>
+        </div>
+        <div class="v2-global-search-results"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const close = modal.querySelector(".v2-global-search-close");
+    if (close) close.addEventListener("click", function(){ modal.classList.remove("open"); });
+
+    modal.addEventListener("click", function(e){
+      if (e.target === modal) modal.classList.remove("open");
+    });
+
+    return modal;
+  }
+
+  function runGlobalSearch(query){
+    // Prefer the existing working render function if one exists in the page.
+    if (typeof window.renderGlobalResults === "function") {
+      window.renderGlobalResults(query);
+      return;
+    }
+
+    // Fallback implementation, using the already exposed APPLIANCES data.
+    const modal = ensureGlobalSearchModalExists();
+    const results = modal.querySelector(".v2-global-search-results");
+    const q = String(query || "").trim().toLowerCase();
+
+    if (!q) {
+      results.innerHTML = `<p class="v2-global-search-summary">Enter a search term.</p>`;
+      return;
+    }
+
+    const apps = [
+      { key: "Blackwood Rescue", label: "Blackwood Rescue", route: "Blackwood Rescue" },
+      { key: "34P", label: "Blackwood 34P", route: "34P" },
+      { key: "CAFS 24", label: "CAFS 24", route: "CAFS 24" }
+    ];
+
+    function norm(value){
+      const v = String(value || "").toLowerCase();
+      if (v.includes("34p")) return "34p";
+      if (v.includes("cafs")) return "cafs24";
+      if (v.includes("rescue")) return "rescue";
+      return v;
+    }
+
+    function textFor(record){
+      return Object.values(record || {}).filter(v => v !== null && v !== undefined).join(" ").toLowerCase();
+    }
+
+    function esc(value){
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[ch]));
+    }
+
+    const found = apps.map(app => {
+      let records = [];
+      if (window.APPLIANCES && window.APPLIANCES[app.key] && Array.isArray(window.APPLIANCES[app.key].records)) {
+        records = window.APPLIANCES[app.key].records;
+      } else if (Array.isArray(window.INVENTORY_DATA)) {
+        records = window.INVENTORY_DATA.filter(r => norm(r.appliance) === norm(app.key));
+      }
+      const matches = records.filter(r => textFor(r).includes(q));
+      return { ...app, count: matches.length };
+    }).filter(app => app.count > 0);
+
+    if (!found.length) {
+      results.innerHTML = `<p class="v2-global-search-summary">No results found for <strong>${esc(query)}</strong>.</p>`;
+      return;
+    }
+
+    const total = found.reduce((s, a) => s + a.count, 0);
+    results.innerHTML = `
+      <p class="v2-global-search-summary">${total} result${total === 1 ? "" : "s"} found for <strong>${esc(query)}</strong>. Choose an appliance:</p>
+      ${found.map(app => `
+        <button type="button" class="v2-global-search-appliance-card" data-v2-global-route="${esc(app.route)}">
+          <strong>${esc(app.label)}</strong>
+          <small>${app.count} matching item${app.count === 1 ? "" : "s"}</small>
+        </button>
+      `).join("")}
+    `;
+
+    results.querySelectorAll("[data-v2-global-route]").forEach(btn => {
+      btn.addEventListener("click", function(){
+        const route = btn.getAttribute("data-v2-global-route");
+        modal.classList.remove("open");
+
+        // Exit the system home overlay first, otherwise the inventory page remains hidden.
+        const systemHome = document.querySelector(".v2-appliance-home");
+        if (systemHome) systemHome.classList.remove("open");
+        Array.from(document.body.children).forEach(function(child){
+          child.classList.remove("v2-app-hidden-for-home");
+        });
+
+        const truckButton = Array.from(document.querySelectorAll("[data-truck]"))
+          .find(b => String(b.getAttribute("data-truck")) === route);
+        if (truckButton) truckButton.click();
+
+        setTimeout(function(){
+          const search = document.getElementById("search") || document.querySelector("input[placeholder*='Search' i], input[id*='search' i], input[class*='search' i]");
+          if (search) {
+            search.value = query;
+            search.dispatchEvent(new Event("input", { bubbles: true }));
+            search.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch(e) { window.scrollTo(0,0); }
+        }, 120);
+      });
+    });
+  }
+
+  function openGlobalSearch(){
+    const modal = ensureGlobalSearchModalExists();
+    modal.classList.add("open");
+
+    const input = modal.querySelector(".v2-global-search-input");
+    const submit = modal.querySelector(".v2-global-search-submit");
+
+    if (submit && submit.dataset.v2Step1Bound !== "1") {
+      submit.dataset.v2Step1Bound = "1";
+      submit.addEventListener("click", function(){ runGlobalSearch(input ? input.value : ""); });
+    }
+
+    if (input && input.dataset.v2Step1Bound !== "1") {
+      input.dataset.v2Step1Bound = "1";
+      input.addEventListener("keydown", function(e){
+        if (e.key === "Enter") runGlobalSearch(input.value);
+        if (e.key === "Escape") modal.classList.remove("open");
+      });
+    }
+
+    setTimeout(function(){ if (input) input.focus(); }, 30);
+  }
+
+  function makeLauncher(className){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = className;
+    btn.innerHTML = "<strong>Global Search</strong><small>Search all appliances</small>";
+    btn.addEventListener("click", openGlobalSearch);
+    return btn;
+  }
+
+  function addToSystemHome(){
+    const card = document.querySelector(".v2-appliance-home-card");
+    if (!card || card.querySelector(".v2-system-home-search")) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "v2-system-home-search";
+    btn.textContent = "Global Search";
+    btn.addEventListener("click", openGlobalSearch);
+    card.appendChild(btn);
+  }
+
+  function addToHamburgerMenu(){
+    // Remove misplaced old launchers first.
+    document.querySelectorAll(".v2-global-search-launch").forEach(el => el.remove());
+
+    const menu = document.querySelector(".truck-menu, .drawer, .hamburger-menu, nav, aside, [class*='menu']");
+    if (!menu) return;
+
+    const heading = document.createElement("div");
+    heading.className = "v2-menu-section-heading-search";
+    heading.textContent = "SEARCH";
+
+    const launcher = makeLauncher("v2-global-search-launch v2-menu-global-search truck-option");
+
+    // Put SEARCH + launcher above Theme Palette if possible.
+    const theme = Array.from(menu.querySelectorAll("*")).find(el =>
+      /theme palette|theme|palette/i.test((el.textContent || "") + " " + (el.className || "") + " " + (el.id || ""))
+    );
+
+    if (theme && theme.parentNode) {
+      theme.parentNode.insertBefore(heading, theme);
+      theme.parentNode.insertBefore(launcher, theme);
+    } else {
+      menu.appendChild(heading);
+      menu.appendChild(launcher);
+    }
+  }
+
+  function removeWrongTitleClick(){
+    document.querySelectorAll(".v2-app-title-system-home").forEach(el => {
+      el.classList.remove("v2-app-title-system-home");
+      el.removeAttribute("title");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    addToSystemHome();
+    addToHamburgerMenu();
+    removeWrongTitleClick();
+  });
+})();
+</script>
+
+
+
+<script>
+// v2.0 STEP 2b: main appliance heading opens system home; hamburger excluded
+(function(){
+  function showSystemHome(){
+    const home = document.querySelector(".v2-appliance-home");
+    if (!home) return;
+
+    home.classList.add("open");
+
+    Array.from(document.body.children).forEach(function(child){
+      if (child === home) return;
+      if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
+      child.classList.add("v2-app-hidden-for-home");
+    });
+
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); }
+    catch(e) { window.scrollTo(0, 0); }
+  }
+
+  function isExcluded(el){
+    return !!(
+      el.closest(".v2-appliance-home") ||
+      el.closest(".truck-menu") ||
+      el.closest(".drawer") ||
+      el.closest(".hamburger-menu") ||
+      el.closest("nav") ||
+      el.closest("aside") ||
+      el.closest(".v2-global-search-modal") ||
+      el.closest(".modal") ||
+      el.closest("[class*='menu']") ||
+      el.closest("[class*='drawer']")
+    );
+  }
+
+  function clearBadBindings(){
+    document.querySelectorAll(".v2-inventory-title-system-home, .v2-main-appliance-heading-system-home").forEach(function(el){
+      if (isExcluded(el)) {
+        el.classList.remove("v2-inventory-title-system-home", "v2-main-appliance-heading-system-home");
+        el.removeAttribute("title");
+        el.dataset.v2SystemHomeTitleBound = "";
+        el.dataset.v2MainHeadingBound = "";
+      }
+    });
+  }
+
+  function findMainApplianceHeading(){
+    const candidates = Array.from(document.querySelectorAll("main h1, main h2, .content h1, .content h2, .app h1, .app h2, h1, h2"));
+
+    return candidates.find(function(el){
+      if (!el || isExcluded(el)) return false;
+
+      const text = (el.textContent || "").replace(/\s+/g, " ").trim();
+      if (!text) return false;
+
+      // These are the main inventory headings we want, not menu labels or modal headings.
+      return (
+        /^Blackwood Rescue\b/i.test(text) ||
+        /^Blackwood 34P\b/i.test(text) ||
+        /^CAFS 24\b/i.test(text) ||
+        /^34P\b/i.test(text)
+      );
+    });
+  }
+
+  function bindMainHeading(){
+    clearBadBindings();
+
+    const heading = findMainApplianceHeading();
+    if (!heading || heading.dataset.v2MainHeadingBound === "1") return;
+
+    heading.dataset.v2MainHeadingBound = "1";
+    heading.classList.add("v2-main-appliance-heading-system-home");
+    heading.setAttribute("title", "Return to appliance selection");
+
+    heading.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      showSystemHome();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    bindMainHeading();
+
+    // Rebind after appliance switches/title changes, without touching hamburger elements.
+    document.addEventListener("click", function(e){
+      const truckTarget = e.target && e.target.closest ? e.target.closest("[data-truck], .truck-option") : null;
+      if (truckTarget) setTimeout(bindMainHeading, 120);
+    }, true);
+
+    setTimeout(bindMainHeading, 250);
+  });
+})();
+</script>
+
+
+<script>
+// v2.0 STEP 3: appliance locker/tab order from Appliance_Config
+(function(){
+  const APPLIANCE_CONFIG_ORDER = {
+  "34P": [
+    "Cabin",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P Reel",
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "D Reel",
+    "Pump Panel",
+    "Crew Deck"
+  ],
+  "Blackwood Rescue": [
+    "Cabin",
+    "Locker 1",
+    "Locker 2",
+    "Locker 3",
+    "Locker 4",
+    "Locker 5",
+    "Locker 6"
+  ],
+  "CAFS 24": [
+    "Cabin",
+    "P1",
+    "P2",
+    "Pump Panel",
+    "P-Tube",
+    "P3",
+    "D-Tube",
+    "D1",
+    "D2",
+    "Rear"
+  ]
+};
+
+  function normaliseApplianceName(value){
+    const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (v.includes("34p")) return "34P";
+    if (v.includes("cafs")) return "CAFS 24";
+    if (v.includes("rescue")) return "Blackwood Rescue";
+    return value;
+  }
+
+  function applyApplianceConfigOrder(){
+    if (!window.APPLIANCES) return false;
+
+    Object.entries(APPLIANCE_CONFIG_ORDER).forEach(function([configApp, configuredLocations]){
+      const canonical = normaliseApplianceName(configApp);
+      const appKey = Object.keys(window.APPLIANCES).find(function(key){
+        return normaliseApplianceName(key) === canonical ||
+               normaliseApplianceName(window.APPLIANCES[key] && window.APPLIANCES[key].appliance) === canonical;
+      });
+      if (!appKey || !window.APPLIANCES[appKey]) return;
+
+      const app = window.APPLIANCES[appKey];
+      const existingFromData = Array.isArray(app.records)
+        ? Array.from(new Set(app.records.map(r => r.locker).filter(Boolean)))
+        : (Array.isArray(app.lockers) ? app.lockers.slice() : []);
+
+      const configured = configuredLocations.filter(loc => existingFromData.includes(loc));
+      const extras = existingFromData.filter(loc => !configured.includes(loc));
+      app.lockers = configured.concat(extras);
+    });
+
+    // Refresh current DATA reference if needed, without altering Home/Starred/Out of Service.
+    if (window.DATA && window.DATA.appliance) {
+      const currentKey = Object.keys(window.APPLIANCES).find(function(key){
+        return normaliseApplianceName(key) === normaliseApplianceName(window.DATA.appliance) ||
+               normaliseApplianceName(window.APPLIANCES[key] && window.APPLIANCES[key].appliance) === normaliseApplianceName(window.DATA.appliance);
+      });
+      if (currentKey) window.DATA = window.APPLIANCES[currentKey];
+    }
+
+    window.v2ApplianceConfigOrderApplied = true;
+    window.v2ApplianceConfigOrder = APPLIANCE_CONFIG_ORDER;
+    return true;
+  }
+
+  function refreshInventoryAfterOrder(){
+    // Trigger the app's existing renderer if available. Do not rebuild Home/Starred/Out of Service.
+    const renderFns = ["render", "renderInventory", "renderTabs", "renderCurrentView"];
+    for (const name of renderFns) {
+      if (typeof window[name] === "function") {
+        try { window[name](); return; } catch(e) {}
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    setTimeout(function(){
+      if (applyApplianceConfigOrder()) refreshInventoryAfterOrder();
+    }, 30);
+  });
+
+  // Re-apply after appliance switches, in case the original app rebuilds tab state.
+  document.addEventListener("click", function(e){
+    const t = e.target && e.target.closest ? e.target.closest("[data-truck], .truck-option") : null;
+    if (t) setTimeout(function(){
+      if (applyApplianceConfigOrder()) refreshInventoryAfterOrder();
+    }, 80);
+  }, true);
 })();
 </script>
 

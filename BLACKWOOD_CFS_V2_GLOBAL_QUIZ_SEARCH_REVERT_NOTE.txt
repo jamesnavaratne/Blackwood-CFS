@@ -1,4 +1,0 @@
-Built from confirmed working flash-only base.
-Search reverted to original simple current-appliance behaviour; no search dropdown/panel added.
-Quiz generator directly patched to build question pool globally from ticked appliance checkboxes.
-Hamburger labels/subheadings updated only.
