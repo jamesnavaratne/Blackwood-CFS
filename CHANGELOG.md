@@ -13,6 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Light theme removed; app returned to dark-only themes.
 - Theme-coloured content background behind tiles.
 - Refined Rescue Blue neon system home with lighter white text.
 - Default dark Rescue Blue theme.

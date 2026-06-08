@@ -2782,134 +2782,6 @@ body.dark .photo-indicator-btn.has-photo {
 
 
 
-/* v2.0 curated light theme: Rescue Frost */
-body.theme-rescue-frost,
-body[data-theme="rescue-frost"] {
-  --bg: #eef6ff;
-  --panel: #ffffff;
-  --panel-2: #f7fbff;
-  --card: #ffffff;
-  --card-2: #eef7ff;
-  --text: #102235;
-  --muted: #50667d;
-  --muted-2: #6f8296;
-  --border: rgba(25, 96, 150, 0.22);
-  --accent: #0077c8;
-  --accent-2: #00a6e8;
-  --accent-3: #ffd166;
-  --danger: #c2410c;
-  --success: #087f5b;
-  --shadow: 0 18px 50px rgba(15, 70, 120, 0.16);
-  --glow: 0 0 24px rgba(0, 119, 200, 0.18);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(0, 119, 200, 0.16), transparent 34%),
-    radial-gradient(circle at 88% 12%, rgba(0, 166, 232, 0.12), transparent 34%),
-    linear-gradient(180deg, #f8fcff 0%, #eef6ff 48%, #e4f0fb 100%) !important;
-  color: var(--text) !important;
-  color-scheme: light;
-}
-
-body.theme-rescue-frost .app,
-body.theme-rescue-frost main,
-body.theme-rescue-frost .panel,
-body.theme-rescue-frost .drawer,
-body.theme-rescue-frost .truck-menu,
-body.theme-rescue-frost .modal,
-body.theme-rescue-frost .v2-global-search-dialog,
-body.theme-rescue-frost .v2-appliance-home-card {
-  background: rgba(255, 255, 255, 0.84) !important;
-  color: var(--text) !important;
-  border-color: var(--border) !important;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(14px);
-}
-
-body.theme-rescue-frost .tile,
-body.theme-rescue-frost .item-card,
-body.theme-rescue-frost .card,
-body.theme-rescue-frost .truck-option,
-body.theme-rescue-frost .v2-appliance-home-pill,
-body.theme-rescue-frost .v2-global-search-launch,
-body.theme-rescue-frost .v2-global-search-appliance-card {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(239,248,255,0.94)) !important;
-  color: var(--text) !important;
-  border: 1px solid rgba(0, 119, 200, 0.24) !important;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.68) inset,
-    0 10px 30px rgba(15, 70, 120, 0.10);
-}
-
-body.theme-rescue-frost .tile:hover,
-body.theme-rescue-frost .item-card:hover,
-body.theme-rescue-frost .card:hover,
-body.theme-rescue-frost .truck-option:hover,
-body.theme-rescue-frost .v2-appliance-home-pill:hover,
-body.theme-rescue-frost .v2-global-search-launch:hover,
-body.theme-rescue-frost .v2-global-search-appliance-card:hover {
-  border-color: rgba(0, 119, 200, 0.48) !important;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.78) inset,
-    0 0 0 3px rgba(0,119,200,0.08),
-    0 14px 34px rgba(15, 70, 120, 0.16);
-  transform: translateY(-1px);
-}
-
-body.theme-rescue-frost input,
-body.theme-rescue-frost select,
-body.theme-rescue-frost textarea {
-  background: rgba(255,255,255,0.92) !important;
-  color: var(--text) !important;
-  border-color: rgba(0,119,200,0.26) !important;
-}
-
-body.theme-rescue-frost button {
-  color: var(--text);
-}
-
-body.theme-rescue-frost small,
-body.theme-rescue-frost .muted,
-body.theme-rescue-frost [class*="muted"] {
-  color: var(--muted) !important;
-}
-
-body.theme-rescue-frost .active,
-body.theme-rescue-frost .selected,
-body.theme-rescue-frost [aria-selected="true"],
-body.theme-rescue-frost .truck-option.active {
-  border-color: rgba(0, 119, 200, 0.65) !important;
-  box-shadow:
-    0 0 0 1px rgba(0,119,200,0.18) inset,
-    0 0 0 3px rgba(0,119,200,0.10),
-    0 14px 38px rgba(0,119,200,0.18) !important;
-}
-
-body.theme-rescue-frost .v2-appliance-home-kicker,
-body.theme-rescue-frost .v2-menu-section-heading-search,
-body.theme-rescue-frost [class*="heading"] {
-  color: #005c99;
-}
-
-body.theme-rescue-frost .status,
-body.theme-rescue-frost .pill,
-body.theme-rescue-frost [class*="pill"] {
-  border-color: rgba(0,119,200,0.22);
-}
-
-body.theme-rescue-frost .out,
-body.theme-rescue-frost .danger,
-body.theme-rescue-frost [class*="out-of-service"] {
-  color: #9a3412;
-  border-color: rgba(194, 65, 12, 0.25);
-}
-
-body.theme-rescue-frost .in,
-body.theme-rescue-frost .success {
-  color: #087f5b;
-  border-color: rgba(8, 127, 91, 0.25);
-}
-
-
 /* v2.0 system home: Rescue Blue dark styling */
 .v2-appliance-home {
   background:
@@ -3313,6 +3185,49 @@ body.dark.palette-red #results {
 .v2-appliance-home .v2-appliance-home-pill strong,
 .v2-appliance-home .v2-system-home-search strong {
   font-weight: 400 !important;
+}
+
+
+/* v2.0 dark-only final */
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--bg, #04111f) !important;
+  color: var(--text, #e8f7ff) !important;
+}
+
+body.theme-rescue-frost,
+body[data-theme="rescue-frost"],
+html.theme-rescue-frost,
+html[data-theme="rescue-frost"],
+body.light,
+html.light,
+body.light-mode,
+html.light-mode,
+body[data-mode="light"],
+html[data-mode="light"] {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(0, 174, 239, 0.18), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 174, 239, 0.12), transparent 28rem),
+    linear-gradient(180deg, #04111f 0%, #061626 52%, #030b14 100%) !important;
+  color: #e8f7ff !important;
+  color-scheme: dark !important;
+}
+
+.theme-rescue-frost-button,
+[data-theme="rescue-frost"],
+[data-theme-option="light"],
+[data-mode-option="light"],
+button[value="light"],
+button[data-mode="light"],
+button[data-theme*="light"],
+button[data-theme="rescue-frost"],
+option[value="light"],
+option[value="rescue-frost"] {
+  display: none !important;
 }
 
 </style>
@@ -5776,63 +5691,6 @@ render();
 
 
 <script>
-// v2.0 Rescue Frost light theme
-(function(){
-  function applyRescueFrost(){
-    document.body.classList.remove("dark", "light", "theme-light", "light-mode");
-    document.documentElement.classList.remove("dark", "light", "theme-light", "light-mode");
-
-    // Remove previous theme-* body classes, keep structural v2 classes.
-    Array.from(document.body.classList).forEach(function(cls){
-      if (/^theme-/.test(cls)) document.body.classList.remove(cls);
-    });
-
-    document.body.classList.add("theme-rescue-frost");
-    document.body.dataset.theme = "rescue-frost";
-    document.body.dataset.mode = "light";
-
-    try {
-      localStorage.setItem("theme", "rescue-frost");
-      localStorage.setItem("themeMode", "light");
-      localStorage.setItem("mode", "light");
-    } catch(e) {}
-  }
-
-  function restoreIfSelected(){
-    let saved = "";
-    try { saved = localStorage.getItem("theme") || ""; } catch(e) {}
-    if (saved === "rescue-frost") applyRescueFrost();
-  }
-
-  function addPaletteButton(){
-    if (document.querySelector("[data-theme='rescue-frost'], .theme-rescue-frost-button")) return;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "theme-rescue-frost-button";
-    btn.dataset.theme = "rescue-frost";
-    btn.innerHTML = "<strong>Rescue Frost</strong><small>Light rescue blue</small>";
-    btn.addEventListener("click", applyRescueFrost);
-
-    const themeArea = Array.from(document.querySelectorAll("section, div, fieldset, nav, aside, .drawer, .truck-menu"))
-      .find(function(el){
-        const text = (el.textContent || "").toLowerCase();
-        return text.includes("theme palette") || text.includes("palette");
-      });
-
-    if (themeArea) themeArea.appendChild(btn);
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    restoreIfSelected();
-    addPaletteButton();
-    setTimeout(addPaletteButton, 200);
-  });
-})();
-</script>
-
-
-<script>
 // v2.0 default to Dark Rescue Blue
 (function(){
   function applyDefaultRescueBlue(){
@@ -5895,6 +5753,61 @@ render();
     }, true);
 
     setTimeout(fix34PTitleText, 250);
+  });
+})();
+</script>
+
+
+<script>
+// v2.0 dark-only final enforcement
+(function(){
+  function forceDarkOnly(){
+    try {
+      if ((localStorage.getItem("theme") || "") === "rescue-frost") localStorage.setItem("theme", "rescue-blue");
+      if (/light/i.test(localStorage.getItem("theme") || "")) localStorage.setItem("theme", "rescue-blue");
+      localStorage.setItem("themeMode", "dark");
+      localStorage.setItem("mode", "dark");
+    } catch(e) {}
+
+    document.documentElement.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
+    if (document.body) document.body.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
+
+    document.documentElement.classList.add("dark");
+    if (document.body) document.body.classList.add("dark");
+
+    if (document.documentElement.dataset) {
+      document.documentElement.dataset.mode = "dark";
+      if (document.documentElement.dataset.theme === "rescue-frost") document.documentElement.dataset.theme = "rescue-blue";
+    }
+    if (document.body && document.body.dataset) {
+      document.body.dataset.mode = "dark";
+      if (document.body.dataset.theme === "rescue-frost") document.body.dataset.theme = "rescue-blue";
+    }
+
+    document.querySelectorAll(".theme-rescue-frost-button, [data-theme='rescue-frost'], button[value='light'], button[data-mode='light'], option[value='light'], option[value='rescue-frost']").forEach(function(el){
+      el.remove();
+    });
+
+    Array.from(document.querySelectorAll("button, label, option, a, span, div")).forEach(function(el){
+      const txt = (el.textContent || "").trim();
+      const attrs = [
+        el.getAttribute("data-theme"),
+        el.getAttribute("data-mode"),
+        el.getAttribute("value"),
+        el.getAttribute("aria-label"),
+        el.getAttribute("title"),
+        el.className
+      ].join(" ");
+      if (/\brescue frost\b|\blight theme\b|\blight mode\b/i.test(txt + " " + attrs)) {
+        if (el.tagName === "OPTION") el.remove();
+        else if (el.tagName === "BUTTON" || el.tagName === "LABEL" || el.tagName === "A") el.remove();
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    forceDarkOnly();
+    setTimeout(forceDarkOnly, 150);
   });
 })();
 </script>
