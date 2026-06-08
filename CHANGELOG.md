@@ -13,6 +13,8 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Legacy light/dark button removed; dark themes retained.
+- Legacy light/dark button fixed to remain in supported dark mode.
 - Light theme removed; app returned to dark-only themes.
 - Theme-coloured content background behind tiles.
 - Refined Rescue Blue neon system home with lighter white text.

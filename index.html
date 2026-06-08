@@ -3230,6 +3230,7 @@ option[value="rescue-frost"] {
   display: none !important;
 }
 
+
 </style>
 
 
@@ -3463,7 +3464,7 @@ if ('serviceWorker' in navigator) {
       <h1 id="title">Inventory</h1>
       <div class="built" id="subtitle"></div>
     </div>
-    <div class="header-actions"><button id="darkToggle" class="toggle-pill" type="button">Dark</button></div>
+    <div class="header-actions"></div>
   </div>
   <div class="search">
     <input id="search" placeholder="Search item, locker, description, category, tags..." autocomplete="off">
@@ -5808,6 +5809,42 @@ render();
   document.addEventListener("DOMContentLoaded", function(){
     forceDarkOnly();
     setTimeout(forceDarkOnly, 150);
+  });
+})();
+</script>
+
+
+
+<script>
+// v2.0 remove legacy light/dark button
+(function(){
+  function removeThemeModeToggle(){
+    Array.from(document.querySelectorAll("button, [role='button'], label")).forEach(function(el){
+      const text = (el.textContent || "").trim();
+      const attrs = [
+        el.id,
+        el.className,
+        el.getAttribute("aria-label"),
+        el.getAttribute("title"),
+        el.getAttribute("data-mode")
+      ].join(" ");
+
+      const looksLikeToggle =
+        /themeToggle|theme-toggle|mode-toggle|light-dark|dark-light/i.test(attrs) ||
+        /^(light|dark|light mode|dark mode)$/i.test(text);
+
+      // Do not remove palette cards named Rescue Blue / Brick Red / Safe Green / CFS Yellow.
+      const isPaletteTheme = /rescue blue|brick red|safe green|cfs yellow|palette/i.test(text);
+
+      if (looksLikeToggle && !isPaletteTheme) {
+        el.remove();
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    removeThemeModeToggle();
+    setTimeout(removeThemeModeToggle, 150);
   });
 })();
 </script>
