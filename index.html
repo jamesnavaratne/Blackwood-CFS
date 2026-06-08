@@ -3056,6 +3056,265 @@ body:not(.theme-rescue-frost) {
   transform: translateY(-1px);
 }
 
+
+/* v2.0 system home pills: remove internal shading */
+.v2-appliance-home .v2-appliance-home-pill,
+.v2-appliance-home .v2-system-home-search {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.08) inset,
+    0 0 18px rgba(0, 174, 239, 0.14) !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill:hover,
+.v2-appliance-home .v2-system-home-search:hover {
+  background: rgba(0, 174, 239, 0.06) !important;
+  background-image: none !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.14) inset,
+    0 0 24px rgba(0, 174, 239, 0.24) !important;
+}
+
+
+/* v2.0 system home: slightly reduced main card glow */
+.v2-appliance-home-card {
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.06) inset,
+    0 0 22px rgba(0, 174, 239, 0.14),
+    0 0 44px rgba(0, 119, 200, 0.08),
+    0 22px 70px rgba(0, 0, 0, 0.44) !important;
+}
+
+
+/* v2.0 palette-true page background override
+   Fixes Rescue Blue default background overriding red/green/yellow palettes. */
+
+body.dark.palette-blue,
+body.palette-blue.dark,
+body[data-theme="rescue-blue"],
+body[data-theme*="blue"] {
+  background:
+    radial-gradient(circle at top left, rgba(40, 215, 255, 0.13), transparent 30rem),
+    radial-gradient(circle at top right, rgba(124, 60, 255, 0.10), transparent 28rem),
+    linear-gradient(180deg, #060b16 0%, #040813 100%) !important;
+}
+
+body.dark.palette-green,
+body.palette-green.dark,
+body[data-theme*="green"] {
+  background:
+    radial-gradient(circle at top left, rgba(53, 224, 129, 0.13), transparent 30rem),
+    radial-gradient(circle at top right, rgba(0, 191, 165, 0.10), transparent 28rem),
+    linear-gradient(180deg, #06110c 0%, #030b07 100%) !important;
+}
+
+body.dark.palette-yellow,
+body.palette-yellow.dark,
+body[data-theme*="yellow"] {
+  background:
+    radial-gradient(circle at top left, rgba(255, 211, 77, 0.13), transparent 30rem),
+    radial-gradient(circle at top right, rgba(255, 159, 28, 0.10), transparent 28rem),
+    linear-gradient(180deg, #121005 0%, #090702 100%) !important;
+}
+
+body.dark.palette-red,
+body.palette-red.dark,
+body[data-theme*="red"] {
+  background:
+    radial-gradient(circle at top left, rgba(255, 107, 87, 0.13), transparent 30rem),
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.08), transparent 28rem),
+    linear-gradient(180deg, #140808 0%, #090303 100%) !important;
+}
+
+/* The content area behind cards should use the same selected palette, slightly darker. */
+body.dark.palette-blue main,
+body.palette-blue.dark main,
+body[data-theme*="blue"] main {
+  background:
+    linear-gradient(180deg, rgba(6, 11, 22, 0.98), rgba(4, 8, 19, 0.98)) !important;
+}
+
+body.dark.palette-green main,
+body.palette-green.dark main,
+body[data-theme*="green"] main {
+  background:
+    linear-gradient(180deg, rgba(6, 17, 12, 0.98), rgba(3, 11, 7, 0.98)) !important;
+}
+
+body.dark.palette-yellow main,
+body.palette-yellow.dark main,
+body[data-theme*="yellow"] main {
+  background:
+    linear-gradient(180deg, rgba(18, 16, 5, 0.98), rgba(9, 7, 2, 0.98)) !important;
+}
+
+body.dark.palette-red main,
+body.palette-red.dark main,
+body[data-theme*="red"] main {
+  background:
+    linear-gradient(180deg, rgba(20, 8, 8, 0.98), rgba(9, 3, 3, 0.98)) !important;
+}
+
+/* Keep theme colours flowing into summary/content sections without changing cards themselves. */
+body.dark.palette-blue .summary,
+body.dark.palette-blue #lockerPhoto,
+body.dark.palette-blue #results {
+  background: transparent !important;
+}
+
+body.dark.palette-green .summary,
+body.dark.palette-green #lockerPhoto,
+body.dark.palette-green #results {
+  background: transparent !important;
+}
+
+body.dark.palette-yellow .summary,
+body.dark.palette-yellow #lockerPhoto,
+body.dark.palette-yellow #results {
+  background: transparent !important;
+}
+
+body.dark.palette-red .summary,
+body.dark.palette-red #lockerPhoto,
+body.dark.palette-red #results {
+  background: transparent !important;
+}
+
+
+/* v2.0 system home: classy restrained neon */
+.v2-appliance-home {
+  background:
+    radial-gradient(circle at 18% 6%, rgba(0, 174, 239, 0.10), transparent 30rem),
+    radial-gradient(circle at 86% 16%, rgba(45, 212, 255, 0.075), transparent 28rem),
+    radial-gradient(circle at 50% 105%, rgba(0, 119, 200, 0.08), transparent 38rem),
+    linear-gradient(180deg, #04111f 0%, #061626 52%, #030b14 100%) !important;
+  color: #e8f7ff !important;
+}
+
+.v2-appliance-home-card {
+  background:
+    linear-gradient(180deg, rgba(7, 22, 39, 0.76), rgba(4, 15, 28, 0.78)) !important;
+  border: 1px solid rgba(115, 228, 255, 0.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.035) inset,
+    0 0 18px rgba(0, 174, 239, 0.09),
+    0 22px 72px rgba(0, 0, 0, 0.42) !important;
+  backdrop-filter: blur(18px);
+}
+
+.v2-appliance-home-kicker {
+  color: rgba(115, 228, 255, 0.78) !important;
+  text-shadow: 0 0 14px rgba(0, 174, 239, 0.18) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+}
+
+.v2-appliance-home h1 {
+  color: rgba(243, 251, 255, 0.94) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.035em !important;
+  text-shadow:
+    0 0 14px rgba(115, 228, 255, 0.12),
+    0 0 32px rgba(0, 174, 239, 0.08) !important;
+}
+
+.v2-appliance-home-pills {
+  gap: 0.82rem !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill,
+.v2-appliance-home .v2-system-home-search {
+  background: rgba(6, 24, 42, 0.34) !important;
+  background-image: none !important;
+  border: 1px solid rgba(115, 228, 255, 0.26) !important;
+  color: rgba(232, 247, 255, 0.94) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 0 12px rgba(0, 174, 239, 0.07) !important;
+  font-weight: 650 !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill:hover,
+.v2-appliance-home .v2-system-home-search:hover {
+  background: rgba(10, 42, 72, 0.44) !important;
+  background-image: none !important;
+  border-color: rgba(115, 228, 255, 0.48) !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.07) inset,
+    0 0 18px rgba(0, 174, 239, 0.16),
+    0 10px 28px rgba(0, 0, 0, 0.22) !important;
+  transform: translateY(-1px);
+}
+
+.v2-system-home-search {
+  margin-top: 1rem !important;
+}
+
+
+/* v2.0 system home: stronger Rescue Blue neon, lighter white text */
+.v2-appliance-home {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(0, 174, 239, 0.18), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 174, 239, 0.12), transparent 28rem),
+    radial-gradient(circle at 50% 105%, rgba(0, 174, 239, 0.10), transparent 38rem),
+    linear-gradient(180deg, #04111f 0%, #061626 52%, #030b14 100%) !important;
+}
+
+.v2-appliance-home-card {
+  border: 1px solid rgba(0, 174, 239, 0.42) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 174, 239, 0.08) inset,
+    0 0 28px rgba(0, 174, 239, 0.22),
+    0 0 58px rgba(0, 174, 239, 0.10),
+    0 22px 72px rgba(0, 0, 0, 0.42) !important;
+}
+
+.v2-appliance-home-kicker {
+  color: rgba(0, 174, 239, 0.95) !important;
+  text-shadow:
+    0 0 12px rgba(0, 174, 239, 0.55),
+    0 0 26px rgba(0, 174, 239, 0.24) !important;
+  font-weight: 500 !important;
+}
+
+.v2-appliance-home h1 {
+  color: rgba(255, 255, 255, 0.96) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.035em !important;
+  text-shadow:
+    0 0 14px rgba(0, 174, 239, 0.22),
+    0 0 34px rgba(0, 174, 239, 0.12) !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill,
+.v2-appliance-home .v2-system-home-search {
+  background: rgba(6, 24, 42, 0.30) !important;
+  border: 1px solid rgba(0, 174, 239, 0.48) !important;
+  color: rgba(255, 255, 255, 0.94) !important;
+  font-weight: 400 !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 174, 239, 0.07) inset,
+    0 0 18px rgba(0, 174, 239, 0.18),
+    0 0 34px rgba(0, 174, 239, 0.08) !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill:hover,
+.v2-appliance-home .v2-system-home-search:hover {
+  background: rgba(8, 38, 66, 0.46) !important;
+  border-color: rgba(0, 174, 239, 0.78) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 174, 239, 0.12) inset,
+    0 0 24px rgba(0, 174, 239, 0.30),
+    0 0 46px rgba(0, 174, 239, 0.14),
+    0 10px 28px rgba(0, 0, 0, 0.22) !important;
+}
+
+.v2-appliance-home .v2-appliance-home-pill strong,
+.v2-appliance-home .v2-system-home-search strong {
+  font-weight: 400 !important;
+}
+
 </style>
 
 
@@ -3342,7 +3601,7 @@ function setActiveAppliance(applianceName) {
   DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
   activeLocker = "Home";
   if (searchEl) searchEl.value = "";
-  if (title) title.textContent = DATA.appliance + " Inventory";
+  if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
   document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
   makeTabs();
   render();
@@ -3465,7 +3724,7 @@ document.querySelectorAll(".truck-option").forEach(btn => {
 });
 
 
-title.textContent = DATA.appliance + " Inventory";
+title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
 
 function esc(s) {
   return (s || "").toString().replace(/[&<>"']/g, m => ({
@@ -5608,6 +5867,34 @@ render();
   document.addEventListener("DOMContentLoaded", function(){
     applyDefaultRescueBlue();
     setTimeout(applyDefaultRescueBlue, 100);
+  });
+})();
+</script>
+
+
+<script>
+// v2.0 34P display title fix
+(function(){
+  function fix34PTitleText(){
+    document.querySelectorAll("h1, h2, .app-title, .brand-title, .title, [class*='title']").forEach(function(el){
+      if (el.closest(".truck-menu, .drawer, .hamburger-menu, nav, aside, .v2-appliance-home, .modal, .v2-global-search-modal")) return;
+
+      const text = (el.textContent || "").trim();
+      if (text === "34P Inventory" || text === "Blackwood 34P") {
+        el.textContent = "Blackwood 34P Inventory";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    fix34PTitleText();
+
+    document.addEventListener("click", function(e){
+      const truckTarget = e.target && e.target.closest ? e.target.closest("[data-truck], .truck-option") : null;
+      if (truckTarget) setTimeout(fix34PTitleText, 120);
+    }, true);
+
+    setTimeout(fix34PTitleText, 250);
   });
 })();
 </script>

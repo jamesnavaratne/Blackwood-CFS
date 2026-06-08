@@ -10,6 +10,9 @@ Multi-appliance inventory system for Blackwood Country Fire Service appliances.
 
 ## Key features
 
+- Default dark Rescue Blue theme
+- Refined Rescue Blue neon system home
+
 - Multi-appliance inventory switching
 - System home page
 - Appliance home pages

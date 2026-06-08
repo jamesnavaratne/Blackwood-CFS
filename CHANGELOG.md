@@ -13,6 +13,10 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Theme-coloured content background behind tiles.
+- Refined Rescue Blue neon system home with lighter white text.
+- Default dark Rescue Blue theme.
+- 34P inventory title standardised to Blackwood 34P Inventory.
 - Default theme set to dark Rescue Blue with matching neon system home.
 - Rescue Blue dark styled system home.
 - Blackwood Rescue preserved while adding 34P and CAFS 24.
