@@ -13,7 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
-- Dark-only interface; light mode removed from the active UI.
+- Rescue Blue dark styled system home.
 - Blackwood Rescue preserved while adding 34P and CAFS 24.
 - Photo filename/path display standardised.
 - Safer locker/photo fade behaviour to reduce browser crashes.

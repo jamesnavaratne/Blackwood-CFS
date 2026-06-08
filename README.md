@@ -21,7 +21,6 @@ Multi-appliance inventory system for Blackwood Country Fire Service appliances.
 - Global Search across appliances
 - Training/quiz mode
 - Offline-friendly static app structure
-- Dark-only interface
 
 ## Inventory source of truth
 

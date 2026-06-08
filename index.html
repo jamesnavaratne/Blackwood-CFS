@@ -2781,32 +2781,189 @@ body.dark .photo-indicator-btn.has-photo {
 }
 
 
-/* v2.0 dark-only mode */
-:root {
-  color-scheme: dark;
+
+/* v2.0 curated light theme: Rescue Frost */
+body.theme-rescue-frost,
+body[data-theme="rescue-frost"] {
+  --bg: #eef6ff;
+  --panel: #ffffff;
+  --panel-2: #f7fbff;
+  --card: #ffffff;
+  --card-2: #eef7ff;
+  --text: #102235;
+  --muted: #50667d;
+  --muted-2: #6f8296;
+  --border: rgba(25, 96, 150, 0.22);
+  --accent: #0077c8;
+  --accent-2: #00a6e8;
+  --accent-3: #ffd166;
+  --danger: #c2410c;
+  --success: #087f5b;
+  --shadow: 0 18px 50px rgba(15, 70, 120, 0.16);
+  --glow: 0 0 24px rgba(0, 119, 200, 0.18);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(0, 119, 200, 0.16), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(0, 166, 232, 0.12), transparent 34%),
+    linear-gradient(180deg, #f8fcff 0%, #eef6ff 48%, #e4f0fb 100%) !important;
+  color: var(--text) !important;
+  color-scheme: light;
 }
-html,
-body {
-  background: var(--bg, #07111f) !important;
-  color: var(--text, #e5f3ff) !important;
+
+body.theme-rescue-frost .app,
+body.theme-rescue-frost main,
+body.theme-rescue-frost .panel,
+body.theme-rescue-frost .drawer,
+body.theme-rescue-frost .truck-menu,
+body.theme-rescue-frost .modal,
+body.theme-rescue-frost .v2-global-search-dialog,
+body.theme-rescue-frost .v2-appliance-home-card {
+  background: rgba(255, 255, 255, 0.84) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
 }
-body.light,
-html.light,
-body[data-mode="light"],
-html[data-mode="light"],
-body[data-theme*="light"],
-html[data-theme*="light"] {
-  background: var(--bg, #07111f) !important;
-  color: var(--text, #e5f3ff) !important;
+
+body.theme-rescue-frost .tile,
+body.theme-rescue-frost .item-card,
+body.theme-rescue-frost .card,
+body.theme-rescue-frost .truck-option,
+body.theme-rescue-frost .v2-appliance-home-pill,
+body.theme-rescue-frost .v2-global-search-launch,
+body.theme-rescue-frost .v2-global-search-appliance-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(239,248,255,0.94)) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(0, 119, 200, 0.24) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.68) inset,
+    0 10px 30px rgba(15, 70, 120, 0.10);
 }
-.theme-light,
-.light-mode,
-[data-theme-option="light"],
-[data-mode-option="light"],
-button[value="light"],
-button[data-theme="light"],
-button[data-mode="light"] {
-  display: none !important;
+
+body.theme-rescue-frost .tile:hover,
+body.theme-rescue-frost .item-card:hover,
+body.theme-rescue-frost .card:hover,
+body.theme-rescue-frost .truck-option:hover,
+body.theme-rescue-frost .v2-appliance-home-pill:hover,
+body.theme-rescue-frost .v2-global-search-launch:hover,
+body.theme-rescue-frost .v2-global-search-appliance-card:hover {
+  border-color: rgba(0, 119, 200, 0.48) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.78) inset,
+    0 0 0 3px rgba(0,119,200,0.08),
+    0 14px 34px rgba(15, 70, 120, 0.16);
+  transform: translateY(-1px);
+}
+
+body.theme-rescue-frost input,
+body.theme-rescue-frost select,
+body.theme-rescue-frost textarea {
+  background: rgba(255,255,255,0.92) !important;
+  color: var(--text) !important;
+  border-color: rgba(0,119,200,0.26) !important;
+}
+
+body.theme-rescue-frost button {
+  color: var(--text);
+}
+
+body.theme-rescue-frost small,
+body.theme-rescue-frost .muted,
+body.theme-rescue-frost [class*="muted"] {
+  color: var(--muted) !important;
+}
+
+body.theme-rescue-frost .active,
+body.theme-rescue-frost .selected,
+body.theme-rescue-frost [aria-selected="true"],
+body.theme-rescue-frost .truck-option.active {
+  border-color: rgba(0, 119, 200, 0.65) !important;
+  box-shadow:
+    0 0 0 1px rgba(0,119,200,0.18) inset,
+    0 0 0 3px rgba(0,119,200,0.10),
+    0 14px 38px rgba(0,119,200,0.18) !important;
+}
+
+body.theme-rescue-frost .v2-appliance-home-kicker,
+body.theme-rescue-frost .v2-menu-section-heading-search,
+body.theme-rescue-frost [class*="heading"] {
+  color: #005c99;
+}
+
+body.theme-rescue-frost .status,
+body.theme-rescue-frost .pill,
+body.theme-rescue-frost [class*="pill"] {
+  border-color: rgba(0,119,200,0.22);
+}
+
+body.theme-rescue-frost .out,
+body.theme-rescue-frost .danger,
+body.theme-rescue-frost [class*="out-of-service"] {
+  color: #9a3412;
+  border-color: rgba(194, 65, 12, 0.25);
+}
+
+body.theme-rescue-frost .in,
+body.theme-rescue-frost .success {
+  color: #087f5b;
+  border-color: rgba(8, 127, 91, 0.25);
+}
+
+
+/* v2.0 system home: Rescue Blue dark styling */
+.v2-appliance-home {
+  background:
+    radial-gradient(circle at 12% 5%, rgba(0, 174, 239, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(14, 116, 180, 0.20), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(0, 119, 200, 0.12), transparent 42%),
+    linear-gradient(180deg, #061323 0%, #071a2e 48%, #04101f 100%) !important;
+  color: #e8f7ff !important;
+}
+
+.v2-appliance-home-card {
+  background:
+    linear-gradient(180deg, rgba(8, 27, 48, 0.92), rgba(5, 18, 34, 0.92)) !important;
+  border: 1px solid rgba(0, 174, 239, 0.34) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 0 34px rgba(0, 174, 239, 0.18),
+    0 24px 80px rgba(0, 0, 0, 0.44) !important;
+  backdrop-filter: blur(14px);
+}
+
+.v2-appliance-home-kicker {
+  color: #63d6ff !important;
+  text-shadow: 0 0 18px rgba(0, 174, 239, 0.35);
+}
+
+.v2-appliance-home h1 {
+  color: #f3fbff !important;
+  text-shadow:
+    0 0 18px rgba(0, 174, 239, 0.24),
+    0 0 36px rgba(0, 119, 200, 0.16);
+}
+
+.v2-appliance-home-pill,
+.v2-system-home-search {
+  background:
+    linear-gradient(180deg, rgba(12, 45, 76, 0.92), rgba(8, 31, 55, 0.94)) !important;
+  border: 1px solid rgba(0, 174, 239, 0.42) !important;
+  color: #e8f7ff !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05) inset,
+    0 0 22px rgba(0, 174, 239, 0.14),
+    0 12px 30px rgba(0, 0, 0, 0.24) !important;
+}
+
+.v2-appliance-home-pill:hover,
+.v2-system-home-search:hover {
+  background:
+    linear-gradient(180deg, rgba(14, 72, 116, 0.96), rgba(9, 43, 75, 0.96)) !important;
+  border-color: rgba(99, 214, 255, 0.70) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08) inset,
+    0 0 28px rgba(0, 174, 239, 0.28),
+    0 14px 36px rgba(0, 0, 0, 0.32) !important;
 }
 
 </style>
@@ -5268,57 +5425,59 @@ render();
 </script>
 
 
+
 <script>
-// v2.0 dark-only enforcement
+// v2.0 Rescue Frost light theme
 (function(){
-  function forceDarkOnly(){
-    try {
-      localStorage.setItem("themeMode", "dark");
-      localStorage.setItem("mode", "dark");
-      localStorage.setItem("theme", (localStorage.getItem("theme") || "tron-dark").replace(/light/gi, "dark"));
-    } catch(e) {}
+  function applyRescueFrost(){
+    document.body.classList.remove("dark", "light", "theme-light", "light-mode");
+    document.documentElement.classList.remove("dark", "light", "theme-light", "light-mode");
 
-    document.documentElement.classList.remove("light", "light-mode");
-    document.body && document.body.classList.remove("light", "light-mode");
-
-    document.documentElement.classList.add("dark");
-    document.body && document.body.classList.add("dark");
-
-    if (document.documentElement.dataset) {
-      if (/light/i.test(document.documentElement.dataset.theme || "")) document.documentElement.dataset.theme = "tron-dark";
-      document.documentElement.dataset.mode = "dark";
-    }
-    if (document.body && document.body.dataset) {
-      if (/light/i.test(document.body.dataset.theme || "")) document.body.dataset.theme = "tron-dark";
-      document.body.dataset.mode = "dark";
-    }
-
-    Array.from(document.querySelectorAll("button, label, option, select, input, a, div, span")).forEach(function(el){
-      const txt = (el.textContent || "").trim();
-      const attrs = [
-        el.getAttribute("data-theme"),
-        el.getAttribute("data-mode"),
-        el.getAttribute("value"),
-        el.getAttribute("aria-label"),
-        el.getAttribute("title"),
-        el.className
-      ].join(" ");
-      if (/\blight\b/i.test(txt + " " + attrs) && !/flashlight|lightweight/i.test(txt + " " + attrs)) {
-        if (el.tagName === "OPTION") el.remove();
-        else if (el.tagName === "INPUT") {
-          const label = el.closest("label");
-          if (label) label.style.display = "none";
-          else el.style.display = "none";
-        } else if (el.tagName === "BUTTON" || el.tagName === "LABEL" || el.tagName === "A") {
-          el.style.display = "none";
-        }
-      }
+    // Remove previous theme-* body classes, keep structural v2 classes.
+    Array.from(document.body.classList).forEach(function(cls){
+      if (/^theme-/.test(cls)) document.body.classList.remove(cls);
     });
+
+    document.body.classList.add("theme-rescue-frost");
+    document.body.dataset.theme = "rescue-frost";
+    document.body.dataset.mode = "light";
+
+    try {
+      localStorage.setItem("theme", "rescue-frost");
+      localStorage.setItem("themeMode", "light");
+      localStorage.setItem("mode", "light");
+    } catch(e) {}
+  }
+
+  function restoreIfSelected(){
+    let saved = "";
+    try { saved = localStorage.getItem("theme") || ""; } catch(e) {}
+    if (saved === "rescue-frost") applyRescueFrost();
+  }
+
+  function addPaletteButton(){
+    if (document.querySelector("[data-theme='rescue-frost'], .theme-rescue-frost-button")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-rescue-frost-button";
+    btn.dataset.theme = "rescue-frost";
+    btn.innerHTML = "<strong>Rescue Frost</strong><small>Light rescue blue</small>";
+    btn.addEventListener("click", applyRescueFrost);
+
+    const themeArea = Array.from(document.querySelectorAll("section, div, fieldset, nav, aside, .drawer, .truck-menu"))
+      .find(function(el){
+        const text = (el.textContent || "").toLowerCase();
+        return text.includes("theme palette") || text.includes("palette");
+      });
+
+    if (themeArea) themeArea.appendChild(btn);
   }
 
   document.addEventListener("DOMContentLoaded", function(){
-    forceDarkOnly();
-    setTimeout(forceDarkOnly, 150);
+    restoreIfSelected();
+    addPaletteButton();
+    setTimeout(addPaletteButton, 200);
   });
 })();
 </script>
