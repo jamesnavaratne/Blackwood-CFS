@@ -2780,6 +2780,35 @@ body.dark .photo-indicator-btn.has-photo {
   text-underline-offset: 4px;
 }
 
+
+/* v2.0 dark-only mode */
+:root {
+  color-scheme: dark;
+}
+html,
+body {
+  background: var(--bg, #07111f) !important;
+  color: var(--text, #e5f3ff) !important;
+}
+body.light,
+html.light,
+body[data-mode="light"],
+html[data-mode="light"],
+body[data-theme*="light"],
+html[data-theme*="light"] {
+  background: var(--bg, #07111f) !important;
+  color: var(--text, #e5f3ff) !important;
+}
+.theme-light,
+.light-mode,
+[data-theme-option="light"],
+[data-mode-option="light"],
+button[value="light"],
+button[data-theme="light"],
+button[data-mode="light"] {
+  display: none !important;
+}
+
 </style>
 
 
@@ -5235,6 +5264,62 @@ render();
       if (applyApplianceConfigOrder()) refreshInventoryAfterOrder();
     }, 80);
   }, true);
+})();
+</script>
+
+
+<script>
+// v2.0 dark-only enforcement
+(function(){
+  function forceDarkOnly(){
+    try {
+      localStorage.setItem("themeMode", "dark");
+      localStorage.setItem("mode", "dark");
+      localStorage.setItem("theme", (localStorage.getItem("theme") || "tron-dark").replace(/light/gi, "dark"));
+    } catch(e) {}
+
+    document.documentElement.classList.remove("light", "light-mode");
+    document.body && document.body.classList.remove("light", "light-mode");
+
+    document.documentElement.classList.add("dark");
+    document.body && document.body.classList.add("dark");
+
+    if (document.documentElement.dataset) {
+      if (/light/i.test(document.documentElement.dataset.theme || "")) document.documentElement.dataset.theme = "tron-dark";
+      document.documentElement.dataset.mode = "dark";
+    }
+    if (document.body && document.body.dataset) {
+      if (/light/i.test(document.body.dataset.theme || "")) document.body.dataset.theme = "tron-dark";
+      document.body.dataset.mode = "dark";
+    }
+
+    Array.from(document.querySelectorAll("button, label, option, select, input, a, div, span")).forEach(function(el){
+      const txt = (el.textContent || "").trim();
+      const attrs = [
+        el.getAttribute("data-theme"),
+        el.getAttribute("data-mode"),
+        el.getAttribute("value"),
+        el.getAttribute("aria-label"),
+        el.getAttribute("title"),
+        el.className
+      ].join(" ");
+      if (/\blight\b/i.test(txt + " " + attrs) && !/flashlight|lightweight/i.test(txt + " " + attrs)) {
+        if (el.tagName === "OPTION") el.remove();
+        else if (el.tagName === "INPUT") {
+          const label = el.closest("label");
+          if (label) label.style.display = "none";
+          else el.style.display = "none";
+        } else if (el.tagName === "BUTTON" || el.tagName === "LABEL" || el.tagName === "A") {
+          el.style.display = "none";
+        }
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    forceDarkOnly();
+    setTimeout(forceDarkOnly, 150);
+  });
 })();
 </script>
 
