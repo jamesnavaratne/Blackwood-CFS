@@ -1,0 +1,3 @@
+Landing page updated: removed quiz pill, heading set to Blackwood Appliance Inventory, neon-style polish.
+Global Search moved from quiz area to directly under quiz in hamburger/menu.
+Global Search data lookup fixed to use global inventory exports where available.

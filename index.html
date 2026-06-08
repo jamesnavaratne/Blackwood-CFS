@@ -2661,6 +2661,48 @@ body.dark .photo-indicator-btn.has-photo {
   display: none !important;
 }
 
+
+/* v2.0 landing page neon polish + hamburger global search fix */
+.v2-appliance-home {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(34,197,94,0.10), transparent 32%),
+    radial-gradient(circle at 80% 80%, rgba(250,204,21,0.08), transparent 34%),
+    rgba(0,0,0,0.08);
+}
+.v2-appliance-home-card {
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  background: rgba(8,15,25,0.78) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05) inset,
+    0 0 28px rgba(34,197,94,0.14),
+    0 24px 80px rgba(0,0,0,0.34) !important;
+}
+.v2-appliance-home-kicker {
+  color: rgba(250,204,21,0.92);
+  text-shadow: 0 0 14px rgba(250,204,21,0.22);
+}
+.v2-appliance-home h1 {
+  color: inherit;
+  text-shadow: 0 0 22px rgba(34,197,94,0.18);
+}
+.v2-appliance-home-pill {
+  border: 1px solid rgba(34,197,94,0.38) !important;
+  background: rgba(34,197,94,0.09) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 0 20px rgba(34,197,94,0.10);
+}
+.v2-appliance-home-pill:hover {
+  background: rgba(34,197,94,0.15) !important;
+  border-color: rgba(250,204,21,0.55) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 0 24px rgba(250,204,21,0.16);
+}
+.v2-appliance-home-quiz {
+  display: none !important;
+}
+
 </style>
 
 
@@ -4362,7 +4404,7 @@ render();
     home.innerHTML = `
       <div class="v2-appliance-home-card">
         <div class="v2-appliance-home-kicker">Blackwood CFS</div>
-        <h1>Blackwood Country Fire Service Appliances</h1>
+        <h1>Blackwood Appliance Inventory</h1>
         <div class="v2-appliance-home-pills">
           ${V2_HOME_APPS.map(app => `<button type="button" class="v2-appliance-home-pill" data-v2-home-truck="${app.key}">${app.label}</button>`).join("")}
         </div>
@@ -4416,6 +4458,242 @@ render();
     patchQuizRandomisation();
     ensureHome();
     returnHomeOnHomeTab();
+  });
+})();
+</script>
+<script>
+// v2.0 final landing/global search placement + data fix
+(function(){
+  const APPS = [
+    { key: "rescue", dataKey: "Blackwood Rescue", buttonKey: "Blackwood Rescue", label: "Blackwood Rescue" },
+    { key: "34p", dataKey: "34P", buttonKey: "34P", label: "Blackwood 34P" },
+    { key: "cafs24", dataKey: "CAFS 24", buttonKey: "CAFS 24", label: "CAFS 24" }
+  ];
+
+  function norm(value){
+    const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (v.includes("34p")) return "34p";
+    if (v.includes("cafs")) return "cafs24";
+    if (v.includes("rescue")) return "rescue";
+    return v || "rescue";
+  }
+
+  function appByKey(value){
+    const n = norm(value);
+    return APPS.find(a => a.key === n) || APPS[0];
+  }
+
+  function escapeHtml(value){
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[ch]));
+  }
+
+  function allRecordsFor(app){
+    // Primary: APPLIANCES if exposed globally by app/rebuild.
+    if (window.APPLIANCES && window.APPLIANCES[app.dataKey] && Array.isArray(window.APPLIANCES[app.dataKey].records)) {
+      return window.APPLIANCES[app.dataKey].records;
+    }
+    if (window.APPLIANCES) {
+      const matchKey = Object.keys(window.APPLIANCES).find(k => norm(k) === app.key);
+      if (matchKey && window.APPLIANCES[matchKey] && Array.isArray(window.APPLIANCES[matchKey].records)) {
+        return window.APPLIANCES[matchKey].records;
+      }
+    }
+
+    // Fallback: current app often has APPLIANCES as const, not window. Use APP_DATA/INVENTORY_DATA exports if present.
+    const flat = [];
+    if (window.APP_DATA && Array.isArray(window.APP_DATA.items)) flat.push(...window.APP_DATA.items);
+    if (!flat.length && Array.isArray(window.INVENTORY_DATA)) flat.push(...window.INVENTORY_DATA);
+    if (!flat.length && window.DATA && Array.isArray(window.DATA.records)) {
+      // This only covers current appliance, but better than empty.
+      flat.push(...window.DATA.records);
+    }
+    return flat.filter(r => norm(r.appliance || r.truck || r.vehicle || r.applianceKey || "") === app.key);
+  }
+
+  function textFor(record){
+    return [
+      record.item, record.name, record.Item, record.Name,
+      record.description, record.Description,
+      record.locker, record.section, record.subsection, record.location,
+      record.category, record.tags, record.notes
+    ].filter(v => v !== undefined && v !== null).join(" ").toLowerCase();
+  }
+
+  function countMatches(query){
+    const q = String(query || "").trim().toLowerCase();
+    if (!q) return [];
+    return APPS.map(app => {
+      const records = allRecordsFor(app);
+      const matches = records.filter(r => textFor(r).includes(q));
+      return Object.assign({}, app, { count: matches.length, matches });
+    }).filter(x => x.count > 0);
+  }
+
+  function findSearchInput(){
+    return document.querySelector("input[type='search'], input[placeholder*='Search' i], input[id*='search' i], input[class*='search' i]");
+  }
+
+  function setNativeSearch(query){
+    const search = findSearchInput();
+    if (!search) return;
+    search.focus();
+    search.value = query;
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    search.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function switchToAppliance(app){
+    const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
+    if (btn && typeof btn.click === "function") btn.click();
+  }
+
+  function routeToApplianceSearch(app, query){
+    closeModal();
+    switchToAppliance(app);
+    setTimeout(function(){
+      setNativeSearch(query);
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch(e) { window.scrollTo(0,0); }
+    }, 100);
+  }
+
+  function ensureModal(){
+    let modal = document.querySelector(".v2-global-search-modal");
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.className = "v2-global-search-modal";
+    modal.innerHTML = `
+      <div class="v2-global-search-dialog" role="dialog" aria-modal="true" aria-label="Global inventory search">
+        <div class="v2-global-search-head">
+          <h2>Global Search</h2>
+          <button type="button" class="v2-global-search-close" aria-label="Close">×</button>
+        </div>
+        <div class="v2-global-search-row">
+          <input class="v2-global-search-input" type="search" placeholder="Search all appliances e.g. ladder">
+          <button type="button" class="v2-global-search-submit">Search</button>
+        </div>
+        <div class="v2-global-search-results"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector(".v2-global-search-close").addEventListener("click", closeModal);
+    modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
+
+    const input = modal.querySelector(".v2-global-search-input");
+    const submit = modal.querySelector(".v2-global-search-submit");
+    submit.addEventListener("click", function(){ renderGlobalResults(input.value); });
+    input.addEventListener("keydown", function(e){
+      if (e.key === "Enter") renderGlobalResults(input.value);
+      if (e.key === "Escape") closeModal();
+    });
+
+    return modal;
+  }
+
+  function openModal(){
+    const modal = ensureModal();
+    modal.classList.add("open");
+    const input = modal.querySelector(".v2-global-search-input");
+    const results = modal.querySelector(".v2-global-search-results");
+    if (results) results.innerHTML = "";
+    setTimeout(() => input && input.focus(), 30);
+  }
+
+  function closeModal(){
+    const modal = document.querySelector(".v2-global-search-modal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function renderGlobalResults(query){
+    const modal = ensureModal();
+    const results = modal.querySelector(".v2-global-search-results");
+    const q = String(query || "").trim();
+
+    if (!q) {
+      results.innerHTML = `<p class="v2-global-search-summary">Enter a search term.</p>`;
+      return;
+    }
+
+    const found = countMatches(q);
+    window.v2HamburgerGlobalSearchMatches = found;
+
+    if (!found.length) {
+      results.innerHTML = `<p class="v2-global-search-summary">No results found for <strong>${escapeHtml(q)}</strong>.</p>`;
+      return;
+    }
+
+    const total = found.reduce((sum, x) => sum + x.count, 0);
+    results.innerHTML = `
+      <p class="v2-global-search-summary">${total} result${total === 1 ? "" : "s"} found for <strong>${escapeHtml(q)}</strong>. Choose an appliance:</p>
+      ${found.map(app => `
+        <button type="button" class="v2-global-search-appliance-card" data-v2-route-app="${app.key}">
+          <strong>${escapeHtml(app.label)}</strong>
+          <small>${app.count} matching item${app.count === 1 ? "" : "s"}</small>
+        </button>
+      `).join("")}
+    `;
+
+    results.querySelectorAll("[data-v2-route-app]").forEach(btn => {
+      btn.addEventListener("click", function(){ routeToApplianceSearch(appByKey(btn.dataset.v2RouteApp), q); });
+    });
+  }
+
+  function removeMisplacedButtons(){
+    document.querySelectorAll(".v2-global-search-launch").forEach(btn => btn.remove());
+  }
+
+  function addGlobalSearchUnderQuiz(){
+    removeMisplacedButtons();
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "v2-global-search-launch";
+    button.innerHTML = `<strong>Global Search</strong><small>Find an item across all appliances</small>`;
+    button.addEventListener("click", openModal);
+
+    // Best target: underneath the quiz block in the hamburger.
+    const quizControls = Array.from(document.querySelectorAll(".quiz-truck"));
+    const quizBlock = quizControls.length ? (quizControls[0].closest("section, form, fieldset, .quiz, div") || quizControls[0].parentElement) : null;
+
+    if (quizBlock && quizBlock.parentNode) {
+      quizBlock.parentNode.insertBefore(button, quizBlock.nextSibling);
+      return;
+    }
+
+    // Fallback: after any visible Quiz button/heading.
+    const quizTextEl = Array.from(document.querySelectorAll("button, a, h2, h3, strong, div, span"))
+      .find(el => /\bquiz\b/i.test(el.textContent || "") && (el.textContent || "").length < 60);
+    if (quizTextEl && quizTextEl.parentNode) {
+      quizTextEl.parentNode.insertBefore(button, quizTextEl.nextSibling);
+      return;
+    }
+
+    // Final fallback: inside first menu/drawer-ish element.
+    const menu = document.querySelector(".truck-menu, .drawer, .hamburger-menu, nav, aside, [class*='menu']");
+    if (menu) menu.appendChild(button);
+    else document.body.appendChild(button);
+  }
+
+  function polishLanding(){
+    document.querySelectorAll(".v2-appliance-home-quiz").forEach(el => el.remove());
+    const homeTitle = Array.from(document.querySelectorAll(".v2-appliance-home h1, h1"))
+      .find(el => /country fire service appliances/i.test(el.textContent || ""));
+    if (homeTitle) homeTitle.textContent = "Blackwood Appliance Inventory";
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    polishLanding();
+    addGlobalSearchUnderQuiz();
+
+    // If hamburger content is dynamically rebuilt, re-place Global Search.
+    const obs = new MutationObserver(function(){
+      if (!document.querySelector(".v2-global-search-launch")) addGlobalSearchUnderQuiz();
+      polishLanding();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
   });
 })();
 </script>
