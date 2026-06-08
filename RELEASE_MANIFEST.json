@@ -1,5 +1,5 @@
 {
-  "version": "Blackwood CFS v2.0 RC1 - Rescue Blue system home test",
+  "version": "Blackwood CFS v2.0 RC1 - default Rescue Blue",
   "source_html": "Blackwood_CFS_v2.0_STEP3_APPLIANCE_CONFIG_ORDER.html",
   "source_workbook": "Blackwood_CFS_Master_Inventory_with_Appliance_Config.xlsx",
   "features_confirmed": [
@@ -9,7 +9,9 @@
     "Main appliance heading returns to system home",
     "Appliance_Config tab ordering",
     "Safer load-only photo fade",
-    "Rescue Blue dark styled system home"
+    "Rescue Blue dark styled system home",
+    "Default dark Rescue Blue theme",
+    "Rescue Blue neon system home"
   ],
   "active_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "legacy_archive": "Archive/"

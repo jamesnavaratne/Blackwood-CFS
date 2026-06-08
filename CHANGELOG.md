@@ -13,6 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Default theme set to dark Rescue Blue with matching neon system home.
 - Rescue Blue dark styled system home.
 - Blackwood Rescue preserved while adding 34P and CAFS 24.
 - Photo filename/path display standardised.

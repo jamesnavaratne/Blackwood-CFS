@@ -2966,6 +2966,96 @@ body.theme-rescue-frost .success {
     0 14px 36px rgba(0, 0, 0, 0.32) !important;
 }
 
+
+/* v2.0 default theme: Dark Rescue Blue */
+:root {
+  color-scheme: dark;
+}
+
+body:not(.theme-rescue-frost) {
+  --bg: #04111f;
+  --panel: #071a2e;
+  --panel-2: #08233d;
+  --card: #081f36;
+  --card-2: #0a2a49;
+  --text: #e8f7ff;
+  --muted: #a9c7dd;
+  --muted-2: #7fa6bf;
+  --border: rgba(0, 174, 239, 0.32);
+  --accent: #00aeef;
+  --accent-2: #2dd4ff;
+  --accent-3: #73e4ff;
+  --shadow: 0 18px 52px rgba(0, 0, 0, 0.38);
+  --glow: 0 0 28px rgba(0, 174, 239, 0.24);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(0, 174, 239, 0.16), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(14, 116, 180, 0.18), transparent 34%),
+    linear-gradient(180deg, #061323 0%, #071a2e 52%, #04101f 100%) !important;
+  color: var(--text) !important;
+}
+
+/* v2.0 system home: exact Dark Rescue Blue neon treatment */
+.v2-appliance-home {
+  background:
+    radial-gradient(circle at 14% 4%, rgba(0, 174, 239, 0.24), transparent 30%),
+    radial-gradient(circle at 88% 16%, rgba(45, 212, 255, 0.16), transparent 32%),
+    radial-gradient(circle at 50% 104%, rgba(0, 119, 200, 0.18), transparent 42%),
+    linear-gradient(180deg, #04111f 0%, #071a2e 46%, #03101d 100%) !important;
+  color: #e8f7ff !important;
+}
+
+.v2-appliance-home-card {
+  background:
+    linear-gradient(180deg, rgba(7, 28, 50, 0.94), rgba(4, 17, 31, 0.94)) !important;
+  border: 1px solid rgba(0, 174, 239, 0.46) !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.08) inset,
+    0 0 34px rgba(0, 174, 239, 0.24),
+    0 0 70px rgba(0, 119, 200, 0.12),
+    0 28px 90px rgba(0, 0, 0, 0.52) !important;
+  backdrop-filter: blur(16px);
+}
+
+.v2-appliance-home-kicker {
+  color: #73e4ff !important;
+  text-shadow:
+    0 0 14px rgba(45, 212, 255, 0.55),
+    0 0 34px rgba(0, 174, 239, 0.24);
+}
+
+.v2-appliance-home h1 {
+  color: #f3fbff !important;
+  text-shadow:
+    0 0 18px rgba(115, 228, 255, 0.30),
+    0 0 40px rgba(0, 174, 239, 0.22),
+    0 0 72px rgba(0, 119, 200, 0.12);
+}
+
+.v2-appliance-home-pill,
+.v2-system-home-search {
+  background:
+    linear-gradient(180deg, rgba(9, 48, 83, 0.96), rgba(6, 31, 56, 0.96)) !important;
+  border: 1px solid rgba(0, 174, 239, 0.56) !important;
+  color: #e8f7ff !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.08) inset,
+    0 0 22px rgba(0, 174, 239, 0.20),
+    0 14px 36px rgba(0, 0, 0, 0.34) !important;
+}
+
+.v2-appliance-home-pill:hover,
+.v2-system-home-search:hover {
+  background:
+    linear-gradient(180deg, rgba(13, 76, 122, 0.98), rgba(8, 43, 75, 0.98)) !important;
+  border-color: rgba(115, 228, 255, 0.88) !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.16) inset,
+    0 0 28px rgba(0, 174, 239, 0.34),
+    0 0 48px rgba(45, 212, 255, 0.16),
+    0 16px 42px rgba(0, 0, 0, 0.40) !important;
+  transform: translateY(-1px);
+}
+
 </style>
 
 
@@ -5478,6 +5568,46 @@ render();
     restoreIfSelected();
     addPaletteButton();
     setTimeout(addPaletteButton, 200);
+  });
+})();
+</script>
+
+
+<script>
+// v2.0 default to Dark Rescue Blue
+(function(){
+  function applyDefaultRescueBlue(){
+    // Do not override the curated light theme if user has explicitly chosen it.
+    let saved = "";
+    try { saved = localStorage.getItem("theme") || ""; } catch(e) {}
+
+    if (saved === "rescue-frost") return;
+
+    document.documentElement.classList.remove("light", "light-mode", "theme-light");
+    document.body && document.body.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
+
+    document.documentElement.classList.add("dark");
+    document.body && document.body.classList.add("dark");
+
+    if (document.documentElement.dataset) {
+      document.documentElement.dataset.mode = "dark";
+      document.documentElement.dataset.theme = "rescue-blue";
+    }
+    if (document.body && document.body.dataset) {
+      document.body.dataset.mode = "dark";
+      document.body.dataset.theme = "rescue-blue";
+    }
+
+    try {
+      if (!saved || /light/i.test(saved)) localStorage.setItem("theme", "rescue-blue");
+      localStorage.setItem("themeMode", "dark");
+      localStorage.setItem("mode", "dark");
+    } catch(e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    applyDefaultRescueBlue();
+    setTimeout(applyDefaultRescueBlue, 100);
   });
 })();
 </script>
