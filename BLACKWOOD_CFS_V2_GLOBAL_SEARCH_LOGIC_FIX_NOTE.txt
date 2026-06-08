@@ -1,0 +1,4 @@
+Global Search logic fix only.
+Exposes APPLIANCES to window so Global Search can read all appliance records.
+Ensures routing applies the search term to the real inventory search input #search, not the modal input.
+Inventory.json ladder counts: {'Blackwood Rescue': 1, '34P': 2, 'CAFS 24': 1}

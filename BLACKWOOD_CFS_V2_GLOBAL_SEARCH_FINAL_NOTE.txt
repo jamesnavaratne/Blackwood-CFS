@@ -1,0 +1,3 @@
+Global Search confirmed working, placed below appliance pills and above Theme Palette.
+Global Search button now uses the same truck-option class as appliance menu pills.
+No custom grey button colour styling retained.
