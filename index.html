@@ -3231,6 +3231,244 @@ option[value="rescue-frost"] {
 }
 
 
+
+/* v2.0 mobile short-locker white-gap fix
+   Ensures the theme background fills the whole viewport even when a locker has only a few tiles. */
+html {
+  min-height: 100%;
+  min-height: 100dvh;
+  background: var(--bg, #04111f) !important;
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 16% 4%, rgba(0, 174, 239, 0.18), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 174, 239, 0.12), transparent 28rem),
+    linear-gradient(180deg, var(--bg, #04111f) 0%, #030b14 100%) !important;
+  background-attachment: fixed;
+}
+
+#app,
+.app,
+main,
+.app-main,
+.content,
+.inventory,
+.inventory-wrap,
+.inventory-content,
+#inventory,
+#results,
+#items,
+.item-grid,
+.tiles,
+[class*="inventory"],
+[class*="content"],
+[class*="grid"] {
+  min-height: 100%;
+}
+
+main,
+.app-main,
+.content,
+.inventory,
+.inventory-wrap,
+.inventory-content,
+#inventory,
+#results,
+#items {
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+
+/* Theme-specific mobile fallback backgrounds for short pages */
+body.palette-blue,
+body[data-theme*="blue"] {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(0, 174, 239, 0.18), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 174, 239, 0.12), transparent 28rem),
+    linear-gradient(180deg, #04111f 0%, #030b14 100%) !important;
+}
+
+body.palette-green,
+body[data-theme*="green"] {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(34, 197, 94, 0.16), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 191, 165, 0.10), transparent 28rem),
+    linear-gradient(180deg, #06110c 0%, #030b07 100%) !important;
+}
+
+body.palette-red,
+body[data-theme*="red"] {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(239, 68, 68, 0.16), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(255, 183, 3, 0.08), transparent 28rem),
+    linear-gradient(180deg, #140808 0%, #090303 100%) !important;
+}
+
+body.palette-yellow,
+body[data-theme*="yellow"] {
+  background:
+    radial-gradient(circle at 16% 4%, rgba(250, 204, 21, 0.15), transparent 30rem),
+    radial-gradient(circle at 86% 14%, rgba(255, 159, 28, 0.10), transparent 28rem),
+    linear-gradient(180deg, #121005 0%, #090702 100%) !important;
+}
+
+
+/* v2.0 SAFE locker photo preview
+   CSS-only. Does not replace or infer locker photo data.
+   Keeps each locker using the app's existing correct title/photo/path. */
+
+/* Main locker photo container: compact, not bulky */
+#lockerPhoto,
+.locker-photo,
+.location-photo,
+.locker-photo-wrap,
+.location-photo-wrap {
+  margin: 0.75rem 0 1rem !important;
+  padding: 0.75rem !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 174, 239, 0.24) !important;
+  background: linear-gradient(180deg, rgba(6, 24, 42, 0.42), rgba(4, 15, 28, 0.52)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 0 14px rgba(0, 174, 239, 0.07),
+    0 10px 28px rgba(0,0,0,0.20) !important;
+}
+
+/* Existing image only: compact preview */
+#lockerPhoto img,
+.locker-photo img,
+.location-photo img,
+.locker-photo-wrap img,
+.location-photo-wrap img {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(110px, 24vw, 155px) !important;
+  object-fit: cover !important;
+  border-radius: 15px !important;
+  border: 1px solid rgba(0, 174, 239, 0.30) !important;
+  cursor: zoom-in !important;
+  margin: 0.45rem 0 0 !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 10px 26px rgba(0,0,0,0.22) !important;
+}
+
+/* Existing title: keep one visible and clean */
+#lockerPhoto h1,
+#lockerPhoto h2,
+#lockerPhoto h3,
+#lockerPhoto h4,
+.locker-photo h1,
+.locker-photo h2,
+.locker-photo h3,
+.locker-photo h4,
+.location-photo h1,
+.location-photo h2,
+.location-photo h3,
+.location-photo h4,
+.locker-photo-wrap h1,
+.locker-photo-wrap h2,
+.locker-photo-wrap h3,
+.locker-photo-wrap h4,
+.location-photo-wrap h1,
+.location-photo-wrap h2,
+.location-photo-wrap h3,
+.location-photo-wrap h4 {
+  margin: 0 0 0.2rem !important;
+  padding: 0 !important;
+  color: rgba(255,255,255,0.94) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+}
+
+/* Existing file path/caption: keep visible as clean path */
+#lockerPhoto small,
+#lockerPhoto figcaption,
+#lockerPhoto .caption,
+#lockerPhoto .photo-caption,
+.locker-photo small,
+.locker-photo figcaption,
+.locker-photo .caption,
+.locker-photo .photo-caption,
+.location-photo small,
+.location-photo figcaption,
+.location-photo .caption,
+.location-photo .photo-caption,
+.locker-photo-wrap small,
+.locker-photo-wrap figcaption,
+.locker-photo-wrap .caption,
+.locker-photo-wrap .photo-caption,
+.location-photo-wrap small,
+.location-photo-wrap figcaption,
+.location-photo-wrap .caption,
+.location-photo-wrap .photo-caption {
+  display: block !important;
+  margin: 0 0 0.45rem !important;
+  padding: 0 !important;
+  color: rgba(128, 184, 255, 0.92) !important;
+  font-size: 0.8rem !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+  word-break: break-word !important;
+}
+
+/* Hide only the known instruction clutter lines. 
+   Do not hide titles, file paths, images, or replace content. */
+#lockerPhoto p,
+.locker-photo p,
+.location-photo p,
+.locker-photo-wrap p,
+.location-photo-wrap p {
+  display: none !important;
+}
+
+/* Remove any overlay/pill cue */
+#lockerPhoto::after,
+.locker-photo::after,
+.location-photo::after,
+.locker-photo-wrap::after,
+.location-photo-wrap::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Avoid large empty blocks when standalone HTML cannot load photos */
+#lockerPhoto:not(:has(img)),
+.locker-photo:not(:has(img)),
+.location-photo:not(:has(img)),
+.locker-photo-wrap:not(:has(img)),
+.location-photo-wrap:not(:has(img)) {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  #lockerPhoto,
+  .locker-photo,
+  .location-photo,
+  .locker-photo-wrap,
+  .location-photo-wrap {
+    margin-top: 0.6rem !important;
+    margin-bottom: 0.85rem !important;
+    padding: 0.65rem !important;
+    border-radius: 16px !important;
+  }
+
+  #lockerPhoto img,
+  .locker-photo img,
+  .location-photo img,
+  .locker-photo-wrap img,
+  .location-photo-wrap img {
+    height: 122px !important;
+    border-radius: 14px !important;
+  }
+}
+
 </style>
 
 
