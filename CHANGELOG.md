@@ -13,6 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Patched 34P/CAFS locker photo mappings, added cabin front/rear support, and generated photo README files from current app data.
 - Safe compact locker-photo preview added; title and clean file path retained.
 - Mobile short-locker white-gap fix so theme background fills the viewport.
 - Legacy light/dark button removed; dark themes retained.

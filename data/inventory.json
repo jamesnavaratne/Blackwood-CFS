@@ -2771,7 +2771,9 @@
       "Cabin": {
         "photo": "cabin.jpg",
         "title": "Cabin",
-        "description": "Main photo shown at top of this locker page"
+        "description": "Main photo shown at top of this locker page",
+        "frontPhoto": "cabin_front.jpg",
+        "rearPhoto": "cabin_rear.jpg"
       },
       "Locker 1": {
         "photo": "locker_1.jpg",
@@ -5533,9 +5535,11 @@
     ],
     "lockerPhotos": {
       "Cabin": {
-        "photo": "34p_cabin.jpg",
+        "photo": "34p_cabin_front.jpg",
         "title": "Cabin",
-        "description": "Main photo shown at top of this location page"
+        "description": "Cabin front/rear photos shown at top of this location page",
+        "frontPhoto": "34p_cabin_front.jpg",
+        "rearPhoto": "34p_cabin_rear.jpg"
       },
       "P1": {
         "photo": "34p_p1.jpg",
@@ -5550,16 +5554,6 @@
       "P3": {
         "photo": "34p_p3.jpg",
         "title": "P3",
-        "description": "Main photo shown at top of this location page"
-      },
-      "D1": {
-        "photo": "34p_d1.jpg",
-        "title": "D1",
-        "description": "Main photo shown at top of this location page"
-      },
-      "D3": {
-        "photo": "34p_d3.jpg",
-        "title": "D3",
         "description": "Main photo shown at top of this location page"
       },
       "P4": {
@@ -5577,14 +5571,19 @@
         "title": "P Reel",
         "description": "Main photo shown at top of this location page"
       },
-      "Pump Panel": {
-        "photo": "34p_pump_panel.jpg",
-        "title": "Pump Panel",
+      "D1": {
+        "photo": "34p_d1.jpg",
+        "title": "D1",
         "description": "Main photo shown at top of this location page"
       },
-      "D Reel": {
-        "photo": "34p_d_reel.jpg",
-        "title": "D Reel",
+      "D2": {
+        "photo": "34p_d2.jpg",
+        "title": "D2",
+        "description": "Main photo shown at top of this location page"
+      },
+      "D3": {
+        "photo": "34p_d3.jpg",
+        "title": "D3",
         "description": "Main photo shown at top of this location page"
       },
       "D4": {
@@ -5597,15 +5596,20 @@
         "title": "D5",
         "description": "Main photo shown at top of this location page"
       },
+      "D Reel": {
+        "photo": "34p_d_reel.jpg",
+        "title": "D Reel",
+        "description": "Main photo shown at top of this location page"
+      },
+      "Pump Panel": {
+        "photo": "34p_pump_panel.jpg",
+        "title": "Pump Panel",
+        "description": "Main photo shown at top of this location page"
+      },
       "Crew Deck": {
         "photo": "34p_crew_deck.jpg",
         "title": "Crew Deck",
         "description": "Main photo shown at top of this location page"
-      },
-      "D2": {
-        "photo": "",
-        "title": "D2",
-        "description": ""
       }
     },
     "built": "2026-06-07 17:46",
@@ -7814,69 +7818,56 @@
     ],
     "lockerPhotos": {
       "Cabin": {
-        "photo": "IMG_20260519_140942500_HDR.jpg",
+        "photo": "cafs24_cabin_front.jpg",
         "title": "Cabin",
-        "description": "Cabin inventory page"
-      },
-      "Drivers Side 1": {
-        "photo": "IMG_20260519_140924212_HDR.jpg",
-        "title": "Drivers Side 1",
-        "description": "Driver side first page"
-      },
-      "Drivers Side 2": {
-        "photo": "IMG_20260519_140929826_HDR.jpg",
-        "title": "Drivers Side 2",
-        "description": "Driver side second page"
-      },
-      "Officers Side": {
-        "photo": "IMG_20260519_140936817_HDR.jpg",
-        "title": "Officers Side",
-        "description": "Officer side page"
-      },
-      "D-Tube": {
-        "photo": "",
-        "title": "D-Tube",
-        "description": ""
-      },
-      "D1": {
-        "photo": "",
-        "title": "D1",
-        "description": ""
-      },
-      "D2": {
-        "photo": "",
-        "title": "D2",
-        "description": ""
-      },
-      "Rear": {
-        "photo": "",
-        "title": "Rear",
-        "description": ""
+        "description": "Cabin front/rear photos shown at top of this location page",
+        "frontPhoto": "cafs24_cabin_front.jpg",
+        "rearPhoto": "cafs24_cabin_rear.jpg"
       },
       "P1": {
-        "photo": "",
+        "photo": "cafs24_p1.jpg",
         "title": "P1",
-        "description": ""
+        "description": "Main photo shown at top of this location page"
       },
       "P2": {
-        "photo": "",
+        "photo": "cafs24_p2.jpg",
         "title": "P2",
-        "description": ""
+        "description": "Main photo shown at top of this location page"
       },
       "Pump Panel": {
-        "photo": "",
+        "photo": "cafs24_pump_panel.jpg",
         "title": "Pump Panel",
-        "description": ""
+        "description": "Main photo shown at top of this location page"
       },
       "P-Tube": {
-        "photo": "",
+        "photo": "cafs24_p_tube.jpg",
         "title": "P-Tube",
-        "description": ""
+        "description": "Main photo shown at top of this location page"
       },
       "P3": {
-        "photo": "",
+        "photo": "cafs24_p3.jpg",
         "title": "P3",
-        "description": ""
+        "description": "Main photo shown at top of this location page"
+      },
+      "D-Tube": {
+        "photo": "cafs24_d_tube.jpg",
+        "title": "D-Tube",
+        "description": "Main photo shown at top of this location page"
+      },
+      "D1": {
+        "photo": "cafs24_d1.jpg",
+        "title": "D1",
+        "description": "Main photo shown at top of this location page"
+      },
+      "D2": {
+        "photo": "cafs24_d2.jpg",
+        "title": "D2",
+        "description": "Main photo shown at top of this location page"
+      },
+      "Rear": {
+        "photo": "cafs24_rear.jpg",
+        "title": "Rear",
+        "description": "Main photo shown at top of this location page"
       }
     },
     "built": "2026-06-07 17:46",
