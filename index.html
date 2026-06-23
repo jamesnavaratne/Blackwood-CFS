@@ -4091,6 +4091,11 @@ if ('serviceWorker' in navigator) {
     </button>
   </div>
 
+  <button class="truck-option directions-book-option" type="button" onclick="window.location.href='directions/index.html'">
+    Directions Book
+    <small>Street directions</small>
+  </button>
+
 
   <div class="theme-section">
     <div class="theme-section-title">Theme palette</div>
@@ -5286,6 +5291,7 @@ render();
 
   function norm(value){
     const v = String(value || "").toLowerCase().trim().replace(/[_-]+/g, " ");
+    if (v.includes("directions") || v.includes("direction book")) return "directions";
     if (v.includes("34p")) return "34p";
     if (v.includes("cafs")) return "cafs24";
     if (v.includes("rescue")) return "rescue";
@@ -5343,6 +5349,10 @@ render();
   }
 
   function switchToAppliance(app){
+    if (app && app.href) {
+      window.location.href = app.href;
+      return;
+    }
     const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
     if (btn && typeof btn.click === "function") btn.click();
   }
@@ -5493,7 +5503,8 @@ render();
   const V2_HOME_APPS = [
     { key: "rescue", dataTruck: "Blackwood Rescue", label: "Blackwood Rescue" },
     { key: "34p", dataTruck: "34P", label: "Blackwood 34P" },
-    { key: "cafs24", dataTruck: "CAFS 24", label: "CAFS 24" }
+    { key: "cafs24", dataTruck: "CAFS 24", label: "CAFS 24" },
+    { key: "directions", dataTruck: "", label: "Directions Book", href: "directions/index.html" }
   ];
 
   function norm(value){
@@ -5580,6 +5591,10 @@ render();
   }
 
   function switchToAppliance(app){
+    if (app && app.href) {
+      window.location.href = app.href;
+      return;
+    }
     const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
     if (btn && typeof btn.click === "function") btn.click();
     hideHome();
@@ -5730,6 +5745,10 @@ render();
   }
 
   function switchToAppliance(app){
+    if (app && app.href) {
+      window.location.href = app.href;
+      return;
+    }
     const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
     if (btn && typeof btn.click === "function") btn.click();
   }
