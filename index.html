@@ -3887,64 +3887,88 @@ body[data-theme*="yellow"] {
 }
 
 
-/* v2.0 Rescue Blue home button consistency fix
-   In Rescue Blue, force the header System Home button to use neon CFS blue/cyan, not purple. */
-body.palette-blue .system-home-header-btn,
-body[data-theme*="blue"] .system-home-header-btn,
-body.rescue-blue .system-home-header-btn,
-body.theme-blue .system-home-header-btn,
+/* v2.0 theme-matched header System Home button */
 .system-home-header-btn {
-  border-color: rgba(0, 174, 239, 0.72) !important;
+  --home-btn-rgb: 0, 174, 239;
+  border-color: rgba(var(--home-btn-rgb), 0.62) !important;
   background:
-    radial-gradient(circle at 50% 28%, rgba(0, 174, 239, 0.22), transparent 58%),
-    linear-gradient(180deg, rgba(7, 34, 58, 0.82), rgba(3, 13, 25, 0.90)) !important;
+    radial-gradient(circle at 50% 28%, rgba(var(--home-btn-rgb), 0.20), transparent 58%),
+    linear-gradient(180deg, rgba(7, 34, 58, 0.74), rgba(3, 13, 25, 0.88)) !important;
   color: rgba(255,255,255,0.96) !important;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.035) inset,
-    0 0 16px rgba(0,174,239,0.26),
-    0 0 34px rgba(0,174,239,0.12),
+    0 0 15px rgba(var(--home-btn-rgb), 0.24),
+    0 0 32px rgba(var(--home-btn-rgb), 0.10),
     0 8px 22px rgba(0,0,0,0.24) !important;
 }
 
-body.palette-blue .system-home-header-btn:hover,
-body.palette-blue .system-home-header-btn:focus-visible,
-body[data-theme*="blue"] .system-home-header-btn:hover,
-body[data-theme*="blue"] .system-home-header-btn:focus-visible,
-body.rescue-blue .system-home-header-btn:hover,
-body.rescue-blue .system-home-header-btn:focus-visible,
-body.theme-blue .system-home-header-btn:hover,
-body.theme-blue .system-home-header-btn:focus-visible,
 .system-home-header-btn:hover,
 .system-home-header-btn:focus-visible {
-  border-color: rgba(0, 204, 255, 0.95) !important;
+  border-color: rgba(var(--home-btn-rgb), 0.92) !important;
   background:
-    radial-gradient(circle at 50% 28%, rgba(0, 204, 255, 0.30), transparent 58%),
-    linear-gradient(180deg, rgba(8, 48, 80, 0.90), rgba(3, 18, 34, 0.94)) !important;
+    radial-gradient(circle at 50% 28%, rgba(var(--home-btn-rgb), 0.30), transparent 58%),
+    linear-gradient(180deg, rgba(var(--home-btn-rgb), 0.18), rgba(3, 13, 25, 0.94)) !important;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.055) inset,
-    0 0 22px rgba(0,204,255,0.36),
-    0 0 46px rgba(0,174,239,0.18),
+    0 0 22px rgba(var(--home-btn-rgb), 0.36),
+    0 0 46px rgba(var(--home-btn-rgb), 0.17),
     0 8px 22px rgba(0,0,0,0.24) !important;
 }
 
-body.palette-blue .system-home-header-btn svg,
-body[data-theme*="blue"] .system-home-header-btn svg,
-body.rescue-blue .system-home-header-btn svg,
-body.theme-blue .system-home-header-btn svg,
 .system-home-header-btn svg {
   color: #ffffff !important;
   stroke: #ffffff !important;
   filter:
-    drop-shadow(0 0 4px rgba(0,174,239,0.78))
-    drop-shadow(0 0 10px rgba(0,174,239,0.36)) !important;
+    drop-shadow(0 0 4px rgba(var(--home-btn-rgb), 0.78))
+    drop-shadow(0 0 10px rgba(var(--home-btn-rgb), 0.36)) !important;
 }
 
-body.palette-blue .system-home-header-btn svg path,
-body[data-theme*="blue"] .system-home-header-btn svg path,
-body.rescue-blue .system-home-header-btn svg path,
-body.theme-blue .system-home-header-btn svg path,
 .system-home-header-btn svg path {
   stroke: #ffffff !important;
+}
+
+/* Rescue Blue: force true CFS/neon blue rather than purple */
+body.palette-blue .system-home-header-btn,
+body[data-theme*="blue"] .system-home-header-btn,
+body.rescue-blue .system-home-header-btn,
+body.theme-blue .system-home-header-btn {
+  --home-btn-rgb: 0, 174, 239;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(0, 174, 239, 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(7, 34, 58, 0.82), rgba(3, 13, 25, 0.90)) !important;
+}
+
+/* Safe Green */
+body.palette-green .system-home-header-btn,
+body[data-theme*="green"] .system-home-header-btn,
+body.safe-green .system-home-header-btn,
+body.theme-green .system-home-header-btn {
+  --home-btn-rgb: 34, 197, 94;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(34, 197, 94, 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(7, 46, 28, 0.82), rgba(3, 18, 11, 0.90)) !important;
+}
+
+/* Brick Red */
+body.palette-red .system-home-header-btn,
+body[data-theme*="red"] .system-home-header-btn,
+body.brick-red .system-home-header-btn,
+body.theme-red .system-home-header-btn {
+  --home-btn-rgb: 239, 68, 68;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(239, 68, 68, 0.23), transparent 58%),
+    linear-gradient(180deg, rgba(54, 16, 16, 0.84), rgba(22, 5, 6, 0.92)) !important;
+}
+
+/* CFS Yellow */
+body.palette-yellow .system-home-header-btn,
+body[data-theme*="yellow"] .system-home-header-btn,
+body.cfs-yellow .system-home-header-btn,
+body.theme-yellow .system-home-header-btn {
+  --home-btn-rgb: 250, 204, 21;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(250, 204, 21, 0.20), transparent 58%),
+    linear-gradient(180deg, rgba(58, 47, 10, 0.84), rgba(20, 16, 3, 0.92)) !important;
 }
 
 </style>
@@ -4149,9 +4173,7 @@ if ('serviceWorker' in navigator) {
     </button>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.0<br>
-    All three appliances imported from the master Excel. Excel location names are used as the source of truth.
-  </div>
+  <div class="drawer-note"><strong>Version:</strong> v2.0</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>

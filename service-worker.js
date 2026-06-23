@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-rc1-directions-v2-home-link';
+const CACHE_NAME = 'blackwood-cfs-v2-0-rc1-directions-v14-home-theme';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
