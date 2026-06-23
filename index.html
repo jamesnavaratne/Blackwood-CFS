@@ -3678,6 +3678,29 @@ body[data-theme*="yellow"] {
   }
 }
 
+
+/* v2.0 locker/cabin file paths only inside zoom modal */
+#lockerPhoto .photo-path,
+#lockerPhoto figcaption.photo-path,
+#lockerPhoto p.photo-path,
+#lockerPhoto .cabin-photo-figure .photo-path {
+  display: none !important;
+}
+
+/* Modal file path caption */
+.v2-zoom-file-path {
+  display: block !important;
+  margin: 0.7rem auto 0 !important;
+  padding: 0 !important;
+  color: rgba(128, 184, 255, 0.94) !important;
+  font-size: 0.82rem !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  word-break: break-word !important;
+  max-width: min(92vw, 900px) !important;
+}
+
 </style>
 
 
@@ -6311,6 +6334,74 @@ render();
     removeThemeModeToggle();
     setTimeout(removeThemeModeToggle, 150);
   });
+})();
+</script>
+
+
+<script>
+// v2.0 show locker/cabin photo file path only in zoom modal
+(function(){
+  function normalisePath(src){
+    if (!src) return "";
+    try {
+      src = String(src);
+      src = src.replace(/^file:\/\/\/?/i, "");
+      const idx = src.indexOf("photos/");
+      if (idx >= 0) src = src.slice(idx);
+      src = src.split("?")[0].split("#")[0];
+      src = decodeURIComponent(src);
+      return src ? "File: " + src : "";
+    } catch(e) {
+      return "";
+    }
+  }
+
+  function addPathCaptionToVisibleModal(pathText){
+    if (!pathText) return;
+
+    setTimeout(function(){
+      const modalCandidates = Array.from(document.querySelectorAll(
+        ".modal, .photo-modal, .image-modal, .lightbox, [role='dialog'], .overlay, .modal-content"
+      ));
+
+      let modal = modalCandidates.find(function(el){
+        const rect = el.getBoundingClientRect();
+        const style = window.getComputedStyle(el);
+        return rect.width > 80 && rect.height > 80 && style.display !== "none" && style.visibility !== "hidden" && style.opacity !== "0";
+      });
+
+      if (!modal) {
+        const imgs = Array.from(document.querySelectorAll("img")).filter(function(img){
+          const r = img.getBoundingClientRect();
+          const style = window.getComputedStyle(img);
+          return r.width > window.innerWidth * 0.45 && r.height > window.innerHeight * 0.35 && style.display !== "none" && style.visibility !== "hidden";
+        });
+        if (imgs.length) modal = imgs[imgs.length - 1].parentElement;
+      }
+
+      if (!modal) return;
+
+      let caption = modal.querySelector(".v2-zoom-file-path");
+      if (!caption) {
+        caption = document.createElement("div");
+        caption.className = "v2-zoom-file-path";
+        modal.appendChild(caption);
+      }
+      caption.textContent = pathText;
+    }, 70);
+  }
+
+  function isLockerPhoto(img){
+    return !!img.closest("#lockerPhoto, .photo-card, .cabin-photo-figure");
+  }
+
+  document.addEventListener("click", function(e){
+    const img = e.target && e.target.closest ? e.target.closest("img") : null;
+    if (!img || !isLockerPhoto(img)) return;
+
+    const pathText = normalisePath(img.getAttribute("src") || img.currentSrc || img.src);
+    addPathCaptionToVisibleModal(pathText);
+  }, true);
 })();
 </script>
 
