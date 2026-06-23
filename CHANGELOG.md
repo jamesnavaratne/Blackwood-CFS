@@ -13,7 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
-- Locker photo presentation adjusted so images are centred within their preview frames.
+- Locker photo presentation trial: side capsule with text on the left and non-cropped tappable photo on the right.
 - Patched 34P/CAFS locker photo mappings, added cabin front/rear support, and generated photo README files from current app data.
 - Safe compact locker-photo preview added; title and clean file path retained.
 - Mobile short-locker white-gap fix so theme background fills the viewport.

@@ -3527,56 +3527,154 @@ body[data-theme*="yellow"] {
 }
 
 
-/* v2.0 locker photo presentation finesse: centred locker images
-   Keeps current layout, title, file paths, and tap-to-enlarge behaviour. */
+/* v2.0 locker/cabin photo capsule layout test
+   Rectangle capsule: text on left, small non-cropped tappable photo(s) on right. */
 
-#lockerPhoto img,
-#lockerPhoto .photo-card img,
-#lockerPhoto .cabin-photo-figure img,
-.photo-card img,
-.cabin-photo-figure img {
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-
-/* Give cabin photos a touch more height so the centered crop is less severe. */
-#lockerPhoto .cabin-photo-figure img {
-  height: clamp(130px, 25vw, 175px) !important;
-}
-
-/* Give single locker/location photos a balanced centred crop too. */
-#lockerPhoto .photo-card > img {
-  height: clamp(130px, 26vw, 180px) !important;
-  object-position: center center !important;
-}
-
-/* Slightly reduce visual bulk around the photo card while keeping the classy bordered look. */
 #lockerPhoto .photo-card {
-  padding: 0.85rem !important;
+  display: grid !important;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(220px, 1.35fr) !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 18px !important;
+  min-height: 132px !important;
+  background:
+    linear-gradient(180deg, rgba(6, 24, 42, 0.48), rgba(4, 15, 28, 0.58)) !important;
+  border: 1px solid rgba(0, 174, 239, 0.26) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 0 16px rgba(0, 174, 239, 0.08),
+    0 12px 32px rgba(0,0,0,0.22) !important;
 }
 
 #lockerPhoto .photo-card .photo-text {
-  padding-bottom: 0.55rem !important;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: center !important;
 }
 
-#lockerPhoto .photo-path,
-#lockerPhoto figcaption.photo-path,
-#lockerPhoto p.photo-path,
-.photo-card .photo-path,
-.cabin-photo-figure .photo-path {
-  margin-top: 0.35rem !important;
+#lockerPhoto .photo-card .photo-text h2 {
+  margin: 0 0 0.4rem !important;
+  text-align: left !important;
+  font-size: 1.08rem !important;
+  line-height: 1.2 !important;
+  font-weight: 650 !important;
+  color: rgba(255,255,255,0.95) !important;
 }
 
-/* Mobile-specific crop balance */
-@media (max-width: 640px) {
-  #lockerPhoto .cabin-photo-figure img {
-    height: 132px !important;
-    object-position: center center !important;
+#lockerPhoto .photo-card .photo-path,
+#lockerPhoto .photo-card p.photo-path,
+#lockerPhoto .photo-card figcaption.photo-path,
+#lockerPhoto .cabin-photo-figure .photo-path {
+  display: block !important;
+  margin: 0.3rem 0 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  color: rgba(128, 184, 255, 0.92) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.25 !important;
+  font-weight: 400 !important;
+  word-break: break-word !important;
+}
+
+/* Single locker/location photo on the right: non-cropped */
+#lockerPhoto .photo-card > img {
+  justify-self: end !important;
+  display: block !important;
+  width: min(100%, 420px) !important;
+  max-height: 142px !important;
+  height: 142px !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 174, 239, 0.30) !important;
+  background: rgba(2, 8, 16, 0.48) !important;
+  cursor: zoom-in !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 10px 24px rgba(0,0,0,0.20) !important;
+}
+
+/* Cabin front/rear grid goes on the right side of the capsule */
+#lockerPhoto .cabin-photo-card {
+  grid-template-columns: minmax(180px, 0.75fr) minmax(260px, 1.55fr) !important;
+}
+
+#lockerPhoto .cabin-photo-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+  align-items: center !important;
+}
+
+#lockerPhoto .cabin-photo-figure {
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+
+#lockerPhoto .cabin-photo-figure img {
+  display: block !important;
+  width: 100% !important;
+  height: 132px !important;
+  max-height: 132px !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 174, 239, 0.30) !important;
+  background: rgba(2, 8, 16, 0.48) !important;
+  cursor: zoom-in !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 10px 24px rgba(0,0,0,0.20) !important;
+}
+
+/* For cabin cards, keep paths below the small right-side images */
+#lockerPhoto .cabin-photo-figure .photo-path {
+  margin-top: 0.28rem !important;
+  text-align: center !important;
+  font-size: 0.7rem !important;
+}
+
+/* Hide old instruction text only */
+#lockerPhoto .photo-card .photo-text p:not(.photo-path) {
+  display: none !important;
+}
+
+/* Mobile: stack text above image, still capsule-like and non-cropped */
+@media (max-width: 760px) {
+  #lockerPhoto .photo-card,
+  #lockerPhoto .cabin-photo-card {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem !important;
+  }
+
+  #lockerPhoto .photo-card .photo-text,
+  #lockerPhoto .photo-card .photo-text h2,
+  #lockerPhoto .photo-card .photo-path,
+  #lockerPhoto .photo-card p.photo-path {
+    text-align: center !important;
   }
 
   #lockerPhoto .photo-card > img {
-    height: 138px !important;
-    object-position: center center !important;
+    justify-self: center !important;
+    width: 100% !important;
+    height: 128px !important;
+    max-height: 128px !important;
+  }
+
+  #lockerPhoto .cabin-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.5rem !important;
+  }
+
+  #lockerPhoto .cabin-photo-figure img {
+    height: 112px !important;
+    max-height: 112px !important;
+  }
+
+  #lockerPhoto .cabin-photo-figure .photo-path {
+    font-size: 0.66rem !important;
   }
 }
 
