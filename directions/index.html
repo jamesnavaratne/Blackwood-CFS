@@ -27,6 +27,10 @@ h1 { margin:2px 0 0; font-size:22px; line-height:1.05; letter-spacing:-.03em; }
 .theme-toggle { display:flex; border:1px solid var(--accent); border-radius:999px; padding:3px; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 25%, transparent); background:var(--panel); flex:0 0 auto; }
 .theme-toggle button { border:0; border-radius:999px; background:transparent; color:var(--muted); padding:7px 10px; font-weight:800; font-size:12px; }
 .theme-toggle button.active { background:var(--accent); color:#00131f; }
+.header-actions { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+.home-btn { width:42px; height:42px; display:grid; place-items:center; border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); text-decoration:none; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 22%, transparent); }
+.home-btn svg { width:21px; height:21px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.home-btn:active { transform:scale(.98); }
 .searchwrap { position:relative; }
 #search { width:100%; border:2px solid var(--accent); border-radius:18px; background:var(--panel); color:var(--text); font-size:20px; padding:15px 48px 15px 16px; outline:none; box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), 0 0 22px color-mix(in srgb, var(--accent) 18%, transparent); }
 #clearSearch { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:36px; height:36px; border:0; border-radius:50%; background:var(--soft); color:var(--text); font-size:24px; line-height:1; }
@@ -77,6 +81,8 @@ body.modal-open { overflow:hidden; }
   .topbar { padding-left:10px; padding-right:8px; }
   h1 { font-size:20px; }
   .theme-toggle button { padding:7px 8px; font-size:11px; }
+  .header-actions { gap:6px; }
+  .home-btn { width:40px; height:40px; }
   #search { font-size:18px; padding-left:14px; }
   .content { padding-left:42px; padding-right:8px; }
   .letter-jump { left:3px; max-width:34px; }
@@ -92,7 +98,12 @@ body.modal-open { overflow:hidden; }
   <header class="topbar">
     <div class="brandrow">
       <div class="brand"><div class="kicker">Blackwood CFS</div><h1>Directions Book</h1></div>
-      <div class="theme-toggle" aria-label="Theme toggle"><button id="lightBtn">Light</button><button id="darkBtn" class="active">Dark</button></div>
+      <div class="header-actions">
+        <div class="theme-toggle" aria-label="Theme toggle"><button id="lightBtn">Light</button><button id="darkBtn" class="active">Dark</button></div>
+        <a class="home-btn" href="../index.html" aria-label="Back to system home" title="System Home">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg>
+        </a>
+      </div>
     </div>
     <div class="searchwrap"><input id="search" autocomplete="off" placeholder="Search street, suburb, landmark…" /><button id="clearSearch" aria-label="Clear search">×</button></div>
     <div class="metaRow"><span id="countText"></span><span>search → tap → read</span></div>
