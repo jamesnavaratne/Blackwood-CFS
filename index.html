@@ -3766,6 +3766,92 @@ body[data-theme*="yellow"] {
   max-width: min(92vw, 900px) !important;
 }
 
+
+/* v2.0 header alignment + system-home pill test */
+header,
+.app-header,
+.topbar,
+[class*="header"],
+[class*="topbar"] {
+  align-items: center !important;
+}
+
+header h1,
+.app-header h1,
+.topbar h1,
+header .title,
+.app-header .title,
+.topbar .title,
+#appTitle,
+#applianceTitle,
+[class*="title"] {
+  line-height: 1.15 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  transform: translateY(1px);
+}
+
+.v2-system-home-top-pill {
+  margin-left: auto !important;
+  width: 3.05rem;
+  min-width: 3.05rem;
+  height: 3.05rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 174, 239, 0.34);
+  background: rgba(6, 24, 42, 0.34);
+  color: rgba(255,255,255,0.94);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 0 14px rgba(0,174,239,0.10);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.v2-system-home-top-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 174, 239, 0.62);
+  background: rgba(8, 38, 66, 0.46);
+  box-shadow:
+    0 0 0 1px rgba(0,174,239,0.10) inset,
+    0 0 20px rgba(0,174,239,0.18);
+}
+
+.v2-system-home-top-pill svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  stroke-width: 2.1;
+}
+
+@media (max-width: 640px) {
+  .v2-system-home-top-pill {
+    width: 2.7rem;
+    min-width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .v2-system-home-top-pill svg {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  header h1,
+  .app-header h1,
+  .topbar h1,
+  header .title,
+  .app-header .title,
+  .topbar .title,
+  #appTitle,
+  #applianceTitle,
+  [class*="title"] {
+    transform: translateY(1px);
+  }
+}
+
 </style>
 
 
@@ -6505,6 +6591,64 @@ render();
   document.addEventListener("click", function(){
     setTimeout(cleanMainLockerPhotoText, 80);
   }, true);
+})();
+</script>
+
+
+<script>
+// v2.0 header system-home pill
+(function(){
+  function goSystemHome(){
+    if (typeof showSystemHome === "function") {
+      showSystemHome();
+      return;
+    }
+    if (typeof renderSystemHome === "function") {
+      renderSystemHome();
+      return;
+    }
+    if (typeof setSystemHome === "function") {
+      setSystemHome();
+      return;
+    }
+
+    // Fallback: click the existing main title if that is already wired to system home.
+    const title = document.querySelector("header h1, .app-header h1, .topbar h1, #appTitle, #applianceTitle");
+    if (title && typeof title.click === "function") {
+      title.click();
+      return;
+    }
+
+    location.hash = "";
+    location.reload();
+  }
+
+  function insertHomePill(){
+    if (document.querySelector(".v2-system-home-top-pill")) return;
+
+    const header = document.querySelector("header, .app-header, .topbar, [class*='header'], [class*='topbar']");
+    if (!header) return;
+
+    const pill = document.createElement("button");
+    pill.type = "button";
+    pill.className = "v2-system-home-top-pill";
+    pill.setAttribute("aria-label", "System Home");
+    pill.setAttribute("title", "System Home");
+    pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 10.8L12 3l9 7.8"></path><path d="M5.5 9.5V21h13V9.5"></path><path d="M9.5 21v-6h5v6"></path></svg>';
+
+    pill.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      goSystemHome();
+    });
+
+    header.appendChild(pill);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    insertHomePill();
+    setTimeout(insertHomePill, 150);
+  });
 })();
 </script>
 
