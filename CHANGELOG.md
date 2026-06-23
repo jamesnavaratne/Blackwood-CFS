@@ -13,6 +13,7 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
+- Main locker/cabin photo card now hides file paths and tap instructions; file paths are reserved for zoom modal.
 - Locker/cabin photo file paths hidden on main page and shown inside zoom modal.
 - Locker photo presentation trial: side capsule with text on the left and non-cropped tappable photo on the right.
 - Patched 34P/CAFS locker photo mappings, added cabin front/rear support, and generated photo README files from current app data.

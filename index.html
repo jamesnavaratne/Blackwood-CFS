@@ -3701,6 +3701,71 @@ body[data-theme*="yellow"] {
   max-width: min(92vw, 900px) !important;
 }
 
+
+/* v2.0 stricter main-page locker photo text cleanup
+   Main locker page shows title only. File path appears only in zoom modal. */
+
+#lockerPhoto .photo-card .photo-text p,
+#lockerPhoto .photo-card .photo-text small,
+#lockerPhoto .photo-card .photo-text figcaption,
+#lockerPhoto .photo-card .photo-text .photo-path,
+#lockerPhoto .photo-card .photo-text [class*="path"],
+#lockerPhoto .photo-card .photo-text [class*="caption"],
+#lockerPhoto .photo-card .photo-text [class*="hint"],
+#lockerPhoto .photo-card > p,
+#lockerPhoto .photo-card > small,
+#lockerPhoto .photo-card > figcaption,
+#lockerPhoto .photo-card > .photo-path,
+#lockerPhoto .cabin-photo-figure .photo-path,
+#lockerPhoto .cabin-photo-figure figcaption,
+#lockerPhoto .cabin-photo-figure small {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+#lockerPhoto .photo-card .photo-text h1,
+#lockerPhoto .photo-card .photo-text h2,
+#lockerPhoto .photo-card .photo-text h3,
+#lockerPhoto .photo-card .photo-text h4 {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+}
+
+#lockerPhoto .photo-card {
+  font-size: 0 !important;
+}
+
+#lockerPhoto .photo-card h1,
+#lockerPhoto .photo-card h2,
+#lockerPhoto .photo-card h3,
+#lockerPhoto .photo-card h4,
+#lockerPhoto .photo-card img,
+#lockerPhoto .photo-card .photo-text,
+#lockerPhoto .photo-card .cabin-photo-grid,
+#lockerPhoto .photo-card .cabin-photo-figure {
+  font-size: initial !important;
+}
+
+.v2-zoom-file-path {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  margin: 0.7rem auto 0 !important;
+  padding: 0 !important;
+  color: rgba(128, 184, 255, 0.94) !important;
+  font-size: 0.82rem !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  word-break: break-word !important;
+  max-width: min(92vw, 900px) !important;
+}
+
 </style>
 
 
@@ -6401,6 +6466,44 @@ render();
 
     const pathText = normalisePath(img.getAttribute("src") || img.currentSrc || img.src);
     addPathCaptionToVisibleModal(pathText);
+  }, true);
+})();
+</script>
+
+
+<script>
+// v2.0 remove locker/cabin metadata text from main page only
+(function(){
+  function cleanMainLockerPhotoText(){
+    const root = document.getElementById("lockerPhoto");
+    if (!root) return;
+
+    root.querySelectorAll("p, small, figcaption, .photo-path").forEach(function(el){
+      if (el.closest(".modal, .photo-modal, .image-modal, .lightbox, [role='dialog']")) return;
+      const text = (el.textContent || "").trim();
+      if (/^file:\s*photos\//i.test(text) || /tap photo|enlarge|main photo shown/i.test(text)) {
+        el.style.display = "none";
+        el.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    root.querySelectorAll(".photo-card").forEach(function(card){
+      Array.from(card.childNodes).forEach(function(node){
+        if (node.nodeType === Node.TEXT_NODE && /tap photo|enlarge|file:\s*photos\//i.test(node.textContent || "")) {
+          node.textContent = "";
+        }
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    cleanMainLockerPhotoText();
+    setTimeout(cleanMainLockerPhotoText, 100);
+    setTimeout(cleanMainLockerPhotoText, 400);
+  });
+
+  document.addEventListener("click", function(){
+    setTimeout(cleanMainLockerPhotoText, 80);
   }, true);
 })();
 </script>
