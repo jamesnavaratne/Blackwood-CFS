@@ -3526,6 +3526,60 @@ body[data-theme*="yellow"] {
   }
 }
 
+
+/* v2.0 locker photo presentation finesse: centred locker images
+   Keeps current layout, title, file paths, and tap-to-enlarge behaviour. */
+
+#lockerPhoto img,
+#lockerPhoto .photo-card img,
+#lockerPhoto .cabin-photo-figure img,
+.photo-card img,
+.cabin-photo-figure img {
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+/* Give cabin photos a touch more height so the centered crop is less severe. */
+#lockerPhoto .cabin-photo-figure img {
+  height: clamp(130px, 25vw, 175px) !important;
+}
+
+/* Give single locker/location photos a balanced centred crop too. */
+#lockerPhoto .photo-card > img {
+  height: clamp(130px, 26vw, 180px) !important;
+  object-position: center center !important;
+}
+
+/* Slightly reduce visual bulk around the photo card while keeping the classy bordered look. */
+#lockerPhoto .photo-card {
+  padding: 0.85rem !important;
+}
+
+#lockerPhoto .photo-card .photo-text {
+  padding-bottom: 0.55rem !important;
+}
+
+#lockerPhoto .photo-path,
+#lockerPhoto figcaption.photo-path,
+#lockerPhoto p.photo-path,
+.photo-card .photo-path,
+.cabin-photo-figure .photo-path {
+  margin-top: 0.35rem !important;
+}
+
+/* Mobile-specific crop balance */
+@media (max-width: 640px) {
+  #lockerPhoto .cabin-photo-figure img {
+    height: 132px !important;
+    object-position: center center !important;
+  }
+
+  #lockerPhoto .photo-card > img {
+    height: 138px !important;
+    object-position: center center !important;
+  }
+}
+
 </style>
 
 
