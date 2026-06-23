@@ -3767,89 +3767,163 @@ body[data-theme*="yellow"] {
 }
 
 
-/* v2.0 header alignment + system-home pill test */
-header,
-.app-header,
-.topbar,
-[class*="header"],
-[class*="topbar"] {
+/* v2.0 clean visible System Home button in header-actions */
+.header-top {
   align-items: center !important;
 }
 
-header h1,
-.app-header h1,
-.topbar h1,
-header .title,
-.app-header .title,
-.topbar .title,
-#appTitle,
-#applianceTitle,
-[class*="title"] {
-  line-height: 1.15 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  transform: translateY(1px);
+.header-top > div[style*="flex:1"] {
+  align-self: center !important;
 }
 
-.v2-system-home-top-pill {
-  margin-left: auto !important;
-  width: 3.05rem;
-  min-width: 3.05rem;
-  height: 3.05rem;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 174, 239, 0.34);
-  background: rgba(6, 24, 42, 0.34);
-  color: rgba(255,255,255,0.94);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+#title {
+  margin: 0 !important;
+  line-height: 1.12 !important;
+  transform: translateY(1px) !important;
+}
+
+.header-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 2.75rem !important;
+  flex: 0 0 auto !important;
+}
+
+.system-home-header-btn {
+  width: 2.72rem !important;
+  height: 2.72rem !important;
+  min-width: 2.72rem !important;
+  min-height: 2.72rem !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  cursor: pointer !important;
+  border: 1px solid color-mix(in srgb, var(--accent-2, #00aeef) 55%, transparent) !important;
+  background:
+    radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-2, #00aeef) 18%, transparent), transparent 58%),
+    color-mix(in srgb, var(--surface, #071626) 82%, #000 18%) !important;
+  color: rgba(255,255,255,0.94) !important;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.025) inset,
-    0 0 14px rgba(0,174,239,0.10);
-  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
-  -webkit-tap-highlight-color: transparent;
+    0 0 0 1px rgba(255,255,255,0.035) inset,
+    0 0 14px color-mix(in srgb, var(--accent-2, #00aeef) 20%, transparent),
+    0 8px 22px rgba(0,0,0,0.24) !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
-.v2-system-home-top-pill:hover {
-  transform: translateY(-1px);
-  border-color: rgba(0, 174, 239, 0.62);
-  background: rgba(8, 38, 66, 0.46);
+.system-home-header-btn:hover,
+.system-home-header-btn:focus-visible {
+  border-color: color-mix(in srgb, var(--accent-2, #00aeef) 82%, white 8%) !important;
+  background:
+    radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-2, #00aeef) 26%, transparent), transparent 58%),
+    color-mix(in srgb, var(--surface, #071626) 70%, var(--accent-2, #00aeef) 10%) !important;
   box-shadow:
-    0 0 0 1px rgba(0,174,239,0.10) inset,
-    0 0 20px rgba(0,174,239,0.18);
+    0 0 0 1px rgba(255,255,255,0.055) inset,
+    0 0 22px color-mix(in srgb, var(--accent-2, #00aeef) 34%, transparent),
+    0 8px 22px rgba(0,0,0,0.24) !important;
+  outline: none !important;
 }
 
-.v2-system-home-top-pill svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  display: block;
-  stroke-width: 2.1;
+.system-home-header-btn svg {
+  display: block !important;
+  width: 1.22rem !important;
+  height: 1.22rem !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent-2, #00aeef) 70%, transparent)) !important;
+}
+
+.system-home-header-btn svg path {
+  stroke: currentColor !important;
+  stroke-width: 2.1 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  fill: none !important;
 }
 
 @media (max-width: 640px) {
-  .v2-system-home-top-pill {
-    width: 2.7rem;
-    min-width: 2.7rem;
-    height: 2.7rem;
+  .header-actions {
+    min-width: 2.5rem !important;
   }
 
-  .v2-system-home-top-pill svg {
-    width: 1.05rem;
-    height: 1.05rem;
+  .system-home-header-btn {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    min-width: 2.45rem !important;
+    min-height: 2.45rem !important;
   }
 
-  header h1,
-  .app-header h1,
-  .topbar h1,
-  header .title,
-  .app-header .title,
-  .topbar .title,
-  #appTitle,
-  #applianceTitle,
-  [class*="title"] {
-    transform: translateY(1px);
+  .system-home-header-btn svg {
+    width: 1.08rem !important;
+    height: 1.08rem !important;
   }
+}
+
+
+/* v2.0 Rescue Blue home button consistency fix
+   In Rescue Blue, force the header System Home button to use neon CFS blue/cyan, not purple. */
+body.palette-blue .system-home-header-btn,
+body[data-theme*="blue"] .system-home-header-btn,
+body.rescue-blue .system-home-header-btn,
+body.theme-blue .system-home-header-btn,
+.system-home-header-btn {
+  border-color: rgba(0, 174, 239, 0.72) !important;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(0, 174, 239, 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(7, 34, 58, 0.82), rgba(3, 13, 25, 0.90)) !important;
+  color: rgba(255,255,255,0.96) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.035) inset,
+    0 0 16px rgba(0,174,239,0.26),
+    0 0 34px rgba(0,174,239,0.12),
+    0 8px 22px rgba(0,0,0,0.24) !important;
+}
+
+body.palette-blue .system-home-header-btn:hover,
+body.palette-blue .system-home-header-btn:focus-visible,
+body[data-theme*="blue"] .system-home-header-btn:hover,
+body[data-theme*="blue"] .system-home-header-btn:focus-visible,
+body.rescue-blue .system-home-header-btn:hover,
+body.rescue-blue .system-home-header-btn:focus-visible,
+body.theme-blue .system-home-header-btn:hover,
+body.theme-blue .system-home-header-btn:focus-visible,
+.system-home-header-btn:hover,
+.system-home-header-btn:focus-visible {
+  border-color: rgba(0, 204, 255, 0.95) !important;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(0, 204, 255, 0.30), transparent 58%),
+    linear-gradient(180deg, rgba(8, 48, 80, 0.90), rgba(3, 18, 34, 0.94)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.055) inset,
+    0 0 22px rgba(0,204,255,0.36),
+    0 0 46px rgba(0,174,239,0.18),
+    0 8px 22px rgba(0,0,0,0.24) !important;
+}
+
+body.palette-blue .system-home-header-btn svg,
+body[data-theme*="blue"] .system-home-header-btn svg,
+body.rescue-blue .system-home-header-btn svg,
+body.theme-blue .system-home-header-btn svg,
+.system-home-header-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  filter:
+    drop-shadow(0 0 4px rgba(0,174,239,0.78))
+    drop-shadow(0 0 10px rgba(0,174,239,0.36)) !important;
+}
+
+body.palette-blue .system-home-header-btn svg path,
+body[data-theme*="blue"] .system-home-header-btn svg path,
+body.rescue-blue .system-home-header-btn svg path,
+body.theme-blue .system-home-header-btn svg path,
+.system-home-header-btn svg path {
+  stroke: #ffffff !important;
 }
 
 </style>
@@ -4085,7 +4159,15 @@ if ('serviceWorker' in navigator) {
       <h1 id="title">Inventory</h1>
       <div class="built" id="subtitle"></div>
     </div>
-    <div class="header-actions"></div>
+    <div class="header-actions">
+      <button id="systemHomeHeaderBtn" class="system-home-header-btn" type="button" aria-label="System Home" title="System Home">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3.5 10.8L12 3.6l8.5 7.2"></path>
+          <path d="M5.8 9.8V20.4h12.4V9.8"></path>
+          <path d="M9.4 20.4v-5.7h5.2v5.7"></path>
+        </svg>
+      </button>
+    </div>
   </div>
   <div class="search">
     <input id="search" placeholder="Search item, locker, description, category, tags..." autocomplete="off">
@@ -6596,58 +6678,46 @@ render();
 
 
 <script>
-// v2.0 header system-home pill
+// v2.0 clean header System Home button
 (function(){
-  function goSystemHome(){
-    if (typeof showSystemHome === "function") {
-      showSystemHome();
-      return;
-    }
-    if (typeof renderSystemHome === "function") {
-      renderSystemHome();
-      return;
-    }
-    if (typeof setSystemHome === "function") {
-      setSystemHome();
+  function showSystemHomeFromHeader(){
+    const home = document.querySelector(".v2-appliance-home");
+    if (home) {
+      home.classList.add("open");
+
+      Array.from(document.body.children).forEach(function(child){
+        if (child === home) return;
+        if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
+        child.classList.add("v2-app-hidden-for-home");
+      });
+
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); }
+      catch(e) { window.scrollTo(0, 0); }
       return;
     }
 
-    // Fallback: click the existing main title if that is already wired to system home.
-    const title = document.querySelector("header h1, .app-header h1, .topbar h1, #appTitle, #applianceTitle");
+    // Fallback to the already-working title click binding.
+    const title = document.getElementById("title");
     if (title && typeof title.click === "function") {
       title.click();
-      return;
     }
-
-    location.hash = "";
-    location.reload();
   }
 
-  function insertHomePill(){
-    if (document.querySelector(".v2-system-home-top-pill")) return;
+  function bindHeaderHomeButton(){
+    const btn = document.getElementById("systemHomeHeaderBtn");
+    if (!btn || btn.dataset.v2Bound === "1") return;
 
-    const header = document.querySelector("header, .app-header, .topbar, [class*='header'], [class*='topbar']");
-    if (!header) return;
-
-    const pill = document.createElement("button");
-    pill.type = "button";
-    pill.className = "v2-system-home-top-pill";
-    pill.setAttribute("aria-label", "System Home");
-    pill.setAttribute("title", "System Home");
-    pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 10.8L12 3l9 7.8"></path><path d="M5.5 9.5V21h13V9.5"></path><path d="M9.5 21v-6h5v6"></path></svg>';
-
-    pill.addEventListener("click", function(e){
+    btn.dataset.v2Bound = "1";
+    btn.addEventListener("click", function(e){
       e.preventDefault();
       e.stopPropagation();
-      goSystemHome();
+      showSystemHomeFromHeader();
     });
-
-    header.appendChild(pill);
   }
 
   document.addEventListener("DOMContentLoaded", function(){
-    insertHomePill();
-    setTimeout(insertHomePill, 150);
+    bindHeaderHomeButton();
+    setTimeout(bindHeaderHomeButton, 150);
   });
 })();
 </script>

@@ -13,7 +13,8 @@
 - Main appliance heading navigation back to the system home.
 
 ### Improved
-- Header title alignment adjusted and right-side system-home icon pill added.
+- Rescue Blue header System Home button recoloured to neon blue/cyan instead of purple.
+- Added visible theme-matched System Home button to the far right of appliance header.
 - Main locker/cabin photo card now hides file paths and tap instructions; file paths are reserved for zoom modal.
 - Locker/cabin photo file paths hidden on main page and shown inside zoom modal.
 - Locker photo presentation trial: side capsule with text on the left and non-cropped tappable photo on the right.
