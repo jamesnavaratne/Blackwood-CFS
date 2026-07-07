@@ -4584,23 +4584,26 @@ function groupRecords(records) {
 function customGroupSortKey(name) {
   const n = name.toLowerCase();
 
-  // Main physical locker order for All view and search results
-  let lockerRank = 99;
+  // Use the current appliance's configured locker order first.
+  // This keeps the Home cards/search groups in exactly the same physical order as the tabs.
+  const configuredIndex = (DATA.lockers || []).findIndex(locker => norm(locker) === norm(name));
+  if (configuredIndex >= 0) {
+    return String(configuredIndex).padStart(3, "0") + "-00-" + n;
+  }
+
+  // Fallback for section-level groups and any unconfigured legacy location names.
+  let lockerRank = 999;
   if (n.includes("cabin")) lockerRank = 0;
   else {
     const m = n.match(/locker\s*(\d+)/);
     if (m) lockerRank = Number(m[1]);
   }
 
-  // Section order within lockers
   let sectionRank = 99;
-
-  // Generic top/middle/bottom order
   if (n.includes("top")) sectionRank = Math.min(sectionRank, 0);
   if (n.includes("middle") || n.includes("midd")) sectionRank = Math.min(sectionRank, 1);
   if (n.includes("bottom")) sectionRank = Math.min(sectionRank, 2);
 
-  // Locker 2 desired physical order
   if (n.includes("locker 2")) {
     if (n.includes("top")) sectionRank = 0;
     else if (n.includes("middle") || n.includes("midd")) sectionRank = 1;
@@ -4610,14 +4613,13 @@ function customGroupSortKey(name) {
     else if (n.includes("tray 4")) sectionRank = 5;
   }
 
-  // Locker 5 desired physical order
   if (n.includes("locker 5")) {
     if (n.includes("top")) sectionRank = 0;
     else if (n.includes("middle") || n.includes("midd")) sectionRank = 1;
     else if (n.includes("bottom")) sectionRank = 2;
   }
 
-  return String(lockerRank).padStart(2, "0") + "-" + String(sectionRank).padStart(2, "0") + "-" + n;
+  return String(lockerRank).padStart(3, "0") + "-" + String(sectionRank).padStart(2, "0") + "-" + n;
 }
 
 
