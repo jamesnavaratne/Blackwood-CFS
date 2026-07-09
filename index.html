@@ -4136,10 +4136,13 @@ if ('serviceWorker' in navigator) {
     </button>
   </div>
 
-  <button class="truck-option directions-book-option" type="button" onclick="window.location.href='directions/index.html'">
-    Directions Book
-    <small>Street directions</small>
-  </button>
+  <div class="theme-section directions-menu-section">
+    <div class="theme-section-title">Directions</div>
+    <button class="truck-option directions-book-option" type="button" onclick="window.location.href='directions/index.html'">
+      Directions Book
+      <small>Street directions</small>
+    </button>
+  </div>
 
 
   <div class="theme-section">
@@ -5989,6 +5992,12 @@ render();
       btn.addEventListener("click", openGlobalSearch);
     }
 
+    const directionsSection = menu.querySelector(".directions-menu-section");
+    if (directionsSection && directionsSection.parentNode) {
+      directionsSection.parentNode.insertBefore(btn, directionsSection);
+      return;
+    }
+
     const themeEl = Array.from(menu.querySelectorAll("*")).find(function(el){
       return /theme|palette/i.test((el.textContent || "") + " " + (el.className || "") + " " + (el.id || ""));
     });
@@ -6011,42 +6020,6 @@ render();
 
   document.addEventListener("DOMContentLoaded", function(){
     setTimeout(placeGlobalSearchOnce, 100);
-  });
-})();
-</script>
-
-<script>
-// v2.0 menu structure: Directions Book under its own Directions header, below Global Search
-(function(){
-  function placeDirectionsSection(){
-    const menu = document.querySelector('#drawer.drawer, .drawer');
-    const searchBtn = menu && menu.querySelector('.v2-global-search-launch');
-    const directionsBtn = menu && menu.querySelector('.directions-book-option');
-    if (!menu || !searchBtn || !directionsBtn) return;
-
-    let section = menu.querySelector('.directions-menu-section');
-    if (!section) {
-      section = document.createElement('div');
-      section.className = 'theme-section directions-menu-section';
-      const title = document.createElement('div');
-      title.className = 'theme-section-title';
-      title.textContent = 'Directions';
-      section.appendChild(title);
-    }
-
-    section.appendChild(directionsBtn);
-    searchBtn.insertAdjacentElement('afterend', section);
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(placeDirectionsSection, 180);
-    setTimeout(placeDirectionsSection, 500);
-  });
-
-  const observer = new MutationObserver(placeDirectionsSection);
-  document.addEventListener('DOMContentLoaded', function(){
-    const menu = document.querySelector('#drawer.drawer, .drawer');
-    if (menu) observer.observe(menu, { childList: true, subtree: true });
   });
 })();
 </script>
@@ -6283,14 +6256,16 @@ render();
 
     const launcher = makeLauncher("v2-global-search-launch v2-menu-global-search truck-option");
 
-    // Put SEARCH + launcher above Theme Palette if possible.
+    // Put SEARCH + launcher immediately above the Directions section.
+    const directionsSection = menu.querySelector(".directions-menu-section");
     const theme = Array.from(menu.querySelectorAll("*")).find(el =>
       /theme palette|theme|palette/i.test((el.textContent || "") + " " + (el.className || "") + " " + (el.id || ""))
     );
+    const anchor = directionsSection || theme;
 
-    if (theme && theme.parentNode) {
-      theme.parentNode.insertBefore(heading, theme);
-      theme.parentNode.insertBefore(launcher, theme);
+    if (anchor && anchor.parentNode) {
+      anchor.parentNode.insertBefore(heading, anchor);
+      anchor.parentNode.insertBefore(launcher, anchor);
     } else {
       menu.appendChild(heading);
       menu.appendChild(launcher);
