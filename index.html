@@ -6016,6 +6016,42 @@ render();
 </script>
 
 <script>
+// v2.0 menu structure: Directions Book under its own Directions header, below Global Search
+(function(){
+  function placeDirectionsSection(){
+    const menu = document.querySelector('#drawer.drawer, .drawer');
+    const searchBtn = menu && menu.querySelector('.v2-global-search-launch');
+    const directionsBtn = menu && menu.querySelector('.directions-book-option');
+    if (!menu || !searchBtn || !directionsBtn) return;
+
+    let section = menu.querySelector('.directions-menu-section');
+    if (!section) {
+      section = document.createElement('div');
+      section.className = 'theme-section directions-menu-section';
+      const title = document.createElement('div');
+      title.className = 'theme-section-title';
+      title.textContent = 'Directions';
+      section.appendChild(title);
+    }
+
+    section.appendChild(directionsBtn);
+    searchBtn.insertAdjacentElement('afterend', section);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(placeDirectionsSection, 180);
+    setTimeout(placeDirectionsSection, 500);
+  });
+
+  const observer = new MutationObserver(placeDirectionsSection);
+  document.addEventListener('DOMContentLoaded', function(){
+    const menu = document.querySelector('#drawer.drawer, .drawer');
+    if (menu) observer.observe(menu, { childList: true, subtree: true });
+  });
+})();
+</script>
+
+<script>
 // v2.0 safer photo fade: load-only, no decode(), no observer loop
 (function(){
   function bind(img){
