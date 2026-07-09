@@ -33,6 +33,8 @@ h1 { margin:2px 0 0; font-size:22px; line-height:1.05; letter-spacing:-.03em; }
 .home-btn:active { transform:scale(.98); }
 .maps-pill { border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); padding:8px 12px; font-weight:900; font-size:12px; white-space:nowrap; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 22%, transparent); }
 .maps-pill:active { transform:scale(.98); }
+.street-ubd-btn { border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); min-width:52px; height:42px; padding:0 11px; font-size:12px; font-weight:900; white-space:nowrap; box-shadow:0 0 12px color-mix(in srgb, var(--accent) 16%, transparent); }
+.street-ubd-btn:active { transform:scale(.98); }
 .map-list-card { width:min(100%, 560px); }
 .map-list { display:grid; gap:8px; padding:12px; }
 .map-list-btn { width:100%; border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:14px; padding:14px 16px; text-align:left; font-size:17px; font-weight:900; display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -136,6 +138,7 @@ body.modal-open { overflow:hidden; }
   <article class="card" role="dialog" aria-modal="true" aria-labelledby="cardName">
     <div class="card-head">
       <div class="card-title"><h2 id="cardName"></h2><div class="sub" id="cardSub"></div></div>
+      <button class="street-ubd-btn" id="streetUbdBtn" type="button" title="Open UBD maps">UBD</button>
       <button class="iconbtn" id="starBtn" title="Favourite">☆</button>
       <button class="iconbtn" id="closeBtn" title="Close">×</button>
     </div>
@@ -180,7 +183,7 @@ const els = {
   search: document.getElementById('search'), clear: document.getElementById('clearSearch'), count: document.getElementById('countText'),
   modal: document.getElementById('modal'), scrim: document.getElementById('scrim'), close: document.getElementById('closeBtn'),
   cardName: document.getElementById('cardName'), cardSub: document.getElementById('cardSub'), cardInfo: document.getElementById('cardInfo'),
-  bookCopy: document.getElementById('bookCopy'), sourceText: document.getElementById('sourceText'), starBtn: document.getElementById('starBtn'),
+  bookCopy: document.getElementById('bookCopy'), sourceText: document.getElementById('sourceText'), streetUbdBtn: document.getElementById('streetUbdBtn'), starBtn: document.getElementById('starBtn'),
   lightBtn: document.getElementById('lightBtn'), darkBtn: document.getElementById('darkBtn')
 };
 let selected = null;
@@ -215,7 +218,8 @@ function openMapList(){
 }
 function closeMapList(){
   closeMapViewer();
-  mapEls.listModal.classList.remove('open'); mapEls.listModal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open');
+  mapEls.listModal.classList.remove('open'); mapEls.listModal.setAttribute('aria-hidden','true');
+  if(!els.modal.classList.contains('open')) document.body.classList.remove('modal-open');
 }
 function setMapZoom(nextZoom, keepCentre=true){
   const oldWidth = mapEls.image.scrollWidth || 1, oldHeight = mapEls.image.scrollHeight || 1;
@@ -245,6 +249,7 @@ function closeMapViewer(){
   mapEls.image.removeAttribute('src'); mapEls.image.alt = ''; setMapZoom(1, false);
 }
 mapEls.open.onclick = openMapList;
+els.streetUbdBtn.onclick = openMapList;
 mapEls.listClose.onclick = closeMapList;
 mapEls.listScrim.onclick = closeMapList;
 mapEls.viewerClose.onclick = closeMapViewer;
