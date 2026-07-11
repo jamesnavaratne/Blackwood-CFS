@@ -1,3 +1,16 @@
+# Changelog
+
+## Blackwood CFS v2.0 Stable Baseline before Directions fidelity checks — 2026-07-11
+
+Housekeeping-only stable release package.
+
+- Added Directions Book Word source documents to `directions/source/`.
+- Added `directions/source/README.txt` with the suggested Directions update workflow.
+- Updated root `README.md` and `README.txt` to describe the combined Inventory + Directions app.
+- Updated `RELEASE_MANIFEST.json` for the stable baseline.
+- Added `STABLE_RELEASE_CHECKLIST.md`.
+- No app logic, inventory data, Directions Book data, UBD map behaviour, photo folders, or UI behaviour changed in this housekeeping release.
+
 # Blackwood CFS Changelog
 
 ## v2.0 RC1
