@@ -346,7 +346,7 @@ DIRECTIONS.forEach(e=>e._search=searchable(e));
 const letters = ['★', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
 let currentLetter = '★';
 function renderJump(activeLetters){
-  const searchButton = `<a href="#" class="search-jump active" data-action="search" aria-label="Jump to search" title="Search">⌕</a>`;
+  const searchButton = `<a href="#" class="search-jump active" data-action="search" aria-label="Jump to search" title="Search">↑</a>`;
   const letterButtons = letters.map(l => `<a href="#sec-${l==='★'?'fav':l}" data-letter="${l}" class="${activeLetters.has(l)?'active':''} ${currentLetter===l?'current':''}">${l}</a>`).join('');
   els.jump.innerHTML = searchButton + letterButtons;
   const searchJump = els.jump.querySelector('[data-action="search"]');
