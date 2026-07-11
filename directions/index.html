@@ -115,15 +115,17 @@ body.modal-open { overflow:hidden; }
   .zoom-readout { min-width:52px; padding:0 6px; }
 }
 
-/* Street-modal UBD split-panel: directions stay visible above maps. */
+/* Street-modal UBD split-panel: directions stay visible above maps.
+   The lower UBD panel starts a fixed gap below the ACTUAL street-card height,
+   so short entries pull the map panel upward and long entries never touch it. */
 #modal.street-map-open .card {
   max-height:42dvh;
 }
 .modal.street-map-context {
-  inset:auto 0 0 0;
-  height:56dvh;
-  padding:4px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
-  align-items:flex-end;
+  inset:var(--street-map-top, 50dvh) 0 0 0;
+  height:auto;
+  padding:0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  align-items:stretch;
   justify-content:center;
   z-index:65;
   pointer-events:none;
@@ -142,7 +144,7 @@ body.modal-open { overflow:hidden; }
 .modal.street-map-context .map-viewer-card { width:min(100%, 1100px); }
 @media (min-width:720px) {
   #modal.street-map-open .card { max-height:46dvh; }
-  .modal.street-map-context { height:52dvh; padding-left:18px; padding-right:18px; }
+  .modal.street-map-context { padding-left:18px; padding-right:18px; }
 }
 
 </style>
@@ -247,10 +249,24 @@ function renderMapList(){
   mapEls.list.querySelectorAll('[data-map-index]').forEach(btn => btn.onclick = () => openMap(Number(btn.dataset.mapIndex)));
 }
 let mapLaunchContext = 'global';
+const STREET_MAP_GAP = 12;
+function updateStreetMapLayout(){
+  if(mapLaunchContext !== 'street' || !els.modal.classList.contains('open')) return;
+  const streetCard = els.modal.querySelector('.card');
+  if(!streetCard) return;
+  const cardBottom = streetCard.getBoundingClientRect().bottom;
+  const top = Math.round(cardBottom + STREET_MAP_GAP);
+  mapEls.listModal.style.setProperty('--street-map-top', `${top}px`);
+  mapEls.viewerModal.style.setProperty('--street-map-top', `${top}px`);
+}
 function setStreetMapMode(on){
   els.modal.classList.toggle('street-map-open', on);
   mapEls.listModal.classList.toggle('street-map-context', on);
   mapEls.viewerModal.classList.toggle('street-map-context', on);
+  if(!on){
+    mapEls.listModal.style.removeProperty('--street-map-top');
+    mapEls.viewerModal.style.removeProperty('--street-map-top');
+  }
 }
 function openMapList(context='global'){
   const useStreetContext = context === 'street' && els.modal.classList.contains('open');
@@ -259,6 +275,7 @@ function openMapList(context='global'){
   renderMapList();
   mapEls.listModal.classList.add('open'); mapEls.listModal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
   const card = mapEls.listModal.querySelector('.card'); if(card) card.scrollTop = 0;
+  if(useStreetContext) requestAnimationFrame(updateStreetMapLayout);
 }
 function closeMapList(){
   closeMapViewer();
@@ -289,6 +306,7 @@ function openMap(index){
   mapEls.stage.scrollLeft = 0; mapEls.stage.scrollTop = 0;
   setMapZoom(1, false);
   mapEls.viewerModal.classList.add('open'); mapEls.viewerModal.setAttribute('aria-hidden','false');
+  if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout);
 }
 function closeMapViewer(){
   mapEls.viewerModal.classList.remove('open'); mapEls.viewerModal.setAttribute('aria-hidden','true');
@@ -307,6 +325,7 @@ mapEls.stage.addEventListener('wheel', e => {
   if(!(e.ctrlKey || e.metaKey)) return;
   e.preventDefault(); setMapZoom(mapZoom + (e.deltaY < 0 ? .25 : -.25));
 }, { passive:false });
+window.addEventListener('resize', () => { if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout); });
 function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' '); }
 function searchable(e){ return norm([e.name, ...(e.areas||[]), e.directions, e.mapRef, e.code, e.source].join(' ')); }
 function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
