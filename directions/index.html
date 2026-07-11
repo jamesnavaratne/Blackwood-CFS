@@ -112,6 +112,37 @@ body.modal-open { overflow:hidden; }
   .map-viewer-title { font-size:18px; }
   .zoom-readout { min-width:52px; padding:0 6px; }
 }
+
+/* Street-modal UBD split-panel: directions stay visible above maps. */
+#modal.street-map-open .card {
+  max-height:42dvh;
+}
+.modal.street-map-context {
+  inset:auto 0 0 0;
+  height:56dvh;
+  padding:4px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  align-items:flex-end;
+  justify-content:center;
+  z-index:65;
+  pointer-events:none;
+}
+.modal.street-map-context .scrim { display:none; }
+.modal.street-map-context .card,
+.modal.street-map-context .map-viewer-card {
+  width:min(100%, 760px);
+  height:100%;
+  max-height:100%;
+  pointer-events:auto;
+  border-radius:18px 18px 10px 10px;
+  box-shadow:0 0 32px color-mix(in srgb, var(--accent) 25%, transparent), 0 -10px 28px rgba(0,0,0,.18);
+}
+.modal.street-map-context .map-list-card { overflow:auto; }
+.modal.street-map-context .map-viewer-card { width:min(100%, 1100px); }
+@media (min-width:720px) {
+  #modal.street-map-open .card { max-height:46dvh; }
+  .modal.street-map-context { height:52dvh; padding-left:18px; padding-right:18px; }
+}
+
 </style>
 </head>
 <body data-theme="dark">
@@ -211,7 +242,16 @@ function renderMapList(){
   mapEls.list.innerHTML = UBD_MAPS.map((map, i) => `<button class="map-list-btn" type="button" data-map-index="${i}">${escapeHtml(map.title || map.file.replace(/\.[^.]+$/, ''))}</button>`).join('');
   mapEls.list.querySelectorAll('[data-map-index]').forEach(btn => btn.onclick = () => openMap(Number(btn.dataset.mapIndex)));
 }
-function openMapList(){
+let mapLaunchContext = 'global';
+function setStreetMapMode(on){
+  els.modal.classList.toggle('street-map-open', on);
+  mapEls.listModal.classList.toggle('street-map-context', on);
+  mapEls.viewerModal.classList.toggle('street-map-context', on);
+}
+function openMapList(context='global'){
+  const useStreetContext = context === 'street' && els.modal.classList.contains('open');
+  mapLaunchContext = useStreetContext ? 'street' : 'global';
+  setStreetMapMode(useStreetContext);
   renderMapList();
   mapEls.listModal.classList.add('open'); mapEls.listModal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
   const card = mapEls.listModal.querySelector('.card'); if(card) card.scrollTop = 0;
@@ -219,6 +259,8 @@ function openMapList(){
 function closeMapList(){
   closeMapViewer();
   mapEls.listModal.classList.remove('open'); mapEls.listModal.setAttribute('aria-hidden','true');
+  setStreetMapMode(false);
+  mapLaunchContext = 'global';
   if(!els.modal.classList.contains('open')) document.body.classList.remove('modal-open');
 }
 function setMapZoom(nextZoom, keepCentre=true){
@@ -248,8 +290,8 @@ function closeMapViewer(){
   mapEls.viewerModal.classList.remove('open'); mapEls.viewerModal.setAttribute('aria-hidden','true');
   mapEls.image.removeAttribute('src'); mapEls.image.alt = ''; setMapZoom(1, false);
 }
-mapEls.open.onclick = openMapList;
-els.streetUbdBtn.onclick = openMapList;
+mapEls.open.onclick = () => openMapList('global');
+els.streetUbdBtn.onclick = () => openMapList('street');
 mapEls.listClose.onclick = closeMapList;
 mapEls.listScrim.onclick = closeMapList;
 mapEls.viewerClose.onclick = closeMapViewer;
