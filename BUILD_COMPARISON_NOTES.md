@@ -39,3 +39,8 @@ Housekeeping-only stable packaging before Directions Book fidelity checks.
 ## Result
 
 This ZIP should behave the same as the previous tested build, with the addition of clearer release documentation and bundled Directions source documents.
+
+
+## Inventory description sync
+
+Updated from uploaded `Blackwood_CFS_Master_Inventory.xlsx`. Comparison against the prior stable app found 13 changed records, all in the Description field. No UI/Directions changes were made.
