@@ -3700,6 +3700,79 @@ body[data-theme*="yellow"] {
 }
 
 
+/* locker photo preview style test: blurred background + full sharp image */
+#lockerPhoto .photo-preview-shell {
+  position: relative !important;
+  justify-self: end !important;
+  width: min(100%, 420px) !important;
+  height: 142px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 174, 239, 0.30) !important;
+  background: rgba(2, 8, 16, 0.48) !important;
+  overflow: hidden !important;
+  cursor: zoom-in !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.025) inset,
+    0 10px 24px rgba(0,0,0,0.20) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  isolation: isolate !important;
+}
+
+#lockerPhoto .photo-preview-shell.photo-preview-shell--cabin {
+  width: 100% !important;
+  height: 132px !important;
+}
+
+#lockerPhoto .photo-preview-shell .photo-preview-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  filter: blur(16px) saturate(0.95) brightness(0.82) !important;
+  transform: scale(1.14) !important;
+  opacity: 0.8 !important;
+}
+
+#lockerPhoto .photo-preview-shell::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(2, 8, 16, 0.10), rgba(2, 8, 16, 0.24)),
+    radial-gradient(circle at center, rgba(255,255,255,0.03), rgba(0,0,0,0.14)) !important;
+  pointer-events: none !important;
+}
+
+#lockerPhoto .photo-preview-shell > img {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+  #lockerPhoto .photo-preview-shell {
+    justify-self: center !important;
+    width: 100% !important;
+    height: 128px !important;
+  }
+
+  #lockerPhoto .photo-preview-shell.photo-preview-shell--cabin {
+    height: 112px !important;
+  }
+}
+
 /* v2.0 locker/cabin file paths only inside zoom modal */
 #lockerPhoto .photo-path,
 #lockerPhoto figcaption.photo-path,
@@ -4630,14 +4703,20 @@ function renderPhoto() {
 
     const frontBlock = front ? `
       <figure class="cabin-photo-figure">
-        <img src="${esc(front)}" alt="${esc(activeLocker)} front photo" onerror="this.style.display='none';">
+        <div class="photo-preview-shell photo-preview-shell--cabin">
+          <div class="photo-preview-bg" style="background-image:url('${esc(front)}');"></div>
+          <img src="${esc(front)}" alt="${esc(activeLocker)} front photo" onerror="this.style.display='none';">
+        </div>
         <figcaption class="photo-path">File: ${esc(front)}</figcaption>
       </figure>
     ` : "";
 
     const rearBlock = rear ? `
       <figure class="cabin-photo-figure">
-        <img src="${esc(rear)}" alt="${esc(activeLocker)} rear photo" onerror="this.style.display='none';">
+        <div class="photo-preview-shell photo-preview-shell--cabin">
+          <div class="photo-preview-bg" style="background-image:url('${esc(rear)}');"></div>
+          <img src="${esc(rear)}" alt="${esc(activeLocker)} rear photo" onerror="this.style.display='none';">
+        </div>
         <figcaption class="photo-path">File: ${esc(rear)}</figcaption>
       </figure>
     ` : "";
@@ -4663,7 +4742,10 @@ function renderPhoto() {
         <h2>${esc(lp.title || activeLocker)}</h2>
         <p class="photo-path">File: ${esc(src)}</p>
       </div>
-      <img src="${esc(src)}" alt="${esc(activeLocker)} photo" onerror="this.style.display='none'; this.parentElement.querySelector('.missing-photo').style.display='block';">
+      <div class="photo-preview-shell">
+        <div class="photo-preview-bg" style="background-image:url('${esc(src)}');"></div>
+        <img src="${esc(src)}" alt="${esc(activeLocker)} photo" onerror="this.style.display='none'; this.closest('.photo-preview-shell').style.display='none'; this.parentElement.parentElement.querySelector('.missing-photo').style.display='block';">
+      </div>
       <div class="missing-photo photo-text" style="display:none;">
         <h2>${esc(activeLocker)}</h2>
         <p class="photo-path">File: ${esc(src)}</p>
