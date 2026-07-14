@@ -4044,6 +4044,31 @@ body.dark .v2-zoom-file-path {
   color: color-mix(in srgb, var(--accent) 62%, var(--text)) !important;
 }
 
+
+
+/* Stable gesture zoom patch - shared enlarged appliance/photo behaviour */
+.photo-modal-image-wrap {
+  touch-action: none !important;
+  overscroll-behavior: contain !important;
+  cursor: grab;
+}
+.photo-modal-image-wrap.gesture-panning {
+  cursor: grabbing;
+}
+.photo-modal-image-wrap img {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+  transform: none !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+.photo-modal-caption::after {
+  content: "  •  Double tap, pinch, or double-tap-hold to zoom  •  Drag to pan" !important;
+  opacity: 0.75;
+}
+
 </style>
 
 
@@ -5215,9 +5240,7 @@ function initialisePhotoModalFeature() {
       const wait = Math.max(0, minimumSpinnerMs - elapsed);
 
       setTimeout(() => {
-        photoModalImg.classList.remove("zoomed");
-        const wrap = photoModalImg.closest(".photo-modal-image-wrap");
-        if (wrap) { wrap.scrollTop = 0; wrap.scrollLeft = 0; }
+        resetPhotoZoom();
 
         photoModalImg.src = src;
         photoModalImg.alt = title || "Expanded photo";
@@ -5242,9 +5265,7 @@ function initialisePhotoModalFeature() {
   function closePhotoModal() {
     photoModalBackdrop.classList.remove("open");
     photoModal.classList.remove("open");
-    photoModalImg.classList.remove("zoomed");
-    const wrap = photoModalImg.closest(".photo-modal-image-wrap");
-    if (wrap) { wrap.scrollTop = 0; wrap.scrollLeft = 0; }
+    resetPhotoZoom();
     setTimeout(() => { photoModalImg.src = ""; }, 150);
   }
 
@@ -5252,41 +5273,201 @@ function initialisePhotoModalFeature() {
 
   if (photoModalClose) photoModalClose.addEventListener("click", closePhotoModal);
   if (photoModalBackdrop) photoModalBackdrop.addEventListener("click", closePhotoModal);
+  let photoZoom = 1;
   let lastPhotoTapTime = 0;
+  let lastPhotoTapX = 0;
+  let lastPhotoTapY = 0;
+  let photoTouchMode = null;
+  let photoStartDistance = 0;
+  let photoStartZoom = 1;
+  let photoStartX = 0;
+  let photoStartY = 0;
+  let photoStartScrollLeft = 0;
+  let photoStartScrollTop = 0;
+  let photoMoved = false;
 
-  function togglePhotoZoom() {
-    const wrap = photoModalImg.closest(".photo-modal-image-wrap");
-    const willZoom = !photoModalImg.classList.contains("zoomed");
-    photoModalImg.classList.toggle("zoomed", willZoom);
+  function clampPhotoZoom(value) {
+    return Math.max(1, Math.min(4, value));
+  }
 
-    if (wrap) {
-      setTimeout(() => {
-        if (willZoom) {
-          wrap.scrollLeft = Math.max(0, (wrap.scrollWidth - wrap.clientWidth) / 2);
-          wrap.scrollTop = Math.max(0, (wrap.scrollHeight - wrap.clientHeight) / 3);
-        } else {
-          wrap.scrollLeft = 0;
-          wrap.scrollTop = 0;
-        }
-      }, 80);
+  function getPhotoWrap() {
+    return photoModalImg ? photoModalImg.closest(".photo-modal-image-wrap") : null;
+  }
+
+  function setPhotoZoom(nextZoom, keepAnchor = true, anchorX = null, anchorY = null) {
+    const wrap = getPhotoWrap();
+    if (!wrap || !photoModalImg) return;
+
+    const oldWidth = photoModalImg.scrollWidth || photoModalImg.getBoundingClientRect().width || 1;
+    const oldHeight = photoModalImg.scrollHeight || photoModalImg.getBoundingClientRect().height || 1;
+    const rect = wrap.getBoundingClientRect();
+    const useAnchor = anchorX !== null && anchorY !== null;
+    const anchorOffsetX = useAnchor ? anchorX - rect.left : wrap.clientWidth / 2;
+    const anchorOffsetY = useAnchor ? anchorY - rect.top : wrap.clientHeight / 2;
+    const relX = (wrap.scrollLeft + anchorOffsetX) / oldWidth;
+    const relY = (wrap.scrollTop + anchorOffsetY) / oldHeight;
+
+    photoZoom = clampPhotoZoom(nextZoom);
+    if (photoZoom < 1.02) photoZoom = 1;
+
+    photoModalImg.classList.toggle("zoomed", photoZoom > 1);
+    photoModalImg.style.setProperty("width", `${photoZoom * 100}%`, "important");
+    photoModalImg.style.setProperty("max-width", photoZoom > 1 ? "none" : "100%", "important");
+    photoModalImg.style.setProperty("max-height", "none", "important");
+    photoModalImg.style.setProperty("height", "auto", "important");
+
+    if (keepAnchor) {
+      requestAnimationFrame(() => {
+        wrap.scrollLeft = Math.max(0, relX * (photoModalImg.scrollWidth || oldWidth) - anchorOffsetX);
+        wrap.scrollTop = Math.max(0, relY * (photoModalImg.scrollHeight || oldHeight) - anchorOffsetY);
+      });
     }
+  }
+
+  function resetPhotoZoom() {
+    const wrap = getPhotoWrap();
+    photoZoom = 1;
+    if (photoModalImg) {
+      photoModalImg.classList.remove("zoomed");
+      photoModalImg.style.setProperty("width", "100%", "important");
+      photoModalImg.style.setProperty("max-width", "100%", "important");
+      photoModalImg.style.setProperty("max-height", "none", "important");
+      photoModalImg.style.setProperty("height", "auto", "important");
+    }
+    if (wrap) {
+      wrap.classList.remove("gesture-panning");
+      wrap.scrollTop = 0;
+      wrap.scrollLeft = 0;
+    }
+  }
+
+  function togglePhotoZoomAt(clientX = null, clientY = null) {
+    setPhotoZoom(photoZoom > 1 ? 1 : 2.25, true, clientX, clientY);
+  }
+
+  function distanceBetweenTouches(touches) {
+    if (!touches || touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  function midpointBetweenTouches(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    };
+  }
+
+  const photoWrap = getPhotoWrap();
+  if (photoWrap) {
+    photoWrap.addEventListener("touchstart", (event) => {
+      if (!photoModal.classList.contains("open")) return;
+
+      if (event.touches.length === 2) {
+        event.preventDefault();
+        photoTouchMode = "pinch";
+        photoStartDistance = distanceBetweenTouches(event.touches) || 1;
+        photoStartZoom = photoZoom;
+        photoMoved = true;
+        return;
+      }
+
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const now = Date.now();
+      const tapDistance = Math.hypot(touch.clientX - lastPhotoTapX, touch.clientY - lastPhotoTapY);
+      photoStartX = touch.clientX;
+      photoStartY = touch.clientY;
+      photoStartScrollLeft = photoWrap.scrollLeft;
+      photoStartScrollTop = photoWrap.scrollTop;
+      photoStartZoom = photoZoom;
+      photoMoved = false;
+
+      if (now - lastPhotoTapTime < 320 && tapDistance < 36) {
+        event.preventDefault();
+        photoTouchMode = "double-slide";
+      } else {
+        photoTouchMode = "pan";
+      }
+    }, { passive: false });
+
+    photoWrap.addEventListener("touchmove", (event) => {
+      if (!photoTouchMode) return;
+
+      if (photoTouchMode === "pinch" && event.touches.length >= 2) {
+        event.preventDefault();
+        const mid = midpointBetweenTouches(event.touches);
+        const ratio = (distanceBetweenTouches(event.touches) || photoStartDistance) / photoStartDistance;
+        setPhotoZoom(photoStartZoom * ratio, true, mid.x, mid.y);
+        return;
+      }
+
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const dx = touch.clientX - photoStartX;
+      const dy = touch.clientY - photoStartY;
+      if (Math.hypot(dx, dy) > 4) photoMoved = true;
+
+      if (photoTouchMode === "double-slide") {
+        event.preventDefault();
+        const zoomFactor = Math.exp(dy / 180);
+        setPhotoZoom(photoStartZoom * zoomFactor, true, photoStartX, photoStartY);
+        return;
+      }
+
+      if (photoZoom > 1) {
+        event.preventDefault();
+        photoWrap.classList.add("gesture-panning");
+        photoWrap.scrollLeft = photoStartScrollLeft - dx;
+        photoWrap.scrollTop = photoStartScrollTop - dy;
+      }
+    }, { passive: false });
+
+    photoWrap.addEventListener("touchend", (event) => {
+      photoWrap.classList.remove("gesture-panning");
+
+      if (photoTouchMode === "double-slide") {
+        event.preventDefault();
+        if (!photoMoved) togglePhotoZoomAt(photoStartX, photoStartY);
+        lastPhotoTapTime = 0;
+        photoTouchMode = null;
+        return;
+      }
+
+      if (photoTouchMode === "pan" && !photoMoved) {
+        const now = Date.now();
+        if (now - lastPhotoTapTime < 320 && Math.hypot(photoStartX - lastPhotoTapX, photoStartY - lastPhotoTapY) < 36) {
+          event.preventDefault();
+          togglePhotoZoomAt(photoStartX, photoStartY);
+          lastPhotoTapTime = 0;
+        } else {
+          lastPhotoTapTime = now;
+          lastPhotoTapX = photoStartX;
+          lastPhotoTapY = photoStartY;
+        }
+      }
+
+      if (event.touches.length === 0) photoTouchMode = null;
+    }, { passive: false });
+
+    photoWrap.addEventListener("touchcancel", () => {
+      photoWrap.classList.remove("gesture-panning");
+      photoTouchMode = null;
+    });
   }
 
   photoModalImg.addEventListener("dblclick", (event) => {
     event.preventDefault();
-    togglePhotoZoom();
+    togglePhotoZoomAt(event.clientX, event.clientY);
   });
 
-  photoModalImg.addEventListener("touchend", (event) => {
-    const now = Date.now();
-    if (now - lastPhotoTapTime < 320) {
-      event.preventDefault();
-      togglePhotoZoom();
-    }
-    lastPhotoTapTime = now;
+  photoModalImg.addEventListener("wheel", (event) => {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    event.preventDefault();
+    setPhotoZoom(photoZoom + (event.deltaY < 0 ? 0.25 : -0.25), true, event.clientX, event.clientY);
   }, { passive: false });
 
-  
 
   document.addEventListener("click", (event) => {
     const card = event.target.closest(".photo-card");

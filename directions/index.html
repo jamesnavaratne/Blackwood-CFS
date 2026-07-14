@@ -47,8 +47,9 @@ h1 { margin:2px 0 0; font-size:22px; line-height:1.05; letter-spacing:-.03em; }
 .map-viewer-title { flex:1; min-width:0; font-size:20px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .map-zoom-controls { display:flex; align-items:center; gap:6px; flex:0 0 auto; }
 .zoom-readout { min-width:58px; height:42px; border:1px solid var(--line); border-radius:14px; background:var(--soft); color:var(--text); font-size:12px; font-weight:900; padding:0 8px; }
-.map-stage { flex:1 1 auto; min-height:0; overflow:auto; background:var(--soft); overscroll-behavior:contain; touch-action:pan-x pan-y pinch-zoom; -webkit-overflow-scrolling:touch; }
-.map-image { display:block; width:100%; max-width:none; height:auto; user-select:none; -webkit-user-drag:none; }
+.map-stage { flex:1 1 auto; min-height:0; overflow:auto; background:var(--soft); overscroll-behavior:contain; touch-action:none; -webkit-overflow-scrolling:touch; cursor:grab; }
+.map-stage.gesture-panning { cursor:grabbing; }
+.map-image { display:block; width:100%; max-width:none; height:auto !important; max-height:none !important; object-fit:contain; user-select:none; -webkit-user-select:none; -webkit-user-drag:none; }
 .map-hint { color:var(--muted); font-size:11px; padding:7px 10px; border-top:1px solid var(--line); background:var(--panel); text-align:center; }
 .searchwrap { position:relative; }
 #search { width:100%; border:2px solid var(--accent); border-radius:18px; background:var(--panel); color:var(--text); font-size:20px; padding:15px 48px 15px 16px; outline:none; box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), 0 0 22px color-mix(in srgb, var(--accent) 18%, transparent); }
@@ -209,7 +210,7 @@ body.modal-open { overflow:hidden; }
       <button class="iconbtn" id="mapViewerClose" title="Back to map list">×</button>
     </div>
     <div class="map-stage" id="mapStage"><img class="map-image" id="mapImage" alt="" draggable="false" /></div>
-    <div class="map-hint">Use + / − to zoom, then scroll or drag around the map. Double-tap or double-click the map to toggle zoom.</div>
+    <div class="map-hint">Use + / −, pinch, double tap, or double-tap-hold to zoom. Drag to pan.</div>
   </section>
 </div>
 <script src="maps/ubd/maps.js"></script>
@@ -284,17 +285,23 @@ function closeMapList(){
   mapLaunchContext = 'global';
   if(!els.modal.classList.contains('open')) document.body.classList.remove('modal-open');
 }
-function setMapZoom(nextZoom, keepCentre=true){
-  const oldWidth = mapEls.image.scrollWidth || 1, oldHeight = mapEls.image.scrollHeight || 1;
-  const centreX = (mapEls.stage.scrollLeft + mapEls.stage.clientWidth / 2) / oldWidth;
-  const centreY = (mapEls.stage.scrollTop + mapEls.stage.clientHeight / 2) / oldHeight;
-  mapZoom = Math.max(1, Math.min(4, Math.round(nextZoom * 4) / 4));
+function setMapZoom(nextZoom, keepCentre=true, anchorX=null, anchorY=null){
+  const oldWidth = mapEls.image.scrollWidth || mapEls.image.getBoundingClientRect().width || 1;
+  const oldHeight = mapEls.image.scrollHeight || mapEls.image.getBoundingClientRect().height || 1;
+  const rect = mapEls.stage.getBoundingClientRect();
+  const useAnchor = anchorX !== null && anchorY !== null;
+  const anchorOffsetX = useAnchor ? anchorX - rect.left : mapEls.stage.clientWidth / 2;
+  const anchorOffsetY = useAnchor ? anchorY - rect.top : mapEls.stage.clientHeight / 2;
+  const centreX = (mapEls.stage.scrollLeft + anchorOffsetX) / oldWidth;
+  const centreY = (mapEls.stage.scrollTop + anchorOffsetY) / oldHeight;
+  mapZoom = Math.max(1, Math.min(4, Math.round(nextZoom * 20) / 20));
+  if(mapZoom < 1.02) mapZoom = 1;
   mapEls.image.style.width = `${mapZoom * 100}%`;
   mapEls.zoomReset.textContent = `${Math.round(mapZoom * 100)}%`;
   if(keepCentre){
     requestAnimationFrame(() => {
-      mapEls.stage.scrollLeft = Math.max(0, centreX * mapEls.image.scrollWidth - mapEls.stage.clientWidth / 2);
-      mapEls.stage.scrollTop = Math.max(0, centreY * mapEls.image.scrollHeight - mapEls.stage.clientHeight / 2);
+      mapEls.stage.scrollLeft = Math.max(0, centreX * (mapEls.image.scrollWidth || oldWidth) - anchorOffsetX);
+      mapEls.stage.scrollTop = Math.max(0, centreY * (mapEls.image.scrollHeight || oldHeight) - anchorOffsetY);
     });
   }
 }
@@ -320,10 +327,107 @@ mapEls.viewerClose.onclick = closeMapViewer;
 mapEls.zoomOut.onclick = () => setMapZoom(mapZoom - .25);
 mapEls.zoomIn.onclick = () => setMapZoom(mapZoom + .25);
 mapEls.zoomReset.onclick = () => setMapZoom(1);
-mapEls.image.addEventListener('dblclick', () => setMapZoom(mapZoom > 1 ? 1 : 2));
+function toggleMapZoomAt(clientX=null, clientY=null){
+  setMapZoom(mapZoom > 1 ? 1 : 2, true, clientX, clientY);
+}
+function mapTouchDistance(touches){
+  if(!touches || touches.length < 2) return 0;
+  return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+}
+function mapTouchMidpoint(touches){
+  return { x:(touches[0].clientX + touches[1].clientX)/2, y:(touches[0].clientY + touches[1].clientY)/2 };
+}
+let mapTouchMode = null;
+let mapStartDistance = 0;
+let mapStartZoom = 1;
+let mapStartX = 0;
+let mapStartY = 0;
+let mapStartScrollLeft = 0;
+let mapStartScrollTop = 0;
+let mapMoved = false;
+let lastMapTapTime = 0;
+let lastMapTapX = 0;
+let lastMapTapY = 0;
+mapEls.image.addEventListener('dblclick', e => { e.preventDefault(); toggleMapZoomAt(e.clientX, e.clientY); });
+mapEls.stage.addEventListener('touchstart', e => {
+  if(e.touches.length === 2){
+    e.preventDefault();
+    mapTouchMode = 'pinch';
+    mapStartDistance = mapTouchDistance(e.touches) || 1;
+    mapStartZoom = mapZoom;
+    mapMoved = true;
+    return;
+  }
+  if(e.touches.length !== 1) return;
+  const t = e.touches[0];
+  const now = Date.now();
+  const tapDistance = Math.hypot(t.clientX - lastMapTapX, t.clientY - lastMapTapY);
+  mapStartX = t.clientX;
+  mapStartY = t.clientY;
+  mapStartScrollLeft = mapEls.stage.scrollLeft;
+  mapStartScrollTop = mapEls.stage.scrollTop;
+  mapStartZoom = mapZoom;
+  mapMoved = false;
+  if(now - lastMapTapTime < 320 && tapDistance < 36){
+    e.preventDefault();
+    mapTouchMode = 'double-slide';
+  } else {
+    mapTouchMode = 'pan';
+  }
+}, { passive:false });
+mapEls.stage.addEventListener('touchmove', e => {
+  if(!mapTouchMode) return;
+  if(mapTouchMode === 'pinch' && e.touches.length >= 2){
+    e.preventDefault();
+    const mid = mapTouchMidpoint(e.touches);
+    const ratio = (mapTouchDistance(e.touches) || mapStartDistance) / mapStartDistance;
+    setMapZoom(mapStartZoom * ratio, true, mid.x, mid.y);
+    return;
+  }
+  if(e.touches.length !== 1) return;
+  const t = e.touches[0];
+  const dx = t.clientX - mapStartX;
+  const dy = t.clientY - mapStartY;
+  if(Math.hypot(dx, dy) > 4) mapMoved = true;
+  if(mapTouchMode === 'double-slide'){
+    e.preventDefault();
+    setMapZoom(mapStartZoom * Math.exp(dy / 180), true, mapStartX, mapStartY);
+    return;
+  }
+  if(mapZoom > 1){
+    e.preventDefault();
+    mapEls.stage.classList.add('gesture-panning');
+    mapEls.stage.scrollLeft = mapStartScrollLeft - dx;
+    mapEls.stage.scrollTop = mapStartScrollTop - dy;
+  }
+}, { passive:false });
+mapEls.stage.addEventListener('touchend', e => {
+  mapEls.stage.classList.remove('gesture-panning');
+  if(mapTouchMode === 'double-slide'){
+    e.preventDefault();
+    if(!mapMoved) toggleMapZoomAt(mapStartX, mapStartY);
+    lastMapTapTime = 0;
+    mapTouchMode = null;
+    return;
+  }
+  if(mapTouchMode === 'pan' && !mapMoved){
+    const now = Date.now();
+    if(now - lastMapTapTime < 320 && Math.hypot(mapStartX - lastMapTapX, mapStartY - lastMapTapY) < 36){
+      e.preventDefault();
+      toggleMapZoomAt(mapStartX, mapStartY);
+      lastMapTapTime = 0;
+    } else {
+      lastMapTapTime = now;
+      lastMapTapX = mapStartX;
+      lastMapTapY = mapStartY;
+    }
+  }
+  if(e.touches.length === 0) mapTouchMode = null;
+}, { passive:false });
+mapEls.stage.addEventListener('touchcancel', () => { mapEls.stage.classList.remove('gesture-panning'); mapTouchMode = null; });
 mapEls.stage.addEventListener('wheel', e => {
   if(!(e.ctrlKey || e.metaKey)) return;
-  e.preventDefault(); setMapZoom(mapZoom + (e.deltaY < 0 ? .25 : -.25));
+  e.preventDefault(); setMapZoom(mapZoom + (e.deltaY < 0 ? .25 : -.25), true, e.clientX, e.clientY);
 }, { passive:false });
 window.addEventListener('resize', () => { if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout); });
 function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' '); }
