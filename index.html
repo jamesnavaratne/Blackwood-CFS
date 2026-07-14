@@ -3993,6 +3993,57 @@ body.theme-yellow .system-home-header-btn {
   transform:none;
 }
 
+
+/* v2.0 stable patch - theme-aware locker photo capsules
+   Uses current palette variables so locker/cabin photo containers no longer stay Rescue Blue.
+   CSS-only: no inventory, photo path, or Directions logic changes. */
+body.dark #lockerPhoto,
+body.dark .locker-photo,
+body.dark .location-photo,
+body.dark .locker-photo-wrap,
+body.dark .location-photo-wrap {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line)) !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 82%, var(--accent) 10%),
+      color-mix(in srgb, var(--bg) 84%, var(--accent) 9%)
+    ) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 3%, transparent) inset,
+    0 0 14px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 10px 28px rgba(0,0,0,0.20) !important;
+}
+
+body.dark #lockerPhoto .photo-card {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line)) !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 76%, var(--accent) 14%),
+      color-mix(in srgb, var(--bg) 78%, var(--accent) 11%)
+    ) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 3%, transparent) inset,
+    0 0 16px color-mix(in srgb, var(--accent) 11%, transparent),
+    0 12px 32px rgba(0,0,0,0.22) !important;
+}
+
+body.dark #lockerPhoto .photo-card > img,
+body.dark #lockerPhoto .cabin-photo-figure img {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line)) !important;
+  background: color-mix(in srgb, var(--bg) 88%, var(--accent) 10%) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 3%, transparent) inset,
+    0 10px 24px rgba(0,0,0,0.20) !important;
+}
+
+body.dark #lockerPhoto .photo-card .photo-path,
+body.dark #lockerPhoto .photo-card p.photo-path,
+body.dark #lockerPhoto .photo-card figcaption.photo-path,
+body.dark #lockerPhoto .cabin-photo-figure .photo-path,
+body.dark .v2-zoom-file-path {
+  color: color-mix(in srgb, var(--accent) 62%, var(--text)) !important;
+}
+
 </style>
 
 
@@ -4172,19 +4223,19 @@ if ('serviceWorker' in navigator) {
     <div class="theme-list">
       <button class="theme-option" type="button" data-palette="blue">
         <span class="theme-dot blue"></span>
-        Rescue Blue
+        Blue
       </button>
       <button class="theme-option" type="button" data-palette="green">
         <span class="theme-dot green"></span>
-        Safe Green
+        Green
       </button>
       <button class="theme-option" type="button" data-palette="yellow">
         <span class="theme-dot yellow"></span>
-        CFS Yellow
+        Yellow
       </button>
       <button class="theme-option" type="button" data-palette="red">
         <span class="theme-dot red"></span>
-        Brick Red
+        Red
       </button>
     </div>
   </div>
@@ -6525,7 +6576,7 @@ render();
 
 
 <script>
-// v2.0 default to Dark Rescue Blue
+// v2.0 default to Dark Blue
 (function(){
   function applyDefaultRescueBlue(){
     // Do not override the curated light theme if user has explicitly chosen it.
@@ -6666,8 +6717,8 @@ render();
         /themeToggle|theme-toggle|mode-toggle|light-dark|dark-light/i.test(attrs) ||
         /^(light|dark|light mode|dark mode)$/i.test(text);
 
-      // Do not remove palette cards named Rescue Blue / Brick Red / Safe Green / CFS Yellow.
-      const isPaletteTheme = /rescue blue|brick red|safe green|cfs yellow|palette/i.test(text);
+      // Do not remove palette cards for colour selection.
+      const isPaletteTheme = /rescue blue|brick red|safe green|cfs yellow|blue|green|yellow|red|palette/i.test(text);
 
       if (looksLikeToggle && !isPaletteTheme) {
         el.remove();

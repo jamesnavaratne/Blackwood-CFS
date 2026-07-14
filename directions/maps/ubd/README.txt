@@ -6,3 +6,6 @@ The list shown in the Directions Book follows the order in maps.js.
 
 Example entry:
   {"title": "UBD 169", "file": "UBD 169.jpg"}
+Additional non-UBD reference maps included at the bottom of the in-app map list:
+- Blackwood Primary Response Zone.jpg
+- Belair National Park Map.jpg

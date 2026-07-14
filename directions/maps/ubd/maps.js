@@ -34,5 +34,13 @@ window.UBD_MAPS = [
   {
     "title": "UBD 168",
     "file": "UBD 168.jpg"
+  },
+  {
+    "title": "Blackwood Primary Response Zone",
+    "file": "Blackwood Primary Response Zone.jpg"
+  },
+  {
+    "title": "Belair National Park Map",
+    "file": "Belair National Park Map.jpg"
   }
 ];
