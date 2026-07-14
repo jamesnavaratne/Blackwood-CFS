@@ -518,7 +518,21 @@ function updateStar(){
   els.starBtn.classList.toggle('starred', !!on);
 }
 els.starBtn.onclick=()=>{ if(!selected) return; favourites.has(selected.id)?favourites.delete(selected.id):favourites.add(selected.id); saveFavs(); updateStar(); render(); };
-function closeModal(){ els.modal.classList.remove('open'); els.modal.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }
+function closeModal(){
+  els.modal.classList.remove('open');
+  els.modal.setAttribute('aria-hidden','true');
+
+  // If the street entry is closed while its UBD split-panel/list/viewer is still open,
+  // promote the UBD panel back to normal modal mode so its backdrop can be tapped to close.
+  const ubdStillOpen = mapEls.listModal.classList.contains('open') || mapEls.viewerModal.classList.contains('open');
+  if (ubdStillOpen) {
+    setStreetMapMode(false);
+    mapLaunchContext = 'global';
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
+}
 els.close.onclick=closeModal; els.scrim.onclick=closeModal; document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(mapEls.viewerModal.classList.contains('open')) closeMapViewer(); else if(mapEls.listModal.classList.contains('open')) closeMapList(); else closeModal(); });
 els.search.addEventListener('input', render); els.clear.onclick=()=>{ els.search.value=''; render(); els.search.focus(); };
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
