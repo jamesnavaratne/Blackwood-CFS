@@ -1,0 +1,32 @@
+{
+  "package": "Blackwood_CFS_v2.1_DIRECTIONS_NEW_SOURCE_UPDATE_FULL_APP_TEST.zip",
+  "kind": "full_app_test",
+  "base_app": "Blackwood_CFS_v2.0_STABLE_UBD_BACKDROP_CLOSE_FIX.zip",
+  "directions_update": "v2.1 new source update",
+  "stable_baseline_before_update": "Blackwood_CFS_v2.0_STABLE_UBD_BACKDROP_CLOSE_FIX.zip",
+  "directions_entry_count_previous": 641,
+  "directions_entry_count_new_test": 678,
+  "retained_source": [
+    "directions/source/BLACKWOOD CORO EDEN HILLS ETC STREETS 122016.docx"
+  ],
+  "new_replacement_sources": [
+    "directions/source/CORO STREETS.doc",
+    "directions/source/BLACKWOOD PARK STREETS1.doc",
+    "directions/source/CORO EAST & CHERRY STREETS.doc"
+  ],
+  "archived_previous_sources": [
+    "directions/source/archive_previous_2016_sources/CORO STREETS 122016.doc",
+    "directions/source/archive_previous_2016_sources/BLACKWOOD PARK STREETS.doc",
+    "directions/source/archive_previous_2016_sources/CORO EAST & CHERRY STREETS 122016.doc"
+  ],
+  "unchanged_from_stable": [
+    "inventory data",
+    "appliance photo assets",
+    "gesture zoom/pan behaviour",
+    "locker photo blur-preview polish",
+    "extra reference maps",
+    "UBD backdrop close fix",
+    "main app UI/theme behaviour"
+  ],
+  "generated_at_utc": "2026-07-16T11:20:37Z"
+}
