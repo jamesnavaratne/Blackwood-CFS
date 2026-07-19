@@ -4143,79 +4143,30 @@ body.dark .v2-zoom-file-path {
 }
 
 
-/* v2.2 Android/PWA smooth native handoff sandbox
-   Strategy: do NOT show a second in-app CFS insignia.
-   Android already shows the PWA splash icon. The app now fades in as content,
-   avoiding icon duplication, slide-up movement, or launch-overlay handoff jitter. */
-
+/* v2.2 Android cold-start smoothing sandbox
+   Strategy:
+   - No custom splash overlay.
+   - No second CFS insignia.
+   - No startup slide/rise animation.
+   - Pre-render System Home as the first visible body element so Android native splash hands over
+     directly to a stable app screen rather than a JS-built screen. */
 html,
 body {
   background-color: #06142d;
 }
 
-body.v2-booting {
-  background-color: #06142d !important;
+.v2-appliance-home.v2-static-startup {
+  display: flex;
 }
 
-body.v2-booting .app,
-body.v2-booting .v2-appliance-home,
-body.v2-booting #app,
-body.v2-booting main,
-body.v2-booting header {
-  opacity: 0;
-}
-
-body.v2-ready .app,
-body.v2-ready .v2-appliance-home,
-body.v2-ready #app,
-body.v2-ready main,
-body.v2-ready header {
-  opacity: 1;
-  transition: opacity 280ms ease;
-}
-
-.v2-appliance-home.v2-home-enter {
-  animation: v2HomeFadeInOnly 280ms ease both;
-}
-
-.v2-appliance-home.v2-home-enter .v2-appliance-home-card,
-.v2-appliance-home.v2-home-enter .v2-appliance-home-pill,
-.v2-appliance-home.v2-home-enter .v2-appliance-home-quiz {
-  opacity: 0;
+.v2-appliance-home.v2-static-startup,
+.v2-appliance-home.v2-static-startup *,
+.v2-appliance-home.v2-static-startup .v2-appliance-home-card,
+.v2-appliance-home.v2-static-startup .v2-appliance-home-pill,
+.v2-appliance-home.v2-static-startup .v2-appliance-home-quiz {
+  animation: none !important;
+  transition: none !important;
   transform: none !important;
-  animation: v2HomeChildFadeInOnly 260ms ease forwards;
-}
-
-.v2-appliance-home.v2-home-enter .v2-appliance-home-card { animation-delay: 0ms; }
-.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(1) { animation-delay: 35ms; }
-.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(2) { animation-delay: 55ms; }
-.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(3) { animation-delay: 75ms; }
-.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(4) { animation-delay: 95ms; }
-.v2-appliance-home.v2-home-enter .v2-appliance-home-quiz { animation-delay: 115ms; }
-
-@keyframes v2HomeFadeInOnly {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes v2HomeChildFadeInOnly {
-  to { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.v2-ready .app,
-  body.v2-ready .v2-appliance-home,
-  body.v2-ready #app,
-  body.v2-ready main,
-  body.v2-ready header,
-  .v2-appliance-home.v2-home-enter,
-  .v2-appliance-home.v2-home-enter .v2-appliance-home-card,
-  .v2-appliance-home.v2-home-enter .v2-appliance-home-pill,
-  .v2-appliance-home.v2-home-enter .v2-appliance-home-quiz {
-    animation: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-  }
 }
 
 </style>
@@ -4243,29 +4194,16 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
-<script>
-(function(){
-  function v2Ready(){
-    var b = document.body;
-    if (!b) return;
-    b.classList.remove('v2-booting');
-    b.classList.add('v2-ready');
-  }
-
-  // Let app JS inject System Home first; then fade in. No second splash/logo.
-  window.v2MarkAppReady = v2Ready;
-
-  window.addEventListener('load', function(){
-    setTimeout(v2Ready, 120);
-  });
-
-  // Safety fallback in case load is delayed by cached/offline assets.
-  setTimeout(v2Ready, 1200);
-})();
-</script>
+<!--
+v2.2 Android cold-start smoothing test:
+- System Home is pre-rendered as first body content.
+- No custom launch splash/logo overlay.
+- No startup slide/fade animation.
+- Intended to make installed Android PWA cold launch hand directly from native splash to stable System Home.
+-->
 
 </head>
-<body class="v2-booting">
+<body>
 
 <div id="photoLoadingOverlay" class="photo-loading-overlay" aria-hidden="true">
   <div class="photo-spinner"></div>
@@ -6094,38 +6032,43 @@ render();
     if (quizEl) quizEl.classList.add("open");
   }
 
-  function ensureHome(){
-    if (document.querySelector(".v2-appliance-home")) return;
-
-    const home = document.createElement("section");
-    home.className = "v2-appliance-home open";
-    home.innerHTML = `
-      <div class="v2-appliance-home-card">
-        <div class="v2-appliance-home-kicker">Blackwood CFS</div>
-        <h1>Blackwood Appliance Inventory</h1>
-        <div class="v2-appliance-home-pills">
-          ${V2_HOME_APPS.map(app => `<button type="button" class="v2-appliance-home-pill" data-v2-home-truck="${app.key}">${app.label}</button>`).join("")}
-        </div>
-        <button type="button" class="v2-appliance-home-quiz">Quiz</button>
-      </div>
-    `;
-
-    document.body.prepend(home);
-    home.classList.add("v2-home-enter");
-    setTimeout(() => home.classList.remove("v2-home-enter"), 520);
+  function bindHomeControls(home){
+    if (!home || home.dataset.v2HomeBound === "1") return;
+    home.dataset.v2HomeBound = "1";
 
     home.querySelectorAll("[data-v2-home-truck]").forEach(btn => {
       btn.addEventListener("click", () => switchToAppliance(appFor(btn.dataset.v2HomeTruck)));
     });
-    home.querySelector(".v2-appliance-home-quiz").addEventListener("click", openQuizFromHome);
 
+    const quizBtn = home.querySelector(".v2-appliance-home-quiz");
+    if (quizBtn) quizBtn.addEventListener("click", openQuizFromHome);
+  }
+
+  function ensureHome(){
+    let home = document.querySelector(".v2-appliance-home");
+
+    if (!home) {
+      home = document.createElement("section");
+      home.className = "v2-appliance-home open";
+      home.innerHTML = `
+        <div class="v2-appliance-home-card">
+          <div class="v2-appliance-home-kicker">Blackwood CFS</div>
+          <h1>Blackwood Appliance Inventory</h1>
+          <div class="v2-appliance-home-pills">
+            ${V2_HOME_APPS.map(app => `<button type="button" class="v2-appliance-home-pill" data-v2-home-truck="${app.key}">${app.label}</button>`).join("")}
+          </div>
+          <button type="button" class="v2-appliance-home-quiz">Quiz</button>
+        </div>
+      `;
+      document.body.prepend(home);
+    }
+
+    home.classList.add("open");
+    bindHomeControls(home);
     hideMainAppForHome();
 
-    // Native Android/PWA splash has already shown the app icon.
-    // Fade in actual app content once System Home exists.
-    setTimeout(() => {
-      if (typeof window.v2MarkAppReady === "function") window.v2MarkAppReady();
-    }, 40);
+    // Remove the startup marker after first binding. It exists only to stabilise cold first paint.
+    setTimeout(() => home.classList.remove("v2-static-startup"), 250);
   }
 
   function hideMainAppForHome(){
