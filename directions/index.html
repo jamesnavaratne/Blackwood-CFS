@@ -270,6 +270,212 @@ button[data-ubd]:active,
   transform: scale(.985);
 }
 
+
+/* v2.4.1 Directions issue reporting
+   Uses Directions Book colours and modal language, not inventory red styling. */
+.direction-report-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.direction-report-pill {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  padding: 5px 11px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  box-shadow: none;
+}
+
+.direction-report-pill:hover,
+.direction-report-pill:focus {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--soft);
+  outline: none;
+}
+
+.direction-report-pill:active {
+  transform: scale(.985);
+}
+
+#directionIssueModal {
+  z-index: 95;
+}
+
+.direction-issue-card {
+  width: min(100%, 640px);
+}
+
+.direction-field {
+  margin-bottom: 13px;
+}
+
+.direction-field-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.direction-issue-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.direction-issue-option {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.direction-issue-option.active,
+.direction-issue-option[aria-pressed="true"] {
+  background: var(--accent);
+  color: #00131f;
+  border-color: var(--accent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.direction-issue-textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--text);
+  padding: 11px 12px;
+  font: inherit;
+  outline: none;
+}
+
+.direction-issue-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.direction-report-box {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  max-height: 230px;
+  overflow: auto;
+}
+
+.direction-issue-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.direction-send-btn {
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #00131f;
+  min-width: 126px;
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.direction-send-btn:active {
+  transform: scale(.985);
+}
+
+.direction-issue-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .direction-report-pill,
+  .direction-issue-option,
+  .direction-send-btn {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+/* v2.4.2 Directions report-pill source-row polish
+   Places the issue-report pill on the SOURCE line and makes it smaller. */
+.direction-source-report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+}
+
+.direction-source-report-row .source {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.direction-source-report-row .direction-report-pill {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  font-size: 9.5px;
+  line-height: 1.15;
+  letter-spacing: .07em;
+  opacity: .9;
+}
+
+.direction-source-report-row .direction-report-pill:hover,
+.direction-source-report-row .direction-report-pill:focus {
+  opacity: 1;
+}
+
+@media (max-width: 420px) {
+  .direction-source-report-row {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .direction-source-report-row .direction-report-pill {
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+}
+
 </style>
 
 <!--
@@ -321,10 +527,53 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
     <div class="card-body">
       <div class="infoLine" id="cardInfo"></div>
       <div class="book-copy" id="bookCopy"></div>
-      <div class="source" id="sourceText"></div>
+      <div class="direction-source-report-row">
+        <div class="source" id="sourceText"></div>
+        <button class="direction-report-pill" id="directionReportBtn" type="button">Report issue</button>
+      </div>
     </div>
   </article>
 </div>
+
+<div class="modal" id="directionIssueModal" aria-hidden="true">
+  <div class="scrim" id="directionIssueScrim"></div>
+  <article class="card direction-issue-card" role="dialog" aria-modal="true" aria-labelledby="directionIssueTitle">
+    <div class="card-head">
+      <div class="card-title">
+        <h2 id="directionIssueTitle">Report Direction Issue</h2>
+        <div class="sub" id="directionIssueSub">Suggest an update to this Directions Book entry</div>
+      </div>
+      <button class="iconbtn" id="directionIssueClose" title="Close">×</button>
+    </div>
+    <div class="card-body">
+      <div class="direction-field">
+        <div class="direction-field-label">Issue type</div>
+        <div class="direction-issue-options">
+          <button class="direction-issue-option" type="button" data-direction-issue-type="Wrong directions">Wrong directions</button>
+          <button class="direction-issue-option" type="button" data-direction-issue-type="Missing detail">Missing detail</button>
+          <button class="direction-issue-option" type="button" data-direction-issue-type="Map/code issue">Map/code issue</button>
+          <button class="direction-issue-option" type="button" data-direction-issue-type="Other">Other</button>
+        </div>
+      </div>
+
+      <div class="direction-field">
+        <div class="direction-field-label">What is wrong or what should be updated?</div>
+        <textarea id="directionIssueNotes" class="direction-issue-textarea" placeholder="Add the suggested correction, extra landmark, access issue, map/code problem, or other note..."></textarea>
+      </div>
+
+      <div class="direction-field">
+        <div class="direction-field-label">Email preview</div>
+        <div id="directionIssuePreview" class="direction-report-box"></div>
+        <div class="direction-issue-hint">This opens your email app with the entry details and your notes included.</div>
+      </div>
+
+      <div class="direction-issue-actions">
+        <button id="directionEmailIssueBtn" class="direction-send-btn" type="button">Send Email</button>
+      </div>
+    </div>
+  </article>
+</div>
+
 <div class="modal" id="mapListModal" aria-hidden="true">
   <div class="scrim" id="mapListScrim"></div>
   <article class="card map-list-card" role="dialog" aria-modal="true" aria-labelledby="mapListTitle">
@@ -360,8 +609,18 @@ const els = {
   modal: document.getElementById('modal'), scrim: document.getElementById('scrim'), close: document.getElementById('closeBtn'),
   cardName: document.getElementById('cardName'), cardSub: document.getElementById('cardSub'), cardInfo: document.getElementById('cardInfo'),
   bookCopy: document.getElementById('bookCopy'), sourceText: document.getElementById('sourceText'), streetUbdBtn: document.getElementById('streetUbdBtn'), starBtn: document.getElementById('starBtn'),
+  reportBtn: document.getElementById('directionReportBtn'),
+  directionIssueModal: document.getElementById('directionIssueModal'),
+  directionIssueScrim: document.getElementById('directionIssueScrim'),
+  directionIssueClose: document.getElementById('directionIssueClose'),
+  directionIssueNotes: document.getElementById('directionIssueNotes'),
+  directionIssuePreview: document.getElementById('directionIssuePreview'),
+  directionIssueSub: document.getElementById('directionIssueSub'),
+  directionEmailIssueBtn: document.getElementById('directionEmailIssueBtn'),
   lightBtn: document.getElementById('lightBtn'), darkBtn: document.getElementById('darkBtn')
 };
+const DIRECTION_ISSUE_EMAIL = "james.navaratne@gmail.com";
+let directionIssueType = "Wrong directions";
 let selected = null;
 const favKey = 'blackwoodDirectionsFavourites.v1';
 const themeKey = 'blackwoodDirectionsTheme.v1';
@@ -654,8 +913,76 @@ function openEntry(id){
   els.bookCopy.innerHTML = formatDirectionsHtml(selected);
   els.sourceText.textContent = 'Source: ' + selected.source;
   updateStar();
+  updateDirectionIssuePreview();
   els.modal.classList.add('open'); els.modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); document.querySelector('.card').scrollTop = 0;
 }
+
+function setDirectionIssueType(type){
+  directionIssueType = type || "Wrong directions";
+  document.querySelectorAll('.direction-issue-option').forEach(btn => {
+    const on = btn.dataset.directionIssueType === directionIssueType;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  updateDirectionIssuePreview();
+}
+function directionEntryDetails(entry){
+  if(!entry) return "No Directions entry selected.";
+  return [
+    `Street: ${entry.name || ""}`,
+    `Suburb/area: ${(entry.areas || []).join(" · ") || entry.displaySuburb || ""}`,
+    `Book/source: ${entry.source || ""}`,
+    `Source file: ${entry.sourceFile || "BLACKWOOD CORO EDEN HILLS ETC STREETS 122016.docx / retained main source"}`,
+    `Entry ID: ${entry.id || ""}`,
+    `Map: ${entry.mapRef || ""}`,
+    `Code: ${entry.code || ""}`,
+    `Flags/notes: ${(entry.flags || []).join(", ") || ""}`,
+    "",
+    "Current Directions Book wording:",
+    entry.directions || ""
+  ].join("\n");
+}
+function buildDirectionIssueReport(){
+  const notes = els.directionIssueNotes ? els.directionIssueNotes.value.trim() : "";
+  return [
+    "Blackwood CFS Directions Book issue / suggested update",
+    "",
+    `Issue type: ${directionIssueType}`,
+    "",
+    "Suggested update / what is wrong:",
+    notes || "(No extra notes entered)",
+    "",
+    "Entry details:",
+    directionEntryDetails(selected)
+  ].join("\n");
+}
+function updateDirectionIssuePreview(){
+  if(!els.directionIssuePreview) return;
+  els.directionIssuePreview.textContent = buildDirectionIssueReport();
+}
+function openDirectionIssueModal(){
+  if(!selected || !els.directionIssueModal) return;
+  if(els.directionIssueSub) els.directionIssueSub.textContent = `${selected.name || "Direction"} · ${selected.source || ""}`;
+  if(els.directionIssueNotes) els.directionIssueNotes.value = "";
+  setDirectionIssueType("Wrong directions");
+  els.directionIssueModal.classList.add('open');
+  els.directionIssueModal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+  const card = els.directionIssueModal.querySelector('.card');
+  if(card) card.scrollTop = 0;
+  setTimeout(() => { if(els.directionIssueNotes) els.directionIssueNotes.focus(); }, 80);
+}
+function closeDirectionIssueModal(){
+  if(!els.directionIssueModal) return;
+  els.directionIssueModal.classList.remove('open');
+  els.directionIssueModal.setAttribute('aria-hidden','true');
+  if(els.modal.classList.contains('open') || mapEls.listModal.classList.contains('open') || mapEls.viewerModal.classList.contains('open')) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
+}
+
 function updateStar(){
   const on = selected && favourites.has(selected.id);
   els.starBtn.textContent = on ? '★' : '☆';
@@ -677,7 +1004,23 @@ function closeModal(){
     document.body.classList.remove('modal-open');
   }
 }
-els.close.onclick=closeModal; els.scrim.onclick=closeModal; document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(mapEls.viewerModal.classList.contains('open')) closeMapViewer(); else if(mapEls.listModal.classList.contains('open')) closeMapList(); else closeModal(); });
+els.close.onclick=closeModal; els.scrim.onclick=closeModal;
+if(els.reportBtn) els.reportBtn.onclick=openDirectionIssueModal;
+if(els.directionIssueClose) els.directionIssueClose.onclick=closeDirectionIssueModal;
+if(els.directionIssueScrim) els.directionIssueScrim.onclick=closeDirectionIssueModal;
+if(els.directionIssueNotes) els.directionIssueNotes.addEventListener('input', updateDirectionIssuePreview);
+document.querySelectorAll('.direction-issue-option').forEach(btn => {
+  btn.addEventListener('click', () => setDirectionIssueType(btn.dataset.directionIssueType));
+});
+if(els.directionEmailIssueBtn) {
+  els.directionEmailIssueBtn.addEventListener('click', () => {
+    const subject = encodeURIComponent(`Directions Book issue – ${selected?.name || "Direction"} (${directionIssueType})`);
+    const body = encodeURIComponent(buildDirectionIssueReport());
+    const to = encodeURIComponent(DIRECTION_ISSUE_EMAIL || "");
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  });
+}
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(els.directionIssueModal.classList.contains('open')) closeDirectionIssueModal(); else if(mapEls.viewerModal.classList.contains('open')) closeMapViewer(); else if(mapEls.listModal.classList.contains('open')) closeMapList(); else closeModal(); });
 els.search.addEventListener('input', render); els.clear.onclick=()=>{ els.search.value=''; render(); els.search.focus(); };
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 render();

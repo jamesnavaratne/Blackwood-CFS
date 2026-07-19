@@ -66,3 +66,14 @@ tools\validate_inventory_only.bat
 ↓
 tools\rebuild_inventory_from_excel.bat
 ```
+
+
+## Report a Directions Book issue
+
+Open a Directions entry, then use the small `Report issue` pill at the bottom.
+
+More detail:
+
+```text
+docs/directions/HOW_TO_REPORT_DIRECTIONS_ISSUE.md
+```

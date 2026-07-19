@@ -1,0 +1,14 @@
+{
+  "package": "Blackwood_CFS_v2.4.1_DIRECTIONS_ISSUE_REPORTING_TEST.zip",
+  "base": "Blackwood_CFS_v2.4_SAFER_INVENTORY_WORKFLOW_TEST.zip",
+  "changed_files": [
+    "directions/index.html",
+    "docs/directions/HOW_TO_REPORT_DIRECTIONS_ISSUE.md",
+    "docs/release_notes/Blackwood_CFS_v2.4.1_DIRECTIONS_ISSUE_REPORTING_NOTES.md",
+    "START_HERE.md",
+    "service-worker.js"
+  ],
+  "email_to": "james.navaratne@gmail.com",
+  "directions_data_changed": false,
+  "feature": "Small Report issue pill at bottom of each Directions entry modal, opening Directions-themed email modal."
+}

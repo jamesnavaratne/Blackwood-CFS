@@ -1,0 +1,13 @@
+{
+  "package": "Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_TEST.zip",
+  "base": "Blackwood_CFS_v2.4.1_DIRECTIONS_ISSUE_REPORTING_TEST.zip",
+  "changed_files": [
+    "directions/index.html",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_VERIFICATION.json"
+  ],
+  "directions_data_changed": false,
+  "inventory_data_changed": false,
+  "ui_change": "Report issue pill moved into the SOURCE row and made smaller."
+}

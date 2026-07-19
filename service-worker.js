@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-4-safer-inventory-workflow-20260719';
+const CACHE_NAME = 'blackwood-cfs-v2-4-2-directions-report-pill-source-row-20260720';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
