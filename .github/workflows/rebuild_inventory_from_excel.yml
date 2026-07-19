@@ -1,0 +1,45 @@
+name: Rebuild inventory from Excel
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Blackwood_CFS_Master_Inventory.xlsx'
+      - 'tools/rebuild_inventory_from_excel.py'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-inventory:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Rebuild inventory data
+        run: python tools/rebuild_inventory_from_excel.py
+
+      - name: Check for generated changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit rebuilt app files
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html data/inventory.json BLACKWOOD_CFS_V2_EXCEL_GOSPEL_REBUILD.json INVENTORY_REBUILD_REPORT.md
+          git commit -m "Auto-rebuild inventory from Excel"
+          git push

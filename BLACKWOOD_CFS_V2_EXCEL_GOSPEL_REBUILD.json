@@ -1,18 +1,19 @@
 {
-  "source_workbook": "Blackwood_CFS_Master_Inventory_with_34P_and_CAFS24_Rescue_Unchanged.xlsx",
-  "built": "2026-06-07 17:46",
+  "source_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
+  "rebuilt_at_utc": "2026-07-19T14:59:16Z",
   "appliances": {
     "Blackwood Rescue": {
       "items": 145,
       "locations": [
+        "Cabin",
         "Locker 1",
         "Locker 2",
         "Locker 3",
         "Locker 4",
-        "Locker 6",
         "Locker 5",
-        "Cabin"
-      ]
+        "Locker 6"
+      ],
+      "locker_photo_entries": 8
     },
     "34P": {
       "items": 142,
@@ -21,34 +22,38 @@
         "P1",
         "P2",
         "P3",
-        "D1",
-        "D2",
-        "D3",
         "P4",
         "P5",
         "P Reel",
-        "Pump Panel",
-        "D Reel",
-        "D5",
+        "D1",
+        "D2",
+        "D3",
         "D4",
+        "D5",
+        "D Reel",
+        "Pump Panel",
         "Crew Deck"
-      ]
+      ],
+      "locker_photo_entries": 15
     },
     "CAFS 24": {
       "items": 115,
       "locations": [
         "Cabin",
-        "D-Tube",
-        "D1",
-        "D2",
-        "Rear",
         "P1",
         "P2",
         "Pump Panel",
         "P-Tube",
-        "P3"
-      ]
+        "P3",
+        "P4",
+        "D-Tube",
+        "D1",
+        "D2",
+        "Rear"
+      ],
+      "locker_photo_entries": 11
     }
   },
-  "note": "index.html APPLIANCES object regenerated directly from the combined Excel workbook in this ZIP. Main location tabs and item section headings now come from Master Inventory columns C-E."
+  "unknown_apps": [],
+  "note": "index.html APPLIANCES object and data/inventory.json regenerated directly from Blackwood_CFS_Master_Inventory.xlsx."
 }
