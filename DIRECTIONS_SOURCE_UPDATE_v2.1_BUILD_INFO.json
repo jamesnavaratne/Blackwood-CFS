@@ -1,5 +1,5 @@
 {
-  "package": "Blackwood_CFS_v2.1_DIRECTIONS_NEW_SOURCE_UPDATE_FULL_APP_TEST.zip",
+  "package": "Blackwood_CFS_v2.1_DIRECTIONS_NEW_SOURCE_UPDATE_SEARCH_STREET_ONLY.zip",
   "kind": "full_app_test",
   "base_app": "Blackwood_CFS_v2.0_STABLE_UBD_BACKDROP_CLOSE_FIX.zip",
   "directions_update": "v2.1 new source update",
@@ -28,5 +28,16 @@
     "UBD backdrop close fix",
     "main app UI/theme behaviour"
   ],
-  "generated_at_utc": "2026-07-16T11:20:37Z"
+  "generated_at_utc": "2026-07-17T14:50:14Z",
+  "search_behaviour": {
+    "directions_book_search_scope": "primary street entry title/name only",
+    "excluded_from_search": [
+      "route directions text",
+      "suburb/area text",
+      "map references",
+      "response codes",
+      "source file names"
+    ],
+    "reason": "Avoid noisy searches where common roads such as MAIN ROAD appear inside many route descriptions."
+  }
 }

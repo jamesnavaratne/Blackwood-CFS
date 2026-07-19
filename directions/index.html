@@ -157,6 +157,14 @@ body.modal-open { overflow:hidden; }
 }
 
 </style>
+
+<!--
+v2.1 Directions search behaviour patch:
+- Search index now matches primary street entry title/name only.
+- Directions text, map refs, codes, source names and suburb/area mentions are no longer searched.
+- Reason: route descriptions often contain common roads such as MAIN ROAD, making those searches noisy.
+-->
+
 </head>
 <body data-theme="dark">
 <div class="app">
@@ -173,7 +181,7 @@ body.modal-open { overflow:hidden; }
     </div>
   </header>
   <div class="search-dock" id="searchDock">
-    <div class="searchwrap"><input id="search" autocomplete="off" placeholder="Search street, suburb, landmark…" /><button id="clearSearch" aria-label="Clear search">×</button></div>
+    <div class="searchwrap"><input id="search" autocomplete="off" placeholder="Search street name…" /><button id="clearSearch" aria-label="Clear search">×</button></div>
     <div class="metaRow"><span id="countText"></span><span>search → tap → read</span></div>
   </div>
   <nav class="letter-jump" id="letterJump" aria-label="Jump by letter"></nav>
@@ -439,7 +447,13 @@ mapEls.stage.addEventListener('wheel', e => {
 }, { passive:false });
 window.addEventListener('resize', () => { if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout); });
 function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' '); }
-function searchable(e){ return norm([e.name, ...(e.areas||[]), e.directions, e.mapRef, e.code, e.source].join(' ')); }
+function searchable(e){
+  // v2.1 search behaviour:
+  // Match only the primary street entry title/name.
+  // Do not match street names merely mentioned inside route directions,
+  // because searches like "Main Road" otherwise return nearly every entry.
+  return norm(e.name || '');
+}
 function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 function regexEscape(s){ return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function formatDirectionsHtml(entry){

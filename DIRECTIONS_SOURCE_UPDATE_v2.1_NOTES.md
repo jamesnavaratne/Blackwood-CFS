@@ -47,3 +47,17 @@ See also:
 
 - `directions/source/SOURCE_GENERATION_MANIFEST.md`
 - `directions/source/SOURCE_GENERATION_MANIFEST.json`
+
+## Search behaviour patch
+
+Directions Book search now matches the primary street entry title/name only.
+
+It no longer searches:
+- route/directions text
+- suburb/area text
+- map references
+- response codes
+- source file names
+
+This avoids noisy results for common road names such as `MAIN ROAD`, which are frequently mentioned inside directions for other streets.
+
