@@ -234,6 +234,42 @@ body.modal-open { overflow:hidden; }
   }
 }
 
+
+/* v2.2 UBD filled-button polish
+   Match Directions UBD buttons to the active Dark/Light selection pill. */
+#ubdMapsBtn,
+.iconBtn.ubd-btn,
+button.iconBtn[data-action="ubd"],
+button[data-ubd],
+.street-ubd-btn {
+  background: var(--accent) !important;
+  color: #04101f !important;
+  border-color: var(--accent) !important;
+  box-shadow:
+    0 0 0 2px rgba(0,0,0,0.72) inset,
+    0 0 0 1px var(--accent),
+    0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent) !important;
+  font-weight: 800;
+}
+
+#ubdMapsBtn:hover,
+.iconBtn.ubd-btn:hover,
+button.iconBtn[data-action="ubd"]:hover,
+button[data-ubd]:hover,
+.street-ubd-btn:hover {
+  background: color-mix(in srgb, var(--accent) 88%, white 12%) !important;
+  color: #04101f !important;
+  border-color: color-mix(in srgb, var(--accent) 88%, white 12%) !important;
+}
+
+#ubdMapsBtn:active,
+.iconBtn.ubd-btn:active,
+button.iconBtn[data-action="ubd"]:active,
+button[data-ubd]:active,
+.street-ubd-btn:active {
+  transform: scale(.985);
+}
+
 </style>
 
 <!--
@@ -646,5 +682,21 @@ els.search.addEventListener('input', render); els.clear.onclick=()=>{ els.search
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 render();
 </script>
+
+<script>
+(function(){
+  function styleUbdButtons(){
+    document.querySelectorAll("button").forEach(function(btn){
+      var label = (btn.textContent || "").trim().toUpperCase();
+      if (btn.id === "ubdMapsBtn" || label === "UBD" || label === "UBD MAPS") {
+        btn.classList.add("ubd-btn");
+      }
+    });
+  }
+  document.addEventListener("DOMContentLoaded", styleUbdButtons);
+  document.addEventListener("click", function(){ setTimeout(styleUbdButtons, 0); }, true);
+})();
+</script>
+
 </body>
 </html>
