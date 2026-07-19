@@ -80,3 +80,9 @@ Results:
 
 This package remains a full-app test package until field testing confirms the update.
 
+## Stable status
+
+This build has been accepted as `Blackwood_CFS_v2.1_STABLE_DIRECTIONS_SOURCE_UPDATE.zip`.
+
+UBD pages 179 and 180 are deliberately parked for a later image update and do not block this stable release.
+
