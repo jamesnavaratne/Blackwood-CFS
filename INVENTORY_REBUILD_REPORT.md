@@ -1,7 +1,7 @@
 # Blackwood CFS Inventory Rebuild Report
 
 Source workbook: `Blackwood_CFS_Master_Inventory.xlsx`
-Rebuilt at UTC: `2026-07-19T14:59:16Z`
+Rebuilt at UTC: `2026-07-19T15:21:24Z`
 
 ## Appliance counts
 
