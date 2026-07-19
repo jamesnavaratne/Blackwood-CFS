@@ -1,11 +1,12 @@
 {
-  "build": "Blackwood CFS Directions v2.1 new source update HTML test",
-  "generated_at_utc": "2026-07-16T09:34:30+00:00",
+  "build": "Blackwood CFS Directions v2.1 fidelity pass full app test",
+  "generated_at_utc": "2026-07-19T11:53:13Z",
   "base_app": "Blackwood_CFS_v2.0_STABLE_UBD_BACKDROP_CLOSE_FIX.zip",
   "notes": [
     "HTML test only: Directions Book data rebuilt from the three newly uploaded source files.",
     "BLACKWOOD MAIN entries retained from current stable baseline.",
-    "New source entries use safe generated bolding for this test; exact Word bold-run fidelity can be re-run if this source update is accepted."
+    "Fidelity pass: new replacement source entries checked against parsed Word tables with missing=0, extra=0 and field mismatches=0.",
+    "Fidelity pass: directionsHtml for new replacement sources replaced with source-derived Word bold-run HTML."
   ],
   "sources": [
     {
@@ -40,5 +41,17 @@
       "sha256": "d4c7c76af1790641b3a6a40aee6a6b4a68d4226bbcbe2893cec7fac6b7e801eb",
       "file_meta": "/mnt/data/CORO EAST & CHERRY STREETS.doc: Composite Document File V2 Document, Little Endian, Os: Windows, Version 6.1, Code page: 1252, Title: ACACIA ROAD, Author: Blackwood Station, Template: Normal.dotm, Last Saved By: Brodie,Scott, Revision Number: 15, Name of Creating Application: Microsoft Office Word, Total Editing Time: 04:17:00, Create Time/Date: Wed Aug  4 06:23:00 2004, Last Saved Time/Date: Thu Jul  1 05:31:00 2021, Number of Pages: 7, Number of Words: 1490, Number of Characters: 8495, Security: 0"
     }
-  ]
+  ],
+  "search_behaviour": "Directions search matches primary street entry title/name only.",
+  "bold_fidelity": {
+    "batch": "v2.1 Directions Fidelity Pass",
+    "updated_entries": 202,
+    "source_derived_html_entries": 202,
+    "bold_segments": 2691,
+    "sources": [
+      "CORO STREETS.doc",
+      "BLACKWOOD PARK STREETS1.doc",
+      "CORO EAST & CHERRY STREETS.doc"
+    ]
+  }
 }

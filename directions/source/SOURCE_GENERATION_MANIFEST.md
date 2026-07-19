@@ -25,3 +25,29 @@ This test rebuilds the Directions Book data from the three newly uploaded source
 ## Test note
 
 New replacement-source entries currently use safe generated bolding. If this test is accepted, rerun exact Word bold-run fidelity before final stable release.
+
+## v2.1 Directions Fidelity Pass
+
+Generated: `2026-07-19T11:53:13Z`
+
+Checks:
+
+- Source replacement entries parsed from Word table sources: `202`
+- App replacement entries matched: `202`
+- Missing source entries in app: `0`
+- Extra app entries versus source: `0`
+- Field mismatches for street name / suburb-area / directions / map ref / code: `0`
+- Source-derived Word bold-run HTML entries applied: `202`
+- Source-derived bold segments applied: `2691`
+- Directions search remains primary street entry title/name only.
+
+Source files used for the fidelity pass:
+
+- `CORO STREETS.doc` → `107` entries
+- `BLACKWOOD PARK STREETS1.doc` → `62` entries
+- `CORO EAST & CHERRY STREETS.doc` → `33` entries
+
+Retained source unchanged from prior stable:
+
+- `BLACKWOOD CORO EDEN HILLS ETC STREETS 122016.docx` → `476` entries
+

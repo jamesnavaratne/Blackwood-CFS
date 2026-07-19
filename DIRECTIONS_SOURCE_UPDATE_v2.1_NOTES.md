@@ -61,3 +61,22 @@ It no longer searches:
 
 This avoids noisy results for common road names such as `MAIN ROAD`, which are frequently mentioned inside directions for other streets.
 
+## Fidelity pass
+
+Generated: `2026-07-19T11:53:13Z`
+
+The v2.1 Directions source update has now had a fidelity pass against the tracked source files.
+
+Results:
+
+- Total Directions entries: `678`
+- Replacement-source entries checked: `202`
+- Missing source entries in app: `0`
+- Extra app entries versus source: `0`
+- Street name / suburb-area / directions / map ref / code mismatches: `0`
+- Source-derived Word bold-run HTML entries applied: `202`
+- Source-derived bold segments applied: `2691`
+- Directions search remains street-name-only.
+
+This package remains a full-app test package until field testing confirms the update.
+
