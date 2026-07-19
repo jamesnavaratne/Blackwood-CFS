@@ -389,7 +389,16 @@ def replace_index_appliances(index_path: Path, appliances):
     index_path.write_text(new_html, encoding="utf-8")
 
 
-def write_outputs(repo_root: Path, appliances, xlsx_path: Path, unknown_apps):
+def write_outputs(repo_root: Path, appliances, xlsx_path: Path, unknown_apps, write_report=False):
+    """Write only app-required generated files by default.
+
+    This keeps the normal inventory workflow low-conflict:
+      - index.html is already updated by replace_index_appliances()
+      - data/inventory.json is updated here
+
+    Timestamped report files are useful locally, but they create unnecessary Git
+    merge conflicts, so they are only written when --write-report is used.
+    """
     data_dir = repo_root / "data"
     data_dir.mkdir(exist_ok=True)
     (data_dir / "inventory.json").write_text(
@@ -406,42 +415,44 @@ def write_outputs(repo_root: Path, appliances, xlsx_path: Path, unknown_apps):
         for app, obj in appliances.items()
     }
 
-    meta = {
-        "source_workbook": xlsx_path.name,
-        "rebuilt_at_utc": _dt.datetime.now(_dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-        "appliances": counts,
-        "unknown_apps": unknown_apps,
-        "note": "index.html APPLIANCES object and data/inventory.json regenerated directly from Blackwood_CFS_Master_Inventory.xlsx.",
-    }
-    (repo_root / "BLACKWOOD_CFS_V2_EXCEL_GOSPEL_REBUILD.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    if write_report:
+        meta = {
+            "source_workbook": xlsx_path.name,
+            "rebuilt_at_utc": _dt.datetime.now(_dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+            "appliances": counts,
+            "unknown_apps": unknown_apps,
+            "note": "index.html APPLIANCES object and data/inventory.json regenerated directly from Blackwood_CFS_Master_Inventory.xlsx.",
+        }
+        (repo_root / "BLACKWOOD_CFS_V2_EXCEL_GOSPEL_REBUILD.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
-    lines = [
-        "# Blackwood CFS Inventory Rebuild Report",
-        "",
-        f"Source workbook: `{xlsx_path.name}`",
-        f"Rebuilt at UTC: `{meta['rebuilt_at_utc']}`",
-        "",
-        "## Appliance counts",
-        "",
-        "| Appliance | Items | Locations | Locker photo entries |",
-        "|---|---:|---:|---:|",
-    ]
-    for app, info in counts.items():
-        lines.append(f"| {app} | {info['items']} | {len(info['locations'])} | {info['locker_photo_entries']} |")
+        lines = [
+            "# Blackwood CFS Inventory Rebuild Report",
+            "",
+            f"Source workbook: `{xlsx_path.name}`",
+            f"Rebuilt at UTC: `{meta['rebuilt_at_utc']}`",
+            "",
+            "## Appliance counts",
+            "",
+            "| Appliance | Items | Locations | Locker photo entries |",
+            "|---|---:|---:|---:|",
+        ]
+        for app, info in counts.items():
+            lines.append(f"| {app} | {info['items']} | {len(info['locations'])} | {info['locker_photo_entries']} |")
 
-    lines.extend(["", "## Location order", ""])
-    for app, info in counts.items():
-        lines.append(f"### {app}")
-        lines.append("")
-        lines.append(", ".join(info["locations"]) or "_No locations found_")
-        lines.append("")
+        lines.extend(["", "## Location order", ""])
+        for app, info in counts.items():
+            lines.append(f"### {app}")
+            lines.append("")
+            lines.append(", ".join(info["locations"]) or "_No locations found_")
+            lines.append("")
 
-    if unknown_apps:
-        lines.extend(["## Warning: unknown appliance names", "", ", ".join(unknown_apps), ""])
-    else:
-        lines.extend(["## Warnings", "", "None.", ""])
+        if unknown_apps:
+            lines.extend(["## Warning: unknown appliance names", "", ", ".join(unknown_apps), ""])
+        else:
+            lines.extend(["## Warnings", "", "None.", ""])
 
-    (repo_root / "INVENTORY_REBUILD_REPORT.md").write_text("\n".join(lines), encoding="utf-8")
+        (repo_root / "INVENTORY_REBUILD_REPORT.md").write_text("\n".join(lines), encoding="utf-8")
+
     return counts
 
 
@@ -474,6 +485,7 @@ def main(argv=None):
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--build-date", default=None)
     parser.add_argument("--check-only", action="store_true")
+    parser.add_argument("--write-report", action="store_true", help="Also write timestamped local rebuild reports.")
     args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root).resolve()
@@ -508,7 +520,7 @@ def main(argv=None):
         }
     else:
         replace_index_appliances(index_path, appliances)
-        counts = write_outputs(repo_root, appliances, xlsx_path, unknown_apps)
+        counts = write_outputs(repo_root, appliances, xlsx_path, unknown_apps, write_report=args.write_report)
 
     print("Blackwood CFS inventory rebuild OK")
     for app, info in counts.items():
