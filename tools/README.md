@@ -41,3 +41,23 @@ rebuild_inventory_from_excel.py
 ```
 
 The script has no external Python package dependencies.
+
+
+## Validate without rebuilding
+
+Use this when you want to check the Excel workbook before generating app files:
+
+```text
+validate_inventory_only.bat
+```
+
+It checks for:
+
+- duplicate `Item_ID`s
+- blank required fields
+- locker names that are not listed in `Appliance_Config`
+- CAFS 24 locker order
+- CAFS 24 `P4`
+- unusual status values
+
+It does not change app files.

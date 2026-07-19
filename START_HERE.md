@@ -45,3 +45,24 @@ Those files are generated from Excel.
 - Folder structure: `docs/FOLDER_STRUCTURE.md`
 - Photos: `docs/HOW_TO_ADD_OR_UPDATE_PHOTOS.md`
 - Rebuild troubleshooting: `docs/TROUBLESHOOTING_REBUILD.md`
+
+
+## Create a new item
+
+Yes, new inventory items are supported.
+
+Read:
+
+```text
+docs/HOW_TO_CREATE_NEW_INVENTORY_ITEM.md
+```
+
+For new items, the safer workflow is:
+
+```text
+Edit/copy row in Excel
+↓
+tools\validate_inventory_only.bat
+↓
+tools\rebuild_inventory_from_excel.bat
+```

@@ -76,3 +76,30 @@ After GitHub Pages deploys:
 1. Open the app in Chrome once.
 2. Hard refresh if needed.
 3. For installed Android app issues, remove and reinstall the home-screen app if it still shows cached old behaviour.
+
+
+## Duplicate Item_ID
+
+If validation says an `Item_ID` is duplicated, find both rows in `Master Inventory`.
+
+Every inventory item needs its own unique `Item_ID`.
+
+Fix one of the IDs, save Excel, and run validation again.
+
+## Locker not listed in Appliance_Config
+
+This usually means a typo in the `Locker` column.
+
+Example:
+
+```text
+P-4
+```
+
+should probably be:
+
+```text
+P4
+```
+
+If it is a real new locker/tab, add that locker to `Appliance_Config` deliberately.

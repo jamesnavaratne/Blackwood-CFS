@@ -124,3 +124,24 @@ For a safe test:
 6. Remove the test text from Excel.
 7. Rebuild again.
 8. Confirm the app is back to normal.
+
+
+## Creating a new item
+
+New items are supported.
+
+Use:
+
+```text
+docs/HOW_TO_CREATE_NEW_INVENTORY_ITEM.md
+```
+
+The safest workflow is:
+
+```text
+copy a similar row in Excel
+give the new row a unique Item_ID
+run tools\validate_inventory_only.bat
+run tools\rebuild_inventory_from_excel.bat
+check the app
+```

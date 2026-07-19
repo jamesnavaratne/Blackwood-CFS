@@ -17,6 +17,18 @@ NS = {
 
 APPLIANCE_ORDER = ["Blackwood Rescue", "34P", "CAFS 24"]
 
+# Keep this list deliberately small and operational.
+# Unknown statuses are warnings rather than hard errors.
+EXPECTED_STATUSES = {
+    "",
+    "In service",
+    "Out of service",
+    "Missing",
+    "For repair",
+    "Needs check",
+    "Needs restock",
+}
+
 MASTER_POSITION_FALLBACK = {
     1: "Item_ID",
     2: "Appliance",
@@ -254,6 +266,8 @@ def parse_appliance_config(xlsx_path: Path, records_by_app):
         config.setdefault(app, []).append((safe_int(mapped.get("Display_Order")), location))
 
     lockers_by_app = {}
+    locker_config_errors = []
+
     for app, records in records_by_app.items():
         ordered = []
         seen = set()
@@ -264,16 +278,23 @@ def parse_appliance_config(xlsx_path: Path, records_by_app):
                 ordered.append(loc)
                 seen.add(loc_key)
 
+        # Safety: do not silently accept a new locker name created by a typo.
+        # It is still appended so a generated test can be inspected, but validation fails
+        # unless the locker is also added deliberately to Appliance_Config.
         for r in records:
             loc = r.get("locker", "")
             loc_key = clean_key(loc)
             if loc_key and loc_key not in seen:
                 ordered.append(loc)
                 seen.add(loc_key)
+                item_label = clean_key(r.get("item", "")) or clean_key(r.get("id", "")) or "unnamed item"
+                locker_config_errors.append(
+                    f"{app}: item '{item_label}' uses locker '{loc}', but that locker is not listed in Appliance_Config."
+                )
 
         lockers_by_app[app] = ordered
 
-    return lockers_by_app
+    return lockers_by_app, locker_config_errors
 
 
 def parse_locker_photos(xlsx_path: Path, records_by_app, repo_root: Path):
@@ -355,7 +376,7 @@ def parse_locker_photos(xlsx_path: Path, records_by_app, repo_root: Path):
 def build_appliances(xlsx_path: Path, index_path: Path, repo_root: Path, build_date: str | None = None):
     old = existing_appliances_from_index(index_path)
     records_by_app, unknown_apps = parse_master_inventory(xlsx_path)
-    lockers_by_app = parse_appliance_config(xlsx_path, records_by_app)
+    lockers_by_app, locker_config_errors = parse_appliance_config(xlsx_path, records_by_app)
     locker_photos = parse_locker_photos(xlsx_path, records_by_app, repo_root)
 
     ordered_apps = [app for app in APPLIANCE_ORDER if app in records_by_app]
@@ -373,7 +394,7 @@ def build_appliances(xlsx_path: Path, index_path: Path, repo_root: Path, build_d
             "version": old_app.get("version") or "v2.x Excel auto-rebuild",
         }
 
-    return out, unknown_apps
+    return out, unknown_apps, locker_config_errors
 
 
 def replace_index_appliances(index_path: Path, appliances):
@@ -456,8 +477,11 @@ def write_outputs(repo_root: Path, appliances, xlsx_path: Path, unknown_apps, wr
     return counts
 
 
-def validate(appliances):
+def validate(appliances, locker_config_errors=None, repo_root=None):
     errors = []
+    warnings = []
+    locker_config_errors = locker_config_errors or []
+
     for app in APPLIANCE_ORDER:
         if app not in appliances:
             errors.append(f"Missing appliance: {app}")
@@ -475,7 +499,37 @@ def validate(appliances):
     if "P4" not in cafs_order:
         errors.append("CAFS 24 P4 is missing from tabs.")
 
-    return errors
+    errors.extend(locker_config_errors)
+
+    seen_ids = {}
+    for app, obj in appliances.items():
+        allowed_lockers = {clean_key(x) for x in obj.get("lockers", [])}
+        for i, r in enumerate(obj.get("records", []), start=1):
+            item_id = clean_key(r.get("id", ""))
+            locker = clean_key(r.get("locker", ""))
+            item = clean_key(r.get("item", ""))
+            status = clean_key(r.get("status", ""))
+            where = f"{app} record {i}"
+
+            if not item_id:
+                errors.append(f"{where}: missing Item_ID.")
+            elif item_id in seen_ids:
+                errors.append(f"Duplicate Item_ID '{item_id}' used by {seen_ids[item_id]} and {where}.")
+            else:
+                seen_ids[item_id] = where
+
+            if not locker:
+                errors.append(f"{where}: missing Locker.")
+            elif allowed_lockers and locker not in allowed_lockers:
+                errors.append(f"{where}: locker '{locker}' is not a configured tab for {app}.")
+
+            if not item:
+                errors.append(f"{where}: missing Item name.")
+
+            if status not in EXPECTED_STATUSES:
+                warnings.append(f"{where}: unusual Status '{status}'. Check spelling if this was not deliberate.")
+
+    return errors, warnings
 
 
 def main(argv=None):
@@ -501,13 +555,19 @@ def main(argv=None):
     if not index_path.exists():
         raise FileNotFoundError(f"index.html not found: {index_path}")
 
-    appliances, unknown_apps = build_appliances(xlsx_path, index_path, repo_root, build_date=args.build_date)
+    appliances, unknown_apps, locker_config_errors = build_appliances(xlsx_path, index_path, repo_root, build_date=args.build_date)
 
-    errors = validate(appliances)
+    errors, warnings = validate(appliances, locker_config_errors=locker_config_errors, repo_root=repo_root)
     if errors:
+        print("Inventory validation failed. Fix these before rebuilding:", file=sys.stderr)
         for err in errors:
             print(f"ERROR: {err}", file=sys.stderr)
         return 2
+
+    if warnings:
+        print("Inventory validation warnings:")
+        for warn in warnings:
+            print(f"WARNING: {warn}")
 
     if args.check_only:
         counts = {
@@ -522,7 +582,7 @@ def main(argv=None):
         replace_index_appliances(index_path, appliances)
         counts = write_outputs(repo_root, appliances, xlsx_path, unknown_apps, write_report=args.write_report)
 
-    print("Blackwood CFS inventory rebuild OK")
+    print("Blackwood CFS inventory rebuild OK — validation passed")
     for app, info in counts.items():
         print(f"- {app}: {info['items']} items, {len(info['locations'])} locations, {info['locker_photo_entries']} locker photo entries")
     if unknown_apps:
