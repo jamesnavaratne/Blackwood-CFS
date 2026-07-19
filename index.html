@@ -4169,6 +4169,212 @@ body {
   transform: none !important;
 }
 
+
+/* v2.2 internal transitions sandbox
+   Keep launch/cold-start calm, then add subtle controlled motion inside the app. */
+:root {
+  --v2-ease: cubic-bezier(.2, .7, .2, 1);
+  --v2-fast: 160ms;
+  --v2-medium: 220ms;
+}
+
+/* Touch/press feedback */
+.v2-appliance-home-pill,
+.v2-system-home-search,
+.truck-option,
+.theme-option,
+.stat-button,
+.service-toggle,
+.tabs button,
+.modal-close,
+.system-home-header-btn,
+.menu-btn {
+  transition:
+    transform var(--v2-fast) var(--v2-ease),
+    opacity var(--v2-fast) ease,
+    background-color var(--v2-fast) ease,
+    border-color var(--v2-fast) ease,
+    box-shadow var(--v2-fast) ease;
+}
+
+.v2-appliance-home-pill:active,
+.v2-system-home-search:active,
+.truck-option:active,
+.theme-option:active,
+.stat-button:active,
+.service-toggle:active,
+.tabs button:active,
+.modal-close:active,
+.system-home-header-btn:active,
+.menu-btn:active {
+  transform: scale(.985);
+}
+
+/* System Home -> appliance transition */
+.v2-appliance-home.v2-home-leaving {
+  animation: v2HomeLeave 150ms ease both;
+  pointer-events: none;
+}
+
+@keyframes v2HomeLeave {
+  from { opacity: 1; filter: brightness(1); }
+  to { opacity: 0; filter: brightness(.92); }
+}
+
+/* Inventory content refresh: appliance switch, tab/locker switch, search refresh */
+body.v2-content-enter header,
+body.v2-content-enter main {
+  animation: v2ContentEnter 210ms var(--v2-ease) both;
+}
+
+body.v2-content-enter #summary,
+body.v2-content-enter #lockerPhoto,
+body.v2-content-enter #results {
+  animation: v2ContentSoftEnter 190ms var(--v2-ease) both;
+}
+
+@keyframes v2ContentEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes v2ContentSoftEnter {
+  from { opacity: .78; }
+  to { opacity: 1; }
+}
+
+/* Drawer polish */
+.drawer-backdrop {
+  transition: opacity 180ms ease !important;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+.drawer {
+  transition: transform 230ms var(--v2-ease), box-shadow 230ms ease !important;
+  will-change: transform;
+}
+
+.drawer.open {
+  box-shadow:
+    0 20px 70px rgba(0,0,0,.42),
+    0 0 28px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+/* Modal fade/scale polish. Closed modals are inert rather than merely offscreen. */
+.modal-backdrop {
+  transition: opacity 180ms ease !important;
+}
+
+.item-modal,
+.quiz-modal,
+.photo-modal,
+.issue-modal {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -45%) scale(.985) !important;
+  transition:
+    opacity 190ms var(--v2-ease),
+    transform 190ms var(--v2-ease) !important;
+  will-change: opacity, transform;
+}
+
+.item-modal.open,
+.quiz-modal.open,
+.photo-modal.open,
+.issue-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -46%) scale(1) !important;
+}
+
+/* Global search modal */
+.v2-global-search-modal {
+  display: flex !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease !important;
+}
+
+.v2-global-search-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.v2-global-search-dialog {
+  transform: scale(.985);
+  opacity: .96;
+  transition:
+    transform 190ms var(--v2-ease),
+    opacity 190ms ease;
+}
+
+.v2-global-search-modal.open .v2-global-search-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Photo viewer feels cleaner with fade-only image entry */
+.photo-modal.open .photo-modal-image-wrap img {
+  animation: v2PhotoIn 200ms ease both;
+}
+
+@keyframes v2PhotoIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Route handoff to Directions */
+html.v2-route-leaving body {
+  opacity: .35;
+  transition: opacity 140ms ease;
+}
+
+/* Preserve reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .v2-appliance-home.v2-home-leaving,
+  body.v2-content-enter header,
+  body.v2-content-enter main,
+  body.v2-content-enter #summary,
+  body.v2-content-enter #lockerPhoto,
+  body.v2-content-enter #results,
+  .photo-modal.open .photo-modal-image-wrap img {
+    animation: none !important;
+  }
+
+  .v2-appliance-home-pill,
+  .v2-system-home-search,
+  .truck-option,
+  .theme-option,
+  .stat-button,
+  .service-toggle,
+  .tabs button,
+  .modal-close,
+  .system-home-header-btn,
+  .menu-btn,
+  .drawer,
+  .drawer-backdrop,
+  .modal-backdrop,
+  .item-modal,
+  .quiz-modal,
+  .photo-modal,
+  .issue-modal,
+  .v2-global-search-modal,
+  .v2-global-search-dialog,
+  html.v2-route-leaving body {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .item-modal.open,
+  .quiz-modal.open,
+  .photo-modal.open,
+  .issue-modal.open {
+    transform: translate(-50%, -46%) !important;
+  }
+}
+
 </style>
 
 
@@ -4204,6 +4410,22 @@ v2.2 Android cold-start smoothing test:
 
 </head>
 <body>
+
+<section class="v2-appliance-home open v2-static-startup" aria-label="Blackwood CFS system home">
+  <div class="v2-appliance-home-card">
+    <div class="v2-appliance-home-kicker">Blackwood CFS</div>
+    <h1>Blackwood Appliance Inventory</h1>
+    <div class="v2-appliance-home-pills">
+      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="rescue">Blackwood Rescue</button>
+      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="34p">Blackwood 34P</button>
+      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="cafs24">CAFS 24</button>
+    </div>
+    <button type="button" class="v2-system-home-search">Global Search</button>
+    <button type="button" class="v2-system-home-search v2-system-home-directions"><strong>Directions Book</strong><small>Street directions</small></button>
+    <button type="button" class="v2-appliance-home-quiz">Quiz</button>
+  </div>
+</section>
+
 
 <div id="photoLoadingOverlay" class="photo-loading-overlay" aria-hidden="true">
   <div class="photo-spinner"></div>
@@ -4473,6 +4695,18 @@ function itemPhotoPath(photoName, appliance) {
   return `${photoRoot(appliance)}/items/${photoName}`;
 }
 
+
+function v2RunContentTransition() {
+  if (!document.body || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  document.body.classList.remove("v2-content-enter");
+  void document.body.offsetWidth;
+  document.body.classList.add("v2-content-enter");
+  clearTimeout(window.v2ContentTransitionTimer);
+  window.v2ContentTransitionTimer = setTimeout(() => {
+    document.body.classList.remove("v2-content-enter");
+  }, 280);
+}
+
 function setActiveAppliance(applianceName) {
   DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
   activeLocker = "Home";
@@ -4481,6 +4715,7 @@ function setActiveAppliance(applianceName) {
   document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
   makeTabs();
   render();
+  v2RunContentTransition();
   closeDrawer();
 }
 
@@ -4655,6 +4890,7 @@ function makeTabs() {
       searchEl.value = "";
       makeTabs();
       render();
+      v2RunContentTransition();
       window.scrollTo({top: 0, behavior: "smooth"});
     };
     tabsEl.appendChild(btn);
@@ -5169,10 +5405,12 @@ searchEl.addEventListener("input", () => {
   activeLocker = "Home";
   makeTabs();
   render();
+  v2RunContentTransition();
 });
 clearBtn.addEventListener("click", () => {
   searchEl.value = "";
   render();
+  v2RunContentTransition();
   searchEl.focus();
 });
 
@@ -6009,27 +6247,40 @@ render();
   }
 
   function switchToAppliance(app){
+    const home = document.querySelector(".v2-appliance-home");
+    if (home) home.classList.add("v2-home-leaving");
+
     if (app && app.href) {
-      window.location.href = app.href;
+      document.documentElement.classList.add("v2-route-leaving");
+      setTimeout(() => { window.location.href = app.href; }, 140);
       return;
     }
+
     const btn = Array.from(document.querySelectorAll("[data-truck]")).find(b => norm(b.getAttribute("data-truck")) === app.key);
-    if (btn && typeof btn.click === "function") btn.click();
-    hideHome();
     setTimeout(() => {
-      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch(e) { window.scrollTo(0,0); }
-    }, 80);
+      if (btn && typeof btn.click === "function") btn.click();
+      hideHome();
+      if (home) home.classList.remove("v2-home-leaving");
+      setTimeout(() => {
+        try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch(e) { window.scrollTo(0,0); }
+      }, 40);
+    }, 135);
   }
 
   function openQuizFromHome(){
-    hideHome();
-    const menuQuiz = Array.from(document.querySelectorAll("button, a")).find(el => /quiz/i.test(el.textContent || ""));
-    if (menuQuiz && typeof menuQuiz.click === "function") {
-      setTimeout(() => menuQuiz.click(), 80);
-      return;
-    }
-    const quizEl = document.querySelector(".quiz-modal, #quizModal, [class*='quiz']");
-    if (quizEl) quizEl.classList.add("open");
+    const home = document.querySelector(".v2-appliance-home");
+    if (home) home.classList.add("v2-home-leaving");
+    setTimeout(() => {
+      hideHome();
+      if (home) home.classList.remove("v2-home-leaving");
+      const menuQuiz = Array.from(document.querySelectorAll("button, a")).find(el => /quiz/i.test(el.textContent || ""));
+      if (menuQuiz && typeof menuQuiz.click === "function") {
+        setTimeout(() => menuQuiz.click(), 40);
+        return;
+      }
+      const quizEl = document.querySelector(".quiz-modal, #quizModal, [class*='quiz']");
+      if (quizEl) quizEl.classList.add("open");
+    }, 135);
   }
 
   function bindHomeControls(home){
@@ -6604,12 +6855,21 @@ render();
 
   function addToSystemHome(){
     const card = document.querySelector(".v2-appliance-home-card");
-    if (!card || card.querySelector(".v2-system-home-search")) return;
+    if (!card) return;
+    let btn = card.querySelector(".v2-system-home-search:not(.v2-system-home-directions)");
+    if (btn) {
+      if (btn.dataset.v2Bound !== "1") {
+        btn.dataset.v2Bound = "1";
+        btn.addEventListener("click", openGlobalSearch);
+      }
+      return;
+    }
     const quizBtn = card.querySelector(".v2-appliance-home-quiz");
-    const btn = document.createElement("button");
+    btn = document.createElement("button");
     btn.type = "button";
     btn.className = "v2-system-home-search";
     btn.textContent = "Global Search";
+    btn.dataset.v2Bound = "1";
     btn.addEventListener("click", openGlobalSearch);
     if (quizBtn) card.insertBefore(btn, quizBtn);
     else card.appendChild(btn);
@@ -6617,13 +6877,26 @@ render();
 
   function addDirectionsToSystemHome(){
     const card = document.querySelector(".v2-appliance-home-card");
-    if (!card || card.querySelector(".v2-system-home-directions")) return;
+    if (!card) return;
+    let btn = card.querySelector(".v2-system-home-directions");
+    const goDirections = function(){
+      document.documentElement.classList.add("v2-route-leaving");
+      setTimeout(function(){ window.location.href = "directions/index.html"; }, 140);
+    };
+    if (btn) {
+      if (btn.dataset.v2Bound !== "1") {
+        btn.dataset.v2Bound = "1";
+        btn.addEventListener("click", goDirections);
+      }
+      return;
+    }
     const quizBtn = card.querySelector(".v2-appliance-home-quiz");
-    const btn = document.createElement("button");
+    btn = document.createElement("button");
     btn.type = "button";
     btn.className = "v2-system-home-search v2-system-home-directions";
     btn.innerHTML = "<strong>Directions Book</strong><small>Street directions</small>";
-    btn.addEventListener("click", function(){ window.location.href = "directions/index.html"; });
+    btn.dataset.v2Bound = "1";
+    btn.addEventListener("click", goDirections);
     if (quizBtn) card.insertBefore(btn, quizBtn);
     else card.appendChild(btn);
   }

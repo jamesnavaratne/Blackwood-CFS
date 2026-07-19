@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-2-static-home-cold-start-20260719';
+const CACHE_NAME = 'blackwood-cfs-v2-2-internal-transitions-20260719';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 

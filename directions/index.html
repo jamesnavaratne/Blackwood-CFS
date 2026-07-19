@@ -156,6 +156,84 @@ body.modal-open { overflow:hidden; }
   .modal.street-map-context { padding-left:18px; padding-right:18px; }
 }
 
+
+/* v2.2 internal transitions sandbox — Directions Book */
+:root {
+  --v2-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+.street-row,
+.rail button,
+#clearSearch,
+#ubdMapsBtn,
+.home-btn,
+.theme-toggle button,
+.iconBtn,
+.map-list-btn {
+  transition:
+    transform 150ms var(--v2-ease),
+    opacity 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.street-row:active,
+.rail button:active,
+#clearSearch:active,
+#ubdMapsBtn:active,
+.home-btn:active,
+.theme-toggle button:active,
+.iconBtn:active,
+.map-list-btn:active {
+  transform: scale(.99);
+}
+
+.modal.open .scrim {
+  animation: v2DirectionsScrimIn 170ms ease both;
+}
+
+.modal.open .card,
+.modal.open .map-viewer-card {
+  animation: v2DirectionsModalIn 190ms var(--v2-ease) both;
+}
+
+.map-viewer-image,
+#mapImage {
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+@keyframes v2DirectionsScrimIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes v2DirectionsModalIn {
+  from { opacity: 0; transform: scale(.988); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .street-row,
+  .rail button,
+  #clearSearch,
+  #ubdMapsBtn,
+  .home-btn,
+  .theme-toggle button,
+  .iconBtn,
+  .map-list-btn,
+  .map-viewer-image,
+  #mapImage {
+    transition: none !important;
+  }
+
+  .modal.open .scrim,
+  .modal.open .card,
+  .modal.open .map-viewer-card {
+    animation: none !important;
+  }
+}
+
 </style>
 
 <!--
