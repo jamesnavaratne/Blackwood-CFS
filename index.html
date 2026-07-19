@@ -4142,6 +4142,142 @@ body.dark .v2-zoom-file-path {
   opacity: 0.75;
 }
 
+
+/* v2.2 opening transition sandbox
+   Smooths initial app startup and masks the previous repeated icon/logo flash.
+   The overlay is text/glow based rather than image based, so the CFS icon does not appear repeatedly. */
+html.v2-launching,
+body.v2-launching {
+  background: #06142d !important;
+}
+
+body.v2-launching > *:not(#v2LaunchOverlay):not(script):not(style) {
+  visibility: hidden !important;
+}
+
+#v2LaunchOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent, #00aeef) 16%, transparent), transparent 32%),
+    linear-gradient(180deg, #07162d 0%, #030914 100%);
+  opacity: 1;
+  transition: opacity 260ms ease, visibility 260ms ease;
+  pointer-events: none;
+}
+
+#v2LaunchOverlay.v2-launch-hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.v2-launch-card {
+  width: min(82vw, 420px);
+  padding: 26px 22px;
+  border-radius: 28px;
+  border: 1px solid color-mix(in srgb, var(--accent, #00aeef) 48%, transparent);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)),
+    rgba(4, 12, 24, 0.76);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.035) inset,
+    0 0 34px color-mix(in srgb, var(--accent, #00aeef) 26%, transparent),
+    0 26px 80px rgba(0,0,0,0.36);
+  text-align: center;
+  transform: translateY(4px) scale(0.985);
+  animation: v2LaunchCardIn 380ms ease forwards;
+}
+
+.v2-launch-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, #00aeef) 76%, white 24%);
+  margin-bottom: 0.55rem;
+  font-weight: 700;
+}
+
+.v2-launch-title {
+  margin: 0;
+  font-size: clamp(1.55rem, 7vw, 2.35rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: rgba(255,255,255,0.96);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent, #00aeef) 32%, transparent);
+}
+
+.v2-launch-line {
+  width: 68%;
+  height: 2px;
+  margin: 18px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--accent, #00aeef), transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent, #00aeef) 42%, transparent);
+  transform-origin: center;
+  animation: v2LaunchLine 520ms ease forwards;
+}
+
+@keyframes v2LaunchCardIn {
+  to { transform: translateY(0) scale(1); }
+}
+
+@keyframes v2LaunchLine {
+  from { transform: scaleX(0.18); opacity: 0.38; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+.v2-appliance-home.v2-home-enter {
+  animation: v2HomeEnter 320ms ease both;
+}
+
+.v2-appliance-home.v2-home-enter .v2-appliance-home-card {
+  animation: v2HomeCardEnter 360ms ease both;
+}
+
+.v2-appliance-home.v2-home-enter .v2-appliance-home-pill,
+.v2-appliance-home.v2-home-enter .v2-appliance-home-quiz {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: v2HomePillEnter 320ms ease forwards;
+}
+
+.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(1) { animation-delay: 60ms; }
+.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(2) { animation-delay: 90ms; }
+.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(3) { animation-delay: 120ms; }
+.v2-appliance-home.v2-home-enter .v2-appliance-home-pill:nth-child(4) { animation-delay: 150ms; }
+.v2-appliance-home.v2-home-enter .v2-appliance-home-quiz { animation-delay: 180ms; }
+
+@keyframes v2HomeEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes v2HomeCardEnter {
+  from { opacity: 0; transform: translateY(8px) scale(0.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes v2HomePillEnter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #v2LaunchOverlay,
+  .v2-launch-card,
+  .v2-launch-line,
+  .v2-appliance-home.v2-home-enter,
+  .v2-appliance-home.v2-home-enter .v2-appliance-home-card,
+  .v2-appliance-home.v2-home-enter .v2-appliance-home-pill,
+  .v2-appliance-home.v2-home-enter .v2-appliance-home-quiz {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 </style>
 
 
@@ -4166,8 +4302,34 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+
+<script>
+(function(){
+  window.v2FinishLaunch = function(){
+    var body = document.body;
+    var overlay = document.getElementById('v2LaunchOverlay');
+    if (!body || !overlay) return;
+    body.classList.remove('v2-launching');
+    overlay.classList.add('v2-launch-hide');
+    setTimeout(function(){ if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 320);
+  };
+  window.addEventListener('load', function(){
+    setTimeout(window.v2FinishLaunch, 850);
+  });
+})();
+</script>
+
 </head>
-<body>
+<body class="v2-launching">
+
+<div id="v2LaunchOverlay" aria-hidden="true">
+  <div class="v2-launch-card">
+    <div class="v2-launch-kicker">Blackwood CFS</div>
+    <h1 class="v2-launch-title">Appliance Inventory</h1>
+    <div class="v2-launch-line"></div>
+  </div>
+</div>
+
 
 <div id="photoLoadingOverlay" class="photo-loading-overlay" aria-hidden="true">
   <div class="photo-spinner"></div>
@@ -6013,6 +6175,8 @@ render();
     `;
 
     document.body.prepend(home);
+    home.classList.add("v2-home-enter");
+    setTimeout(() => home.classList.remove("v2-home-enter"), 760);
 
     home.querySelectorAll("[data-v2-home-truck]").forEach(btn => {
       btn.addEventListener("click", () => switchToAppliance(appFor(btn.dataset.v2HomeTruck)));
@@ -6020,6 +6184,11 @@ render();
     home.querySelector(".v2-appliance-home-quiz").addEventListener("click", openQuizFromHome);
 
     hideMainAppForHome();
+
+    // Fade away the launch overlay only after the System Home has been injected.
+    setTimeout(() => {
+      if (typeof window.v2FinishLaunch === "function") window.v2FinishLaunch();
+    }, 180);
   }
 
   function hideMainAppForHome(){
