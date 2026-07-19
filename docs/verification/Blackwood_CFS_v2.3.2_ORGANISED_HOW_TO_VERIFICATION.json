@@ -1,0 +1,39 @@
+{
+  "package": "Blackwood_CFS_v2.3.2_ORGANISED_HOW_TO_TEST.zip",
+  "base": "Blackwood_CFS_v2.3.1_AUTO_REBUILD_LOW_CONFLICT_TEST.zip",
+  "rebuild_ok": true,
+  "rebuild_output": "Blackwood CFS inventory rebuild OK\n- Blackwood Rescue: 145 items, 7 locations, 8 locker photo entries\n- 34P: 142 items, 15 locations, 15 locker photo entries\n- CAFS 24: 115 items, 11 locations, 11 locker photo entries",
+  "root_files": [
+    ".gitignore",
+    "Blackwood_CFS_Master_Inventory.xlsx",
+    "CHANGELOG.md",
+    "README.md",
+    "START_HERE.md",
+    "UPLOAD_THESE_FILES_TO_GITHUB.txt",
+    "icon.png",
+    "index.html",
+    "manifest.json",
+    "service-worker.js"
+  ],
+  "runtime_paths_kept": [
+    "index.html",
+    "manifest.json",
+    "service-worker.js",
+    "icon.png",
+    "Blackwood_CFS_Master_Inventory.xlsx",
+    "data/",
+    "directions/",
+    "photos/",
+    "icons/",
+    "tools/"
+  ],
+  "docs_added": [
+    "START_HERE.md",
+    "docs/HOW_TO_EDIT_INVENTORY.md",
+    "docs/HOW_TO_ADD_OR_UPDATE_PHOTOS.md",
+    "docs/FOLDER_STRUCTURE.md",
+    "docs/TROUBLESHOOTING_REBUILD.md",
+    "docs/deployment/HOW_TO_DEPLOY_WITH_GITHUB_DESKTOP.md",
+    "tools/README.md"
+  ]
+}

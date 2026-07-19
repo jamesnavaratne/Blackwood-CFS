@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-3-auto-rebuild-foundation-20260719';
+const CACHE_NAME = 'blackwood-cfs-v2-3-2-organised-how-to-20260719';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
