@@ -1,0 +1,16 @@
+{
+  "package": "Blackwood_CFS_v2.5_INVENTORY_NATIVE_SWIPE_RESET_TEST.zip",
+  "base_zip": "Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_TEST.zip",
+  "changed_files": [
+    "index.html",
+    ".nojekyll",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.5_INVENTORY_NATIVE_SWIPE_RESET_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.5_INVENTORY_NATIVE_SWIPE_RESET_VERIFICATION.json"
+  ],
+  "directions_book_changed": false,
+  "inventory_data_changed": false,
+  "photos_changed": false,
+  "rebuild_tools_changed": false,
+  "html_preview_generated": false
+}

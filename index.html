@@ -4376,13 +4376,50 @@ html.v2-route-leaving body {
 }
 
 
-/* v2.4.5 item-card attached-photo background wash
-   Background-only. No pseudo-elements, z-index, child positioning, star/photo/status movement,
-   or card structure changes. */
+/* v2.5 inventory native-swipe reset
+   Directions Book untouched.
+   Inventory movement is reset to one controlled horizontal main-panel slide only. */
+
+body.v2-content-enter header,
+body.v2-content-enter main,
+body.v2-content-enter #summary,
+body.v2-content-enter #lockerPhoto,
+body.v2-content-enter #results,
+main .summary,
+main #lockerPhoto,
+main #results,
+main .photo-card,
+main .group,
+main .item {
+  animation: none !important;
+}
+
+main #summary,
+main #lockerPhoto,
+main #results,
+main .group,
+main .item {
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: .16s;
+  transition-timing-function: ease;
+}
+
+main.inventory-native-swipe-zone {
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  will-change: transform, opacity;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+}
+
+main.inventory-native-transitioning {
+  pointer-events: none;
+}
+
 .item.has-photo-bg {
   background-color: var(--card);
   background-image:
-    linear-gradient(180deg, rgba(18, 27, 39, .74), rgba(16, 24, 36, .83)),
+    linear-gradient(180deg, rgba(18, 27, 39, .74), rgba(16, 24, 36, .84)),
     var(--item-photo-bg);
   background-size: 100% 100%, cover;
   background-position: center, center;
@@ -4392,7 +4429,7 @@ html.v2-route-leaving body {
 
 .item.has-photo-bg.in-service {
   background-image:
-    linear-gradient(180deg, rgba(18, 29, 39, .72), rgba(12, 24, 34, .81)),
+    linear-gradient(180deg, rgba(18, 29, 39, .72), rgba(12, 24, 34, .82)),
     var(--item-photo-bg);
 }
 
@@ -4408,208 +4445,22 @@ html.v2-route-leaving body {
   backdrop-filter: blur(1px);
 }
 
-/* v2.4.5 inventory staged-render smoothness
-   Fixes the hard clear/reload flash seen in screen recordings.
-   Directions Book is untouched. */
-#summary,
-#lockerPhoto,
-#results {
-  transition:
-    opacity .24s ease,
-    transform .24s ease,
-    filter .24s ease;
-}
-
-.inventory-fade-out {
-  opacity: .42;
-  transform: translateY(3px);
-  filter: saturate(.92);
-}
-
-.inventory-fade-in {
-  animation: inventoryStagedFadeIn .34s ease both;
-}
-
-@keyframes inventoryStagedFadeIn {
-  from {
-    opacity: .58;
-    transform: translateY(4px);
-    filter: saturate(.92);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: saturate(1);
-  }
-}
-
-/* Reduce tiny flashes when the photo-background availability check resolves. */
-.item {
-  transition:
-    background-image .30s ease,
-    background-color .30s ease,
-    border-color .30s ease,
-    box-shadow .30s ease;
-}
-
-.photo-card,
-.group,
-.group-title,
-.items-grid,
-.item {
-  backface-visibility: hidden;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  #summary,
-  #lockerPhoto,
-  #results,
-  .item {
-    transition: none !important;
-  }
-
-  .inventory-fade-out,
-  .inventory-fade-in {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    animation: none !important;
-  }
-}
-
-
-/* v2.4.6 no-second-photo-flash refinement
-   Photo backgrounds are now present on the initial item-card render, so avoid delayed
-   card-wide transitions that look like a second flash. */
-.item.has-photo-bg {
-  transition:
-    background-color .18s ease,
-    border-color .28s ease,
-    box-shadow .28s ease;
-}
-
-
-/* v2.4.8 butter-smooth inventory
-   Inventory only. Directions Book untouched.
-   Removes double stacked fades and uses a single main-view transition where supported. */
-
-main {
-  view-transition-name: inventory-main;
-  contain: layout paint;
-}
-
-/* Neutralise older staged-render classes so they cannot create a second flash or downward movement. */
-.inventory-fade-out,
-.inventory-fade-in {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  animation: none !important;
-}
-
-/* Prevent the older content-enter animation if an old call slips through. */
-body.v2-content-enter header,
-body.v2-content-enter main,
-body.v2-content-enter #summary,
-body.v2-content-enter #lockerPhoto,
-body.v2-content-enter #results {
-  animation: none !important;
-}
-
-/* View Transition API: one snapshot crossfade/slide for locker changes. */
-::view-transition-old(inventory-main),
-::view-transition-new(inventory-main) {
-  animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
-  animation-fill-mode: both;
-  mix-blend-mode: normal;
-}
-
-html.inventory-vt-next::view-transition-old(inventory-main) {
-  animation-name: bwInvOldNext;
-}
-html.inventory-vt-next::view-transition-new(inventory-main) {
-  animation-name: bwInvNewNext;
-}
-html.inventory-vt-prev::view-transition-old(inventory-main) {
-  animation-name: bwInvOldPrev;
-}
-html.inventory-vt-prev::view-transition-new(inventory-main) {
-  animation-name: bwInvNewPrev;
-}
-html.inventory-vt-fade::view-transition-old(inventory-main) {
-  animation-name: bwInvOldFade;
-}
-html.inventory-vt-fade::view-transition-new(inventory-main) {
-  animation-name: bwInvNewFade;
-}
-
-@keyframes bwInvOldNext {
-  from { opacity: 1; transform: translateX(0); }
-  to   { opacity: 0; transform: translateX(-10px); }
-}
-@keyframes bwInvNewNext {
-  from { opacity: 0; transform: translateX(14px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes bwInvOldPrev {
-  from { opacity: 1; transform: translateX(0); }
-  to   { opacity: 0; transform: translateX(10px); }
-}
-@keyframes bwInvNewPrev {
-  from { opacity: 0; transform: translateX(-14px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes bwInvOldFade {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
-@keyframes bwInvNewFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Fallback for browsers without View Transition API: a single gentle fade only. */
-main.inventory-fallback-fade {
-  opacity: .84;
-  transition: opacity 130ms ease;
-}
-
-/* Smooth swipe capture zone. Allows vertical scrolling but reserves horizontal swipes. */
-main.inventory-swipe-zone {
-  touch-action: pan-y;
-  overscroll-behavior-x: contain;
-}
-
-/* Card photo background remains background-only and gentle. */
-.item.has-photo-bg {
-  background-size: 100% 100%, cover;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
-  background-clip: border-box, padding-box;
-}
-
-/* Reduce late image-background shimmer; no structural changes. */
-.item {
-  transition:
-    background-color .18s ease,
-    border-color .22s ease,
-    box-shadow .22s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  main {
-    view-transition-name: none;
-    contain: none;
-  }
-  main.inventory-swipe-zone {
+  main.inventory-native-swipe-zone {
     touch-action: auto;
+    will-change: auto;
   }
-  ::view-transition-old(inventory-main),
-  ::view-transition-new(inventory-main),
-  main.inventory-fallback-fade {
-    animation: none !important;
+
+  main.inventory-native-transitioning,
+  main #summary,
+  main #lockerPhoto,
+  main #results,
+  main .group,
+  main .item {
     transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
   }
 }
 
@@ -4935,24 +4786,21 @@ function itemPhotoPath(photoName, appliance) {
 
 
 function v2RunContentTransition() {
-  // v2.4.8: intentionally no-op for inventory.
-  // The older body.v2-content-enter animation stacked with render animations and caused
-  // visible double flashes/move-down movements when changing lockers.
+  // v2.5 reset: no-op for inventory. Previous body/content animation stacked with
+  // locker rendering and caused visible double flashes/move-down movements.
   return;
 }
 
 function setActiveAppliance(applianceName) {
-  runInventoryViewTransition(() => {
-    DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
-    activeLocker = "Home";
-    if (searchEl) searchEl.value = "";
-    if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
-    document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
-    makeTabs();
-    renderNow();
-  }, "fade");
+  DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
+  activeLocker = "Home";
+  if (searchEl) searchEl.value = "";
+  if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
+  document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
+  makeTabs();
+  renderImmediate();
+  installNativeLockerSwipe();
   closeDrawer();
-  setTimeout(installLockerSwipe, 0);
 }
 
 let activeLocker = "Home";
@@ -5116,19 +4964,28 @@ function recordMatches(r, q) {
 }
 
 
-function lockerListForSwipe() {
+function cssUrlSafe(value) {
+  return String(value || "")
+    .replace(/\\/g, "/")
+    .replace(/"/g, "%22")
+    .replace(/'/g, "%27")
+    .replace(/\n/g, "")
+    .replace(/\r/g, "");
+}
+
+function lockerListForNativeSwipe() {
   return Array.isArray(DATA.lockers) ? DATA.lockers : [];
 }
 
 function lockerTransitionDirection(fromLocker, toLocker) {
-  const list = lockerListForSwipe();
-  const fromIndex = list.indexOf(fromLocker);
-  const toIndex = list.indexOf(toLocker);
-  if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return "fade";
-  return toIndex > fromIndex ? "next" : "prev";
+  const lockers = lockerListForNativeSwipe();
+  const fromIndex = lockers.indexOf(fromLocker);
+  const toIndex = lockers.indexOf(toLocker);
+  if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return 0;
+  return toIndex > fromIndex ? 1 : -1;
 }
 
-function scrollActiveTabIntoView() {
+function scrollActiveLockerTabIntoView() {
   const active = tabsEl ? tabsEl.querySelector("button.active") : null;
   if (!active || !active.scrollIntoView) return;
   try {
@@ -5138,7 +4995,7 @@ function scrollActiveTabIntoView() {
   }
 }
 
-function imagePreloadPromise(src, timeoutMs = 190) {
+function imagePreloadPromise(src, timeoutMs = 160) {
   src = String(src || "").trim();
   if (!src) return Promise.resolve();
   return new Promise(resolve => {
@@ -5168,14 +5025,12 @@ function lockerAssetsToPreload(locker) {
     urls.push(lockerPhotoPath(lp.photo, DATA.appliance));
   }
 
-  // Start loading visible card background images before the transition.
-  // Do not wait forever; this is only to remove the obvious second flash.
   DATA.records
     .filter(r => r.locker === locker)
-    .slice(0, 30)
+    .slice(0, 24)
     .forEach(r => {
-      const itemPhoto = itemPhotoPath(r.extraPhoto || itemPhotoFilenameFromName(r.item), r.appliance || DATA.appliance);
-      if (itemPhoto) urls.push(itemPhoto);
+      const url = itemPhotoPath(r.extraPhoto || itemPhotoFilenameFromName(r.item), r.appliance || DATA.appliance);
+      if (url) urls.push(url);
     });
 
   return [...new Set(urls)];
@@ -5186,84 +5041,131 @@ function preloadLockerAssets(locker) {
   if (!urls.length) return Promise.resolve();
   return Promise.race([
     Promise.allSettled(urls.map(src => imagePreloadPromise(src))).then(() => {}),
-    new Promise(resolve => setTimeout(resolve, 240))
+    new Promise(resolve => setTimeout(resolve, 190))
   ]);
 }
 
-function runInventoryViewTransition(updateFn, direction = "fade") {
-  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const root = document.documentElement;
+function renderImmediate() {
+  const records = filteredRecords();
+  renderSummary(records);
+  renderPhoto();
+  renderResults(records);
+  checkItemPhotoIndicators();
+}
+
+let nativeLockerSwitchToken = 0;
+let nativeSwipeBusy = false;
+
+function resetMainMotion(main) {
+  if (!main) return;
+  main.style.transition = "";
+  main.style.transform = "";
+  main.style.opacity = "";
+  main.classList.remove("inventory-native-transitioning");
+}
+
+function animateMain(main, transform, opacity, duration, easing = "cubic-bezier(.2,.82,.2,1)") {
+  if (!main) return Promise.resolve();
+  return new Promise(resolve => {
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      main.removeEventListener("transitionend", onEnd);
+      resolve();
+    };
+    const onEnd = event => {
+      if (event && event.target !== main) return;
+      done();
+    };
+    main.addEventListener("transitionend", onEnd);
+    main.style.transition = `transform ${duration}ms ${easing}, opacity ${duration}ms ease`;
+    requestAnimationFrame(() => {
+      main.style.transform = transform;
+      main.style.opacity = opacity;
+    });
+    setTimeout(done, duration + 70);
+  });
+}
+
+async function setActiveLockerNative(locker, options = {}) {
+  if (!locker || locker === activeLocker) return;
+
   const main = document.querySelector("main");
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const previousLocker = activeLocker;
+  const direction = options.direction || lockerTransitionDirection(previousLocker, locker) || 1;
+  const token = ++nativeLockerSwitchToken;
 
-  root.classList.remove("inventory-vt-next", "inventory-vt-prev", "inventory-vt-fade");
-  if (direction === "next") root.classList.add("inventory-vt-next");
-  else if (direction === "prev") root.classList.add("inventory-vt-prev");
-  else root.classList.add("inventory-vt-fade");
-
-  if (!reduceMotion && document.startViewTransition) {
-    const vt = document.startViewTransition(() => {
-      updateFn();
-    });
-    vt.finished.finally(() => {
-      root.classList.remove("inventory-vt-next", "inventory-vt-prev", "inventory-vt-fade");
-    });
+  if (!main || reduceMotion) {
+    activeLocker = locker;
+    if (options.clearSearch !== false && searchEl) searchEl.value = "";
+    makeTabs();
+    renderImmediate();
+    scrollActiveLockerTabIntoView();
+    if (options.scrollTop === true && window.scrollY > 140) window.scrollTo({ top: 0, behavior: "auto" });
     return;
   }
 
-  // Minimal fallback: update immediately with one gentle opacity settle, no vertical movement.
-  if (main && !reduceMotion) main.classList.add("inventory-fallback-fade");
-  updateFn();
-  requestAnimationFrame(() => {
-    if (main) main.classList.remove("inventory-fallback-fade");
-    root.classList.remove("inventory-vt-next", "inventory-vt-prev", "inventory-vt-fade");
-  });
-}
+  if (nativeSwipeBusy) return;
+  nativeSwipeBusy = true;
+  main.classList.add("inventory-native-transitioning");
 
-function setActiveLocker(locker, options = {}) {
-  if (!locker || locker === activeLocker) return;
-  const previousLocker = activeLocker;
-  const direction = options.direction || lockerTransitionDirection(previousLocker, locker);
+  const outX = direction > 0 ? -26 : 26;
+  const inX = direction > 0 ? 26 : -26;
+  const preload = preloadLockerAssets(locker);
 
-  preloadLockerAssets(locker).then(() => {
-    runInventoryViewTransition(() => {
-      activeLocker = locker;
-      if (options.clearSearch !== false && searchEl) searchEl.value = "";
-      makeTabs();
-      renderNow();
-    }, direction);
-    scrollActiveTabIntoView();
-  });
+  try {
+    await animateMain(main, `translate3d(${outX}px,0,0)`, ".72", 115);
+    if (token !== nativeLockerSwitchToken) return;
 
-  if (options.scrollTop === true && window.scrollY > 140) {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    await preload;
+    if (token !== nativeLockerSwitchToken) return;
+
+    main.style.transition = "none";
+    main.style.transform = `translate3d(${inX}px,0,0)`;
+    main.style.opacity = ".72";
+
+    activeLocker = locker;
+    if (options.clearSearch !== false && searchEl) searchEl.value = "";
+    makeTabs();
+    renderImmediate();
+    scrollActiveLockerTabIntoView();
+    if (options.scrollTop === true && window.scrollY > 140) window.scrollTo({ top: 0, behavior: "auto" });
+
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (token !== nativeLockerSwitchToken) return;
+
+    await animateMain(main, "translate3d(0,0,0)", "1", 165);
+  } finally {
+    if (token === nativeLockerSwitchToken) resetMainMotion(main);
+    nativeSwipeBusy = false;
   }
 }
 
-function moveLockerBy(delta) {
-  const list = lockerListForSwipe();
-  if (!list.length) return false;
+function moveLockerByNativeSwipe(delta) {
+  const lockers = lockerListForNativeSwipe();
+  if (!lockers.length) return false;
 
-  let index = list.indexOf(activeLocker);
-  if (index < 0) {
-    index = delta > 0 ? -1 : list.length;
-  }
+  let index = lockers.indexOf(activeLocker);
+  if (index < 0) index = delta > 0 ? -1 : lockers.length;
 
   const nextIndex = index + delta;
-  if (nextIndex < 0 || nextIndex >= list.length) return false;
+  if (nextIndex < 0 || nextIndex >= lockers.length) return false;
 
-  setActiveLocker(list[nextIndex], {
-    direction: delta > 0 ? "next" : "prev",
+  setActiveLockerNative(lockers[nextIndex], {
+    direction: delta > 0 ? 1 : -1,
     clearSearch: true,
     scrollTop: false
   });
   return true;
 }
 
-function installLockerSwipe() {
+function installNativeLockerSwipe() {
   const main = document.querySelector("main");
-  if (!main || main.dataset.lockerSwipeInstalled === "true") return;
-  main.dataset.lockerSwipeInstalled = "true";
-  main.classList.add("inventory-swipe-zone");
+  if (!main || main.dataset.nativeLockerSwipeInstalled === "true") return;
+  main.dataset.nativeLockerSwipeInstalled = "true";
+  main.classList.add("inventory-native-swipe-zone");
 
   let sx = 0;
   let sy = 0;
@@ -5272,53 +5174,77 @@ function installLockerSwipe() {
   let horizontalIntent = false;
   let suppressClickUntil = 0;
 
-  function blockSwipeStart(target) {
+  function blockedTarget(target) {
     return !!(target && target.closest && target.closest(
       "button, a, input, textarea, select, .drawer, .drawer-backdrop, .item-modal, .photo-modal, .issue-modal, .quiz-modal, .v2-global-search-modal, .modal-backdrop"
     ));
   }
 
   main.addEventListener("touchstart", event => {
+    if (nativeSwipeBusy) return;
     if (!event.touches || event.touches.length !== 1) return;
-    if (blockSwipeStart(event.target)) return;
+    if (blockedTarget(event.target)) return;
     const t = event.touches[0];
     sx = t.clientX;
     sy = t.clientY;
     startTime = Date.now();
     tracking = true;
     horizontalIntent = false;
+    main.style.transition = "none";
   }, { passive: true });
 
   main.addEventListener("touchmove", event => {
-    if (!tracking || !event.touches || event.touches.length !== 1) return;
+    if (!tracking || nativeSwipeBusy || !event.touches || event.touches.length !== 1) return;
     const t = event.touches[0];
     const dx = t.clientX - sx;
     const dy = t.clientY - sy;
-    if (!horizontalIntent && Math.abs(dx) > 14 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+
+    if (!horizontalIntent && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.18) {
       horizontalIntent = true;
     }
-    if (horizontalIntent) event.preventDefault();
+
+    if (!horizontalIntent) return;
+    event.preventDefault();
+
+    const lockers = lockerListForNativeSwipe();
+    const atStart = lockers.indexOf(activeLocker) <= 0 && dx > 0;
+    const atEnd = lockers.indexOf(activeLocker) >= lockers.length - 1 && dx < 0;
+    const resistance = (atStart || atEnd) ? 0.16 : 0.34;
+    const visualX = Math.max(-46, Math.min(46, dx * resistance));
+    const visualOpacity = String(Math.max(0.78, 1 - Math.abs(visualX) / 170));
+    main.style.transform = `translate3d(${visualX}px,0,0)`;
+    main.style.opacity = visualOpacity;
   }, { passive: false });
 
   main.addEventListener("touchend", event => {
     if (!tracking) return;
     tracking = false;
+
     const t = event.changedTouches && event.changedTouches[0];
-    if (!t) return;
+    if (!t) {
+      resetMainMotion(main);
+      return;
+    }
 
     const dx = t.clientX - sx;
     const dy = t.clientY - sy;
     const elapsed = Date.now() - startTime;
+    const passed = Math.abs(dx) >= 52 && Math.abs(dx) > Math.abs(dy) * 1.25 && elapsed < 1100;
 
-    if (Math.abs(dx) >= 54 && Math.abs(dx) > Math.abs(dy) * 1.28 && elapsed < 950) {
-      const moved = moveLockerBy(dx < 0 ? 1 : -1);
-      if (moved) suppressClickUntil = Date.now() + 420;
+    if (horizontalIntent && passed) {
+      const moved = moveLockerByNativeSwipe(dx < 0 ? 1 : -1);
+      if (moved) {
+        suppressClickUntil = Date.now() + 420;
+        return;
+      }
     }
+
+    animateMain(main, "translate3d(0,0,0)", "1", 120).then(() => resetMainMotion(main));
   }, { passive: true });
 
   main.addEventListener("touchcancel", () => {
     tracking = false;
-    horizontalIntent = false;
+    animateMain(main, "translate3d(0,0,0)", "1", 120).then(() => resetMainMotion(main));
   }, { passive: true });
 
   document.addEventListener("click", event => {
@@ -5336,8 +5262,8 @@ function makeTabs() {
     btn.textContent = locker;
     btn.className = locker === activeLocker ? "active" : "";
     btn.onclick = () => {
-      setActiveLocker(locker, {
-        direction: lockerTransitionDirection(activeLocker, locker),
+      setActiveLockerNative(locker, {
+        direction: lockerTransitionDirection(activeLocker, locker) || 1,
         clearSearch: true,
         scrollTop: true
       });
@@ -5376,7 +5302,7 @@ function renderSummary(records) {
   const starredBtn = document.getElementById("starredStat");
   if (starredBtn) {
     starredBtn.addEventListener("click", () => {
-      setActiveLocker("★", { direction: "fade", clearSearch: true, scrollTop: true });
+      setActiveLockerNative("★", { direction: 1, clearSearch: true, scrollTop: true });
     });
   }
 
@@ -5397,7 +5323,7 @@ function renderSummary(records) {
   const oosBtn = document.getElementById("outOfServiceStat");
   if (oosBtn) {
     oosBtn.addEventListener("click", () => {
-      setActiveLocker("Out of Service", { direction: "fade", clearSearch: true, scrollTop: true });
+      setActiveLockerNative("Out of Service", { direction: 1, clearSearch: true, scrollTop: true });
     });
   }
 }
@@ -5808,30 +5734,6 @@ function renderResults(records) {
 
 const itemPhotoAvailabilityCache = {};
 
-
-function cssUrlSafe(value) {
-  return String(value || "")
-    .replace(/\\/g, "/")
-    .replace(/"/g, "%22")
-    .replace(/'/g, "%27")
-    .replace(/\n/g, "")
-    .replace(/\r/g, "");
-}
-
-function applyItemCardPhotoBackground(button, url) {
-  const card = button ? button.closest(".item") : null;
-  if (!card || !url) return;
-  card.classList.add("has-photo-bg");
-  card.style.setProperty("--item-photo-bg", `url("${cssUrlSafe(url)}")`);
-}
-
-function clearItemCardPhotoBackground(button) {
-  const card = button ? button.closest(".item") : null;
-  if (!card) return;
-  card.classList.remove("has-photo-bg");
-  card.style.removeProperty("--item-photo-bg");
-}
-
 function checkItemPhotoIndicators() {
   document.querySelectorAll(".photo-indicator-btn").forEach(btn => {
     const url = btn.dataset.photoUrl;
@@ -5850,30 +5752,18 @@ function checkItemPhotoIndicators() {
     const img = new Image();
     img.onload = () => {
       itemPhotoAvailabilityCache[url] = true;
-      document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => {
-        b.classList.add("has-photo");
-      });
+      document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => b.classList.add("has-photo"));
     };
     img.onerror = () => {
       itemPhotoAvailabilityCache[url] = false;
-      document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => {
-        b.classList.remove("has-photo");
-      });
+      document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => b.classList.remove("has-photo"));
     };
     img.src = url;
   });
 }
 
-function renderNow() {
-  const records = filteredRecords();
-  renderSummary(records);
-  renderPhoto();
-  renderResults(records);
-  checkItemPhotoIndicators();
-}
-
 function render() {
-  renderNow();
+  renderImmediate();
 }
 
 let inventorySearchTimer = null;
@@ -5882,12 +5772,12 @@ searchEl.addEventListener("input", () => {
   makeTabs();
   clearTimeout(inventorySearchTimer);
   inventorySearchTimer = setTimeout(() => {
-    renderNow();
-  }, 45);
+    renderImmediate();
+  }, 35);
 });
 clearBtn.addEventListener("click", () => {
   searchEl.value = "";
-  renderNow();
+  renderImmediate();
   searchEl.focus();
 });
 
@@ -6412,8 +6302,8 @@ if (emailIssueBtn) {
 initialiseIssueReportingFeature();
 
 makeTabs();
-render();
-installLockerSwipe();
+renderImmediate();
+installNativeLockerSwipe();
 </script>
 <script>
 // v2.0 hamburger global search + top-scroll patch

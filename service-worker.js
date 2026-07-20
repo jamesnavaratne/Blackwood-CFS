@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-4-8-inventory-butter-smooth-20260720';
+const CACHE_NAME = 'blackwood-cfs-v2-5-inventory-native-swipe-reset-20260720';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
