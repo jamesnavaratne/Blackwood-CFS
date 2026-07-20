@@ -1,0 +1,34 @@
+# Upload these files to GitHub
+
+Upload/commit the whole folder contents.
+
+Important root files that must be present:
+
+```text
+index.html
+manifest.json
+service-worker.js
+icon.png
+Blackwood_CFS_Master_Inventory.xlsx
+README.md
+START_HERE.md
+```
+
+Important folders:
+
+```text
+.github/
+data/
+directions/
+docs/
+icons/
+photos/
+tools/
+```
+
+For routine inventory edits, read:
+
+```text
+START_HERE.md
+docs/HOW_TO_EDIT_INVENTORY.md
+```
