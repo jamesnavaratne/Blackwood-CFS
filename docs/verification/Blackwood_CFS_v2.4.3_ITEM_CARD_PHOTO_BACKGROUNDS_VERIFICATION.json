@@ -1,0 +1,15 @@
+{
+  "package": "Blackwood_CFS_v2.4.3_ITEM_CARD_PHOTO_BACKGROUNDS_TEST.zip",
+  "base": "Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_TEST.zip",
+  "changed_files": [
+    "index.html",
+    ".nojekyll",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.4.3_ITEM_CARD_PHOTO_BACKGROUNDS_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.3_ITEM_CARD_PHOTO_BACKGROUNDS_VERIFICATION.json"
+  ],
+  "inventory_data_changed": false,
+  "directions_data_changed": false,
+  "runtime_change": "Item cards with confirmed attached photos receive a dark, faded background image layer.",
+  "nojekyll_added": true
+}
