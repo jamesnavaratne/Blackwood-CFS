@@ -4558,6 +4558,13 @@ main.inventory-native-transitioning {
   }
 }
 
+
+/* v2.5.2 appliance switch reset
+   On appliance change, reset to Home and reset locker-tab scroll without adding animation. */
+.tabs {
+  scroll-behavior: auto;
+}
+
 </style>
 
 
@@ -4885,7 +4892,22 @@ function v2RunContentTransition() {
   return;
 }
 
+
+function resetInventoryNavigationPosition() {
+  if (tabsEl) {
+    tabsEl.scrollLeft = 0;
+  }
+  const main = document.querySelector("main");
+  if (main) {
+    main.style.transition = "";
+    main.style.transform = "";
+    main.style.opacity = "";
+    main.classList.remove("inventory-native-transitioning");
+  }
+}
+
 function setActiveAppliance(applianceName) {
+  resetInventoryNavigationPosition();
   DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
   activeLocker = "Home";
   if (searchEl) searchEl.value = "";
@@ -4893,6 +4915,7 @@ function setActiveAppliance(applianceName) {
   document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
   makeTabs();
   renderImmediate();
+  resetInventoryNavigationPosition();
   installNativeLockerSwipe();
   closeDrawer();
 }
