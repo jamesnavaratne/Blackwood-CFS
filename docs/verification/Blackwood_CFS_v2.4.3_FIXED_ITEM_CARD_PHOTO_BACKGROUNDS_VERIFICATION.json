@@ -1,0 +1,15 @@
+{
+  "package": "Blackwood_CFS_v2.4.3_FIXED_ITEM_CARD_PHOTO_BACKGROUNDS_TEST.zip",
+  "base": "Blackwood_CFS_v2.4.2_DIRECTIONS_REPORT_PILL_SOURCE_ROW_TEST.zip",
+  "changed_files": [
+    "index.html",
+    ".nojekyll",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.4.3_FIXED_ITEM_CARD_PHOTO_BACKGROUNDS_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.3_FIXED_ITEM_CARD_PHOTO_BACKGROUNDS_VERIFICATION.json"
+  ],
+  "inventory_data_changed": false,
+  "directions_data_changed": false,
+  "layout_safety": "Background applied via background-image on .item.has-photo-bg only; no pseudo-elements or child positioning changes.",
+  "nojekyll_added": true
+}

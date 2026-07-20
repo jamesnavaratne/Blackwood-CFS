@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-4-3-item-card-photo-backgrounds-20260720';
+const CACHE_NAME = 'blackwood-cfs-v2-4-3-fixed-item-card-photo-bg-20260720';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
