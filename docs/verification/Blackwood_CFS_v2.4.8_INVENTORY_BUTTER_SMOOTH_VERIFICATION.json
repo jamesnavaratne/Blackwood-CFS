@@ -1,0 +1,20 @@
+{
+  "package": "Blackwood_CFS_v2.4.8_INVENTORY_BUTTER_SMOOTH_TEST.zip",
+  "base_zip_used": "Blackwood_CFS_v2.4.7_INVENTORY_LOCKER_SWIPE_SMOOTH_TEST.zip",
+  "changed_files": [
+    "index.html",
+    "service-worker.js",
+    ".nojekyll",
+    "docs/release_notes/Blackwood_CFS_v2.4.8_INVENTORY_BUTTER_SMOOTH_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.8_INVENTORY_BUTTER_SMOOTH_VERIFICATION.json"
+  ],
+  "directions_book_changed": false,
+  "inventory_data_changed": false,
+  "photos_changed": false,
+  "rebuild_tools_changed": false,
+  "old_staged_render_removed": true,
+  "v2_content_enter_disabled": true,
+  "view_transition_api_used": true,
+  "swipe_installed": true,
+  "html_preview_generated": false
+}
