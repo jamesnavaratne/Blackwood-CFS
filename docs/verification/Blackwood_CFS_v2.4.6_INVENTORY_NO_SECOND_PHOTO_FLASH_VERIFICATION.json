@@ -1,0 +1,15 @@
+{
+  "package": "Blackwood_CFS_v2.4.6_INVENTORY_NO_SECOND_PHOTO_FLASH_TEST.zip",
+  "base": "Blackwood_CFS_v2.4.5_INVENTORY_STAGED_RENDER_PHOTO_WASH_TEST.zip",
+  "changed_files": [
+    "index.html",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.4.6_INVENTORY_NO_SECOND_PHOTO_FLASH_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.6_INVENTORY_NO_SECOND_PHOTO_FLASH_VERIFICATION.json"
+  ],
+  "directions_book_changed": false,
+  "inventory_data_changed": false,
+  "photos_changed": false,
+  "rebuild_tools_changed": false,
+  "fix": "Moved card photo background application from async image.onload stage into initial item render."
+}

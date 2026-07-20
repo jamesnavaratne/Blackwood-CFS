@@ -4477,6 +4477,17 @@ html.v2-route-leaving body {
   }
 }
 
+
+/* v2.4.6 no-second-photo-flash refinement
+   Photo backgrounds are now present on the initial item-card render, so avoid delayed
+   card-wide transitions that look like a second flash. */
+.item.has-photo-bg {
+  transition:
+    background-color .18s ease,
+    border-color .28s ease,
+    box-shadow .28s ease;
+}
+
 </style>
 
 
@@ -5432,13 +5443,15 @@ function renderResults(records) {
       const div = document.createElement("div");
       const effectiveStatus = getEffectiveStatus(r);
       const excelDescription = getExcelDescription(r);
-      div.className = "item " + tileStatusClass(effectiveStatus) + " clickable";
+      const photoUrl = itemPhotoPath(r.extraPhoto || itemPhotoFilenameFromName(r.item), r.appliance || DATA.appliance);
+      div.className = "item " + tileStatusClass(effectiveStatus) + " clickable" + (photoUrl ? " has-photo-bg" : "");
+      if (photoUrl) div.style.setProperty("--item-photo-bg", `url("${cssUrlSafe(photoUrl)}")`);
       div.dataset.itemKey = itemKey(r);
       const favKey = itemKey(r);
       const isFav = favourites.has(favKey);
       div.innerHTML = `
         <button class="fav-btn ${isFav ? "active" : ""}" type="button" title="Favourite item" aria-label="Favourite item">${isFav ? "★" : "☆"}</button>
-        <button class="photo-indicator-btn" type="button" title="Item photo available" aria-label="Item photo available" data-photo-url="${esc(itemPhotoPath(r.extraPhoto || itemPhotoFilenameFromName(r.item), r.appliance || DATA.appliance))}"><svg class="photo-indicator-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <button class="photo-indicator-btn" type="button" title="Item photo available" aria-label="Item photo available" data-photo-url="${esc(photoUrl)}"><svg class="photo-indicator-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <rect x="3.5" y="4.5" width="17" height="15" rx="1.8"></rect>
           <circle cx="16.8" cy="8.2" r="1.8"></circle>
           <path d="M5.8 17.2l5.1-5.4 3.7 3.7 2.1-2.2 3.3 3.9"></path>
@@ -5498,13 +5511,11 @@ function checkItemPhotoIndicators() {
 
     if (itemPhotoAvailabilityCache[url] === true) {
       btn.classList.add("has-photo");
-      applyItemCardPhotoBackground(btn, url);
       return;
     }
 
     if (itemPhotoAvailabilityCache[url] === false) {
       btn.classList.remove("has-photo");
-      clearItemCardPhotoBackground(btn);
       return;
     }
 
@@ -5513,14 +5524,12 @@ function checkItemPhotoIndicators() {
       itemPhotoAvailabilityCache[url] = true;
       document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => {
         b.classList.add("has-photo");
-        applyItemCardPhotoBackground(b, url);
       });
     };
     img.onerror = () => {
       itemPhotoAvailabilityCache[url] = false;
       document.querySelectorAll(`.photo-indicator-btn[data-photo-url="${CSS.escape(url)}"]`).forEach(b => {
         b.classList.remove("has-photo");
-        clearItemCardPhotoBackground(b);
       });
     };
     img.src = url;
