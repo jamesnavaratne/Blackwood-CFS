@@ -4376,32 +4376,29 @@ html.v2-route-leaving body {
 }
 
 
-/* v2.4.4 item-card attached-photo background wash
-   Safe version: background-only. No card structure, child position, z-index, star,
-   photo button, or status pill changes. */
+/* v2.4.5 item-card attached-photo background wash
+   Background-only. No pseudo-elements, z-index, child positioning, star/photo/status movement,
+   or card structure changes. */
 .item.has-photo-bg {
   background-color: var(--card);
   background-image:
-    linear-gradient(180deg, rgba(18, 27, 39, .74), rgba(16, 24, 36, .82)),
+    linear-gradient(180deg, rgba(18, 27, 39, .74), rgba(16, 24, 36, .83)),
     var(--item-photo-bg);
   background-size: 100% 100%, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   background-clip: border-box, padding-box;
-  box-shadow:
-    inset 0 0 0 999px rgba(8, 15, 25, .10),
-    var(--shadow);
 }
 
 .item.has-photo-bg.in-service {
   background-image:
-    linear-gradient(180deg, rgba(18, 29, 39, .72), rgba(12, 24, 34, .80)),
+    linear-gradient(180deg, rgba(18, 29, 39, .72), rgba(12, 24, 34, .81)),
     var(--item-photo-bg);
 }
 
 .item.has-photo-bg.not-in-service {
   background-image:
-    linear-gradient(180deg, rgba(35, 23, 25, .76), rgba(24, 16, 19, .83)),
+    linear-gradient(180deg, rgba(35, 23, 25, .76), rgba(24, 16, 19, .84)),
     var(--item-photo-bg);
 }
 
@@ -4411,50 +4408,31 @@ html.v2-route-leaving body {
   backdrop-filter: blur(1px);
 }
 
-
-/* v2.4.4 inventory smoothness pass
-   Reduces visual jump/flash during inventory re-rendering without altering layout. */
-html.inventory-smooth-ready .content,
-html.inventory-smooth-ready .locker-panel,
-html.inventory-smooth-ready .items,
-html.inventory-smooth-ready .item,
-html.inventory-smooth-ready .locker-photo-card,
-html.inventory-smooth-ready .toolbar,
-html.inventory-smooth-ready .tabs {
+/* v2.4.5 inventory staged-render smoothness
+   Fixes the hard clear/reload flash seen in screen recordings.
+   Directions Book is untouched. */
+#summary,
+#lockerPhoto,
+#results {
   transition:
-    opacity .38s ease,
-    transform .38s ease,
-    filter .38s ease,
-    background-color .38s ease,
-    border-color .38s ease,
-    box-shadow .38s ease;
+    opacity .24s ease,
+    transform .24s ease,
+    filter .24s ease;
 }
 
-html.inventory-rendering .items,
-html.inventory-rendering .locker-panel {
-  opacity: .62;
+.inventory-fade-out {
+  opacity: .42;
+  transform: translateY(3px);
   filter: saturate(.92);
-  transform: translateY(2px);
 }
 
-html.inventory-rendering .item {
-  opacity: .72;
-  transform: translateY(2px);
+.inventory-fade-in {
+  animation: inventoryStagedFadeIn .34s ease both;
 }
 
-html.inventory-smooth-ready .item {
-  will-change: opacity, transform;
-}
-
-html.inventory-smooth-ready .item,
-html.inventory-smooth-ready .locker-panel,
-html.inventory-smooth-ready .locker-photo-card {
-  animation: inventorySoftIn .34s ease both;
-}
-
-@keyframes inventorySoftIn {
+@keyframes inventoryStagedFadeIn {
   from {
-    opacity: .72;
+    opacity: .58;
     transform: translateY(4px);
     filter: saturate(.92);
   }
@@ -4465,38 +4443,36 @@ html.inventory-smooth-ready .locker-photo-card {
   }
 }
 
-/* Avoid the hard white/image flash while item-photo checks are loading. */
-.item .photo-indicator-btn,
-.item.has-photo-bg {
+/* Reduce tiny flashes when the photo-background availability check resolves. */
+.item {
   transition:
-    opacity .35s ease,
-    background-image .35s ease,
-    box-shadow .35s ease,
-    border-color .35s ease;
+    background-image .30s ease,
+    background-color .30s ease,
+    border-color .30s ease,
+    box-shadow .30s ease;
+}
+
+.photo-card,
+.group,
+.group-title,
+.items-grid,
+.item {
+  backface-visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.inventory-smooth-ready .content,
-  html.inventory-smooth-ready .locker-panel,
-  html.inventory-smooth-ready .items,
-  html.inventory-smooth-ready .item,
-  html.inventory-smooth-ready .locker-photo-card,
-  html.inventory-smooth-ready .toolbar,
-  html.inventory-smooth-ready .tabs {
+  #summary,
+  #lockerPhoto,
+  #results,
+  .item {
     transition: none !important;
   }
 
-  html.inventory-rendering .items,
-  html.inventory-rendering .locker-panel,
-  html.inventory-rendering .item {
+  .inventory-fade-out,
+  .inventory-fade-in {
     opacity: 1 !important;
-    filter: none !important;
     transform: none !important;
-  }
-
-  html.inventory-smooth-ready .item,
-  html.inventory-smooth-ready .locker-panel,
-  html.inventory-smooth-ready .locker-photo-card {
+    filter: none !important;
     animation: none !important;
   }
 }
@@ -5017,7 +4993,7 @@ function makeTabs() {
       makeTabs();
       render();
       v2RunContentTransition();
-      window.scrollTo({top: 0, behavior: "smooth"});
+      window.scrollTo({top: 0, behavior: "auto"});
     };
     tabsEl.appendChild(btn);
   });
@@ -5057,7 +5033,7 @@ function renderSummary(records) {
       searchEl.value = "";
       makeTabs();
       render();
-      window.scrollTo({top: 0, behavior: "smooth"});
+      window.scrollTo({top: 0, behavior: "auto"});
     });
   }
 
@@ -5082,7 +5058,7 @@ function renderSummary(records) {
       searchEl.value = "";
       makeTabs();
       render();
-      window.scrollTo({top: 0, behavior: "smooth"});
+      window.scrollTo({top: 0, behavior: "auto"});
     });
   }
 }
@@ -5551,12 +5527,66 @@ function checkItemPhotoIndicators() {
   });
 }
 
-function render() {
+function renderNow() {
   const records = filteredRecords();
   renderSummary(records);
   renderPhoto();
   renderResults(records);
   checkItemPhotoIndicators();
+}
+
+let inventoryRenderTimer = null;
+let inventoryRenderToken = 0;
+let inventoryHasRenderedOnce = false;
+
+function inventoryRenderTargets() {
+  return [summaryEl, photoEl, resultsEl].filter(Boolean);
+}
+
+function clearInventoryFadeClasses() {
+  inventoryRenderTargets().forEach(el => {
+    el.classList.remove("inventory-fade-out", "inventory-fade-in");
+  });
+}
+
+function render() {
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const targets = inventoryRenderTargets();
+
+  if (reduceMotion || !inventoryHasRenderedOnce || !targets.length) {
+    clearTimeout(inventoryRenderTimer);
+    clearInventoryFadeClasses();
+    renderNow();
+    inventoryHasRenderedOnce = true;
+    return;
+  }
+
+  const token = ++inventoryRenderToken;
+  clearTimeout(inventoryRenderTimer);
+
+  targets.forEach(el => {
+    el.classList.remove("inventory-fade-in");
+    el.classList.add("inventory-fade-out");
+  });
+
+  inventoryRenderTimer = setTimeout(() => {
+    if (token !== inventoryRenderToken) return;
+
+    renderNow();
+
+    requestAnimationFrame(() => {
+      if (token !== inventoryRenderToken) return;
+      targets.forEach(el => {
+        el.classList.remove("inventory-fade-out");
+        el.classList.add("inventory-fade-in");
+      });
+
+      setTimeout(() => {
+        if (token !== inventoryRenderToken) return;
+        targets.forEach(el => el.classList.remove("inventory-fade-in"));
+      }, 420);
+    });
+  }, 120);
 }
 
 searchEl.addEventListener("input", () => {
@@ -7625,71 +7655,6 @@ render();
     bindHeaderHomeButton();
     setTimeout(bindHeaderHomeButton, 150);
   });
-})();
-</script>
-
-
-<script>
-// v2.4.4 inventory smoothness pass
-// Adds soft fade timing around inventory DOM re-renders without changing app state or layout.
-(function(){
-  if (window.__blackwoodInventorySmoothnessV244) return;
-  window.__blackwoodInventorySmoothnessV244 = true;
-
-  const root = document.documentElement;
-  root.classList.add("inventory-smooth-ready");
-
-  let renderTimer = null;
-  let lastMutationAt = 0;
-
-  function markRendering(){
-    lastMutationAt = Date.now();
-    root.classList.add("inventory-rendering");
-    clearTimeout(renderTimer);
-    renderTimer = setTimeout(() => {
-      if (Date.now() - lastMutationAt >= 150) {
-        root.classList.remove("inventory-rendering");
-      }
-    }, 260);
-  }
-
-  function observeWhenReady(){
-    const targets = [
-      document.getElementById("content"),
-      document.querySelector(".content"),
-      document.querySelector(".items"),
-      document.querySelector("main")
-    ].filter(Boolean);
-
-    const seen = new Set();
-    targets.forEach(target => {
-      if (seen.has(target)) return;
-      seen.add(target);
-      const observer = new MutationObserver(mutations => {
-        if (!mutations.some(m => m.type === "childList")) return;
-        markRendering();
-      });
-      observer.observe(target, { childList: true, subtree: true });
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", observeWhenReady, { once: true });
-  } else {
-    observeWhenReady();
-  }
-
-  document.addEventListener("click", event => {
-    if (event.target.closest(".tab, .tabs button, .pill, .locker-toggle, .clear-btn, #clear")) {
-      markRendering();
-    }
-  }, true);
-
-  document.addEventListener("input", event => {
-    if (event.target.matches("input[type='search'], #search, .search")) {
-      markRendering();
-    }
-  }, true);
 })();
 </script>
 

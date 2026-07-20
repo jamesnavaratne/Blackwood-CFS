@@ -1,0 +1,16 @@
+{
+  "package": "Blackwood_CFS_v2.4.5_INVENTORY_STAGED_RENDER_PHOTO_WASH_TEST.zip",
+  "base": "Blackwood_CFS_v2.4.3_FIXED_ITEM_CARD_PHOTO_BACKGROUNDS_TEST.zip",
+  "changed_files": [
+    "index.html",
+    "service-worker.js",
+    "docs/release_notes/Blackwood_CFS_v2.4.5_INVENTORY_STAGED_RENDER_PHOTO_WASH_NOTES.md",
+    "docs/verification/Blackwood_CFS_v2.4.5_INVENTORY_STAGED_RENDER_PHOTO_WASH_VERIFICATION.json"
+  ],
+  "directions_book_changed": false,
+  "inventory_data_changed": false,
+  "photos_changed": false,
+  "rebuild_tools_changed": false,
+  "jumpiness_target": "Replaced hard synchronous render() with staged fade render; removed smooth scroll reset.",
+  "photo_wash": "Lighter, full-cover, background-only."
+}

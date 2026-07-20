@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-4-4-inventory-smoothness-photo-wash-20260720';
+const CACHE_NAME = 'blackwood-cfs-v2-4-5-inventory-staged-render-photo-wash-20260720';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
