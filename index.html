@@ -4376,35 +4376,129 @@ html.v2-route-leaving body {
 }
 
 
-/* v2.4.3 fixed item-card attached-photo background hint
-   Safe version: changes the card background only.
-   Does not alter child positioning, z-index, buttons, stars, status pills, or card structure. */
+/* v2.4.4 item-card attached-photo background wash
+   Safe version: background-only. No card structure, child position, z-index, star,
+   photo button, or status pill changes. */
 .item.has-photo-bg {
   background-color: var(--card);
   background-image:
-    linear-gradient(180deg, rgba(7, 18, 32, .83), rgba(7, 18, 32, .91)),
+    linear-gradient(180deg, rgba(18, 27, 39, .74), rgba(16, 24, 36, .82)),
     var(--item-photo-bg);
-  background-size: cover, cover;
+  background-size: 100% 100%, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
+  background-clip: border-box, padding-box;
+  box-shadow:
+    inset 0 0 0 999px rgba(8, 15, 25, .10),
+    var(--shadow);
 }
 
 .item.has-photo-bg.in-service {
   background-image:
-    linear-gradient(180deg, rgba(7, 18, 32, .82), rgba(7, 18, 32, .90)),
+    linear-gradient(180deg, rgba(18, 29, 39, .72), rgba(12, 24, 34, .80)),
     var(--item-photo-bg);
 }
 
 .item.has-photo-bg.not-in-service {
   background-image:
-    linear-gradient(180deg, rgba(32, 12, 12, .84), rgba(16, 8, 10, .91)),
+    linear-gradient(180deg, rgba(35, 23, 25, .76), rgba(24, 16, 19, .83)),
     var(--item-photo-bg);
 }
 
 .item.has-photo-bg .desc,
 .item.has-photo-bg .notes {
-  background: color-mix(in srgb, var(--surface-2) 82%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
   backdrop-filter: blur(1px);
+}
+
+
+/* v2.4.4 inventory smoothness pass
+   Reduces visual jump/flash during inventory re-rendering without altering layout. */
+html.inventory-smooth-ready .content,
+html.inventory-smooth-ready .locker-panel,
+html.inventory-smooth-ready .items,
+html.inventory-smooth-ready .item,
+html.inventory-smooth-ready .locker-photo-card,
+html.inventory-smooth-ready .toolbar,
+html.inventory-smooth-ready .tabs {
+  transition:
+    opacity .38s ease,
+    transform .38s ease,
+    filter .38s ease,
+    background-color .38s ease,
+    border-color .38s ease,
+    box-shadow .38s ease;
+}
+
+html.inventory-rendering .items,
+html.inventory-rendering .locker-panel {
+  opacity: .62;
+  filter: saturate(.92);
+  transform: translateY(2px);
+}
+
+html.inventory-rendering .item {
+  opacity: .72;
+  transform: translateY(2px);
+}
+
+html.inventory-smooth-ready .item {
+  will-change: opacity, transform;
+}
+
+html.inventory-smooth-ready .item,
+html.inventory-smooth-ready .locker-panel,
+html.inventory-smooth-ready .locker-photo-card {
+  animation: inventorySoftIn .34s ease both;
+}
+
+@keyframes inventorySoftIn {
+  from {
+    opacity: .72;
+    transform: translateY(4px);
+    filter: saturate(.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: saturate(1);
+  }
+}
+
+/* Avoid the hard white/image flash while item-photo checks are loading. */
+.item .photo-indicator-btn,
+.item.has-photo-bg {
+  transition:
+    opacity .35s ease,
+    background-image .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.inventory-smooth-ready .content,
+  html.inventory-smooth-ready .locker-panel,
+  html.inventory-smooth-ready .items,
+  html.inventory-smooth-ready .item,
+  html.inventory-smooth-ready .locker-photo-card,
+  html.inventory-smooth-ready .toolbar,
+  html.inventory-smooth-ready .tabs {
+    transition: none !important;
+  }
+
+  html.inventory-rendering .items,
+  html.inventory-rendering .locker-panel,
+  html.inventory-rendering .item {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  html.inventory-smooth-ready .item,
+  html.inventory-smooth-ready .locker-panel,
+  html.inventory-smooth-ready .locker-photo-card {
+    animation: none !important;
+  }
 }
 
 </style>
@@ -7531,6 +7625,71 @@ render();
     bindHeaderHomeButton();
     setTimeout(bindHeaderHomeButton, 150);
   });
+})();
+</script>
+
+
+<script>
+// v2.4.4 inventory smoothness pass
+// Adds soft fade timing around inventory DOM re-renders without changing app state or layout.
+(function(){
+  if (window.__blackwoodInventorySmoothnessV244) return;
+  window.__blackwoodInventorySmoothnessV244 = true;
+
+  const root = document.documentElement;
+  root.classList.add("inventory-smooth-ready");
+
+  let renderTimer = null;
+  let lastMutationAt = 0;
+
+  function markRendering(){
+    lastMutationAt = Date.now();
+    root.classList.add("inventory-rendering");
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(() => {
+      if (Date.now() - lastMutationAt >= 150) {
+        root.classList.remove("inventory-rendering");
+      }
+    }, 260);
+  }
+
+  function observeWhenReady(){
+    const targets = [
+      document.getElementById("content"),
+      document.querySelector(".content"),
+      document.querySelector(".items"),
+      document.querySelector("main")
+    ].filter(Boolean);
+
+    const seen = new Set();
+    targets.forEach(target => {
+      if (seen.has(target)) return;
+      seen.add(target);
+      const observer = new MutationObserver(mutations => {
+        if (!mutations.some(m => m.type === "childList")) return;
+        markRendering();
+      });
+      observer.observe(target, { childList: true, subtree: true });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", observeWhenReady, { once: true });
+  } else {
+    observeWhenReady();
+  }
+
+  document.addEventListener("click", event => {
+    if (event.target.closest(".tab, .tabs button, .pill, .locker-toggle, .clear-btn, #clear")) {
+      markRendering();
+    }
+  }, true);
+
+  document.addEventListener("input", event => {
+    if (event.target.matches("input[type='search'], #search, .search")) {
+      markRendering();
+    }
+  }, true);
 })();
 </script>
 
