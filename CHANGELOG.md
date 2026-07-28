@@ -1,3 +1,14 @@
+# Blackwood CFS Changelog
+
+## v2.5.6 — Locker surface refinement
+
+### Improved
+- Preserved the accepted v2.5.5 hamburger menu treatment unchanged.
+- Softened the light-to-dark gradient in expandable locker headings.
+- Matched unselected Home/Cabin/locker ribbon pills to the preserved theme-aware locker-photo capsule background.
+- Matched the large All Items capsule on each appliance Home tab to the same locker-photo capsule background.
+- Kept active ribbon pills visually distinct.
+
 # Changelog
 
 ## v2.5.5 Dark neon surface consistency — 2026-07-28

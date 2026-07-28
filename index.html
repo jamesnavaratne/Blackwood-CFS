@@ -4892,6 +4892,54 @@ body.dark .group-title::after {
   text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+/* v2.5.6 locker surface refinement
+   - Hamburger menu remains exactly as accepted in v2.5.5.
+   - Locker headings retain their dark neon depth with a gentler top-to-bottom shift.
+   - Unselected locker ribbon pills and the Home-view All Items capsule reuse the
+     preserved theme-aware locker-photo capsule surface. */
+body.dark .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 74%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 61%, var(--bg) 39%) 0%,
+      color-mix(in srgb, var(--surface) 64%, var(--bg) 36%) 100%) !important;
+}
+
+body.dark .group.collapsed .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 72%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 63%, var(--bg) 37%) 0%,
+      color-mix(in srgb, var(--surface) 61%, var(--bg) 39%) 100%) !important;
+}
+
+body.dark .tabs button:not(.active),
+body.dark #results > .v2-all-items-pill {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 76%, var(--accent) 14%),
+      color-mix(in srgb, var(--bg) 78%, var(--accent) 11%)
+    ) !important;
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 3%, transparent) inset,
+    0 0 12px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 8px 20px rgba(0,0,0,.18) !important;
+}
+
+body.dark .tabs button:not(.active):hover {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 72%, var(--accent) 18%),
+      color-mix(in srgb, var(--bg) 75%, var(--accent) 14%)
+    ) !important;
+  border-color: color-mix(in srgb, var(--accent) 46%, var(--line)) !important;
+}
+
+body.dark #results > .v2-all-items-pill {
+  cursor: default;
+}
+
 </style>
 
 
@@ -6128,7 +6176,7 @@ function renderResults(records) {
 
   if (activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service") {
     const heading = document.createElement("section");
-    heading.className = "photo-card";
+    heading.className = "photo-card v2-all-items-pill";
     const headingTitle = activeLocker === "★" ? "★ Starred Items" : (activeLocker === "Out of Service" ? "Out of Service" : "All Items");
     heading.innerHTML = `
       <div class="photo-text">
