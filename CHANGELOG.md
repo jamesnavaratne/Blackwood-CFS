@@ -1,3 +1,9 @@
+## v2.6.0 - Compact locker-card status indicators
+- Replaced the full green In service badge on locker-page item cards with a compact green tick.
+- Replaced the full red Out of service badge on locker-page item cards with a compact red cross.
+- Preserved the full status wording, status controls, and editing behaviour inside the item modal.
+- Removed temporary test-blue/green/yellow/red HTML pages from the packaged app.
+
 ## v2.5.9 - Cohesive surface fine pass
 - Performed a final cohesion pass across item pills, locker headings, All Items pills, locker photo pills, and unselected ribbon pills.
 - Softened gradients further and reduced glow/border variance for a more unified dark neon look.

@@ -5183,6 +5183,43 @@ body.dark .group-title::after {
   text-shadow: none !important;
 }
 
+
+
+/* v2.6.0 compact locker-card status indicators
+   Card-only visual simplification: full status controls and wording in the item
+   modal remain unchanged. */
+.item > .status-pill {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  min-width: 23px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 0.98rem;
+  font-weight: 750;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: 0;
+  bottom: 8px;
+  right: 8px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.025) inset,
+    0 3px 8px rgba(0,0,0,.16);
+}
+
+.item > .status-pill.in-service {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: color-mix(in srgb, var(--success-text) 28%, transparent);
+}
+
+.item > .status-pill.not-in-service {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: color-mix(in srgb, var(--danger-text) 30%, transparent);
+}
+
 </style>
 
 
@@ -6490,7 +6527,7 @@ function renderResults(records) {
           <circle cx="16.8" cy="8.2" r="1.8"></circle>
           <path d="M5.8 17.2l5.1-5.4 3.7 3.7 2.1-2.2 3.3 3.9"></path>
         </svg></button>
-        ${effectiveStatus ? `<div class="status-pill ${statusPillClass(effectiveStatus)}">${esc(effectiveStatus)}</div>` : `<div class="status-pill in-service">In service</div>`}
+        ${isInService(effectiveStatus) ? `<div class="status-pill in-service" role="img" aria-label="In service" title="In service">✓</div>` : `<div class="status-pill not-in-service" role="img" aria-label="Out of service" title="Out of service">×</div>`}
         <div class="item-main">
           <div class="item-name">${esc(r.item)}</div>
           ${r.quantity ? `<div class="qty">Qty ${esc(r.quantity)}</div>` : ""}
