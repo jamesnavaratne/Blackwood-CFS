@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-5-7-item-pill-finish-20260728';
+const CACHE_NAME = 'blackwood-cfs-v2-5-9-cohesive-fine-pass-20260728';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 

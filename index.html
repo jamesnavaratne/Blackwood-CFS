@@ -5029,6 +5029,160 @@ body.dark #lockerPhoto .photo-card h2 {
   background-image: none !important;
 }
 
+
+
+/* v2.5.8 theme-safe palette review + subtler item pills
+   - Removes the stale cool-blue cast introduced by the last item-pill pass.
+   - Keeps item pills palette-aware in blue/green/yellow/red by using theme vars only.
+   - Reduces the item-pill gradient so the finish stays subtle. */
+body.dark .item,
+body.dark .item.in-service,
+body.dark .item.not-in-service {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 80%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 81%, var(--accent) 7%) 0%,
+      color-mix(in srgb, var(--bg) 84%, var(--accent) 5%) 100%) !important;
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 2.5%, transparent) inset,
+    0 0 8px color-mix(in srgb, var(--accent) 5%, transparent),
+    0 7px 18px rgba(0,0,0,.16) !important;
+}
+
+body.dark .item.not-in-service {
+  border-color: color-mix(in srgb, var(--danger-text) 16%, color-mix(in srgb, var(--accent) 22%, var(--line))) !important;
+}
+
+body.dark .item.has-photo-bg,
+body.dark .item.has-photo-bg.in-service,
+body.dark .item.has-photo-bg.not-in-service {
+  background-color: color-mix(in srgb, var(--surface) 81%, var(--accent) 7%) !important;
+  background-image:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 80%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 74%, transparent),
+      color-mix(in srgb, var(--bg) 78%, transparent)
+    ),
+    var(--item-photo-bg) !important;
+  background-size: auto, 100% 100%, cover !important;
+  background-position: 12% 0, center, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+  background-clip: border-box, border-box, padding-box !important;
+}
+
+body.dark .item.has-photo-bg .desc,
+body.dark .item.has-photo-bg .notes {
+  background: color-mix(in srgb, var(--surface-2, #14243a) 54%, transparent);
+}
+
+
+
+/* v2.5.9 cohesive dark-surface fine pass
+   Final restrained homogenisation pass.
+   Goal: all key dark inventory surfaces feel related without becoming flat.
+   Keeps palette-aware colour flow and avoids strong gradients/glow. */
+body.dark .tabs button:not(.active),
+body.dark #results > .v2-all-items-pill,
+body.dark #lockerPhoto .photo-card {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 80%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 78%, var(--accent) 10%) 0%,
+      color-mix(in srgb, var(--bg) 82%, var(--accent) 8%) 100%) !important;
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 2.5%, transparent) inset,
+    0 0 9px color-mix(in srgb, var(--accent) 6%, transparent),
+    0 8px 20px rgba(0,0,0,.18) !important;
+}
+
+body.dark .tabs button:not(.active):hover {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 2.5%, transparent) inset,
+    0 0 11px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 9px 22px rgba(0,0,0,.19) !important;
+}
+
+body.dark .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 5.5%, transparent), transparent 79%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 64%, var(--bg) 36%) 0%,
+      color-mix(in srgb, var(--surface) 66%, var(--bg) 34%) 100%) !important;
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line)) !important;
+  border-bottom-color: color-mix(in srgb, var(--accent) 30%, var(--line)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.03),
+    0 0 0 1px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 0 10px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 9px 22px rgba(0,0,0,.22) !important;
+}
+
+body.dark .group.collapsed .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 6.5%, transparent), transparent 78%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 65%, var(--bg) 35%) 0%,
+      color-mix(in srgb, var(--surface) 64%, var(--bg) 36%) 100%) !important;
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.032),
+    0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 0 11px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 10px 24px rgba(0,0,0,.23) !important;
+}
+
+body.dark .item,
+body.dark .item.in-service,
+body.dark .item.not-in-service {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 3.5%, transparent), transparent 82%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 83%, var(--accent) 6%) 0%,
+      color-mix(in srgb, var(--bg) 86%, var(--accent) 4%) 100%) !important;
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 2%, transparent) inset,
+    0 0 6px color-mix(in srgb, var(--accent) 4%, transparent),
+    0 6px 16px rgba(0,0,0,.14) !important;
+}
+
+body.dark .item.not-in-service {
+  border-color: color-mix(in srgb, var(--danger-text) 14%, color-mix(in srgb, var(--accent) 20%, var(--line))) !important;
+}
+
+body.dark .item.has-photo-bg,
+body.dark .item.has-photo-bg.in-service,
+body.dark .item.has-photo-bg.not-in-service {
+  background-color: color-mix(in srgb, var(--surface) 83%, var(--accent) 6%) !important;
+  background-image:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 3.5%, transparent), transparent 82%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 76%, transparent),
+      color-mix(in srgb, var(--bg) 80%, transparent)
+    ),
+    var(--item-photo-bg) !important;
+  background-size: auto, 100% 100%, cover !important;
+  background-position: 12% 0, center, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+  background-clip: border-box, border-box, padding-box !important;
+}
+
+body.dark .item .desc,
+body.dark .item .notes {
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent) !important;
+  border-left-color: color-mix(in srgb, var(--accent) 52%, transparent) !important;
+}
+
+body.dark .status-pill,
+body.dark .fav-btn,
+body.dark .group-title::after {
+  filter: none !important;
+  text-shadow: none !important;
+}
+
 </style>
 
 

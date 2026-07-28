@@ -1,3 +1,15 @@
+## v2.5.9 - Cohesive surface fine pass
+- Performed a final cohesion pass across item pills, locker headings, All Items pills, locker photo pills, and unselected ribbon pills.
+- Softened gradients further and reduced glow/border variance for a more unified dark neon look.
+- Slightly tuned item pill brightness so they sit in the same visual family without looking flat.
+- Kept palette-aware behaviour across Blue, Green, Yellow, and Red themes.
+
+## v2.5.8 - Theme review and subtler item pills
+- Reviewed the latest inventory styling across theme changes.
+- Removed the stale cool-blue cast from inventory item pills so palette switching stays consistent.
+- Reduced the item-pill gradient for a subtler finish.
+- Preserved the accepted hamburger menu and recent locker-surface work.
+
 
 ## v2.5.7 - Item pill finish and softer locker headings
 - Softened the expandable locker heading gradients again.
