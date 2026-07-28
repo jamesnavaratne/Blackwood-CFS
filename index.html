@@ -4940,6 +4940,95 @@ body.dark #results > .v2-all-items-pill {
   cursor: default;
 }
 
+
+
+/* v2.5.7 item pill finish + softer locker headings
+   - Softens the collapsed/expanded locker heading gradients again.
+   - Reuses the preserved locker-photo capsule surface for individual item pills.
+   - Removes the thin accent line/highlight above the All Items and locker-photo pill titles. */
+body.dark .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 78%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 62%, var(--bg) 38%) 0%,
+      color-mix(in srgb, var(--surface) 62%, var(--bg) 38%) 100%) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 0 12px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 9px 22px rgba(0,0,0,.22) !important;
+}
+
+body.dark .group.collapsed .group-title {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 76%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface-2) 63%, var(--bg) 37%) 0%,
+      color-mix(in srgb, var(--surface) 62%, var(--bg) 38%) 100%) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 0 13px color-mix(in srgb, var(--accent) 9%, transparent),
+    0 10px 24px rgba(0,0,0,.24) !important;
+}
+
+body.dark .item,
+body.dark .item.in-service,
+body.dark .item.not-in-service {
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 74%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 76%, var(--accent) 14%),
+      color-mix(in srgb, var(--bg) 78%, var(--accent) 11%)
+    ) !important;
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, white 3%, transparent) inset,
+    0 0 12px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 8px 20px rgba(0,0,0,.18) !important;
+}
+
+body.dark .item.not-in-service {
+  border-color: color-mix(in srgb, var(--danger-text) 18%, color-mix(in srgb, var(--accent) 32%, var(--line))) !important;
+}
+
+body.dark .item.has-photo-bg,
+body.dark .item.has-photo-bg.in-service,
+body.dark .item.has-photo-bg.not-in-service {
+  background-color: color-mix(in srgb, var(--surface) 76%, var(--accent) 14%) !important;
+  background-image:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 74%),
+    linear-gradient(180deg, rgba(18, 31, 46, .78), rgba(10, 22, 36, .82)),
+    var(--item-photo-bg) !important;
+  background-size: auto, 100% 100%, cover !important;
+  background-position: 12% 0, center, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+  background-clip: border-box, border-box, padding-box !important;
+}
+
+body.dark #results > .v2-all-items-pill,
+body.dark #lockerPhoto .photo-card {
+  box-shadow:
+    0 0 14px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 10px 28px rgba(0,0,0,0.20) !important;
+}
+
+body.dark #results > .v2-all-items-pill::before,
+body.dark #results > .v2-all-items-pill::after,
+body.dark #lockerPhoto .photo-card::before {
+  content: none !important;
+  display: none !important;
+}
+
+body.dark #results > .v2-all-items-pill .photo-text,
+body.dark #results > .v2-all-items-pill .photo-text h2,
+body.dark #results > .v2-all-items-pill h2,
+body.dark #lockerPhoto .photo-card .photo-text,
+body.dark #lockerPhoto .photo-card .photo-text h2,
+body.dark #lockerPhoto .photo-card h2 {
+  border-top: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
 </style>
 
 

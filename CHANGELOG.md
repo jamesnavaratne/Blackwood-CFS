@@ -1,3 +1,10 @@
+
+## v2.5.7 - Item pill finish and softer locker headings
+- Softened the expandable locker heading gradients again.
+- Updated individual inventory item pills to use the same theme-aware locker-photo capsule surface.
+- Removed the thin accent line/highlight above the All Items and locker-photo pill titles.
+- Preserved the accepted hamburger menu styling from v2.5.5 onward.
+
 # Blackwood CFS Changelog
 
 ## v2.5.6 — Locker surface refinement
