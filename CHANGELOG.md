@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.5.4 Inventory search visual alignment — 2026-07-28
+- Restyled the inventory-page search field to match the Directions Book design language.
+- Replaced the separate **Clear** button with an inset circular **×** clear control.
+- Preserved the existing inventory search and clear behaviour.
+- Updated the service-worker cache key so the visual change is picked up after deployment.
+
 ## Blackwood CFS v2.0 Stable Baseline before Directions fidelity checks — 2026-07-11
 
 Housekeeping-only stable release package.

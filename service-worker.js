@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-5-3-inventory-brightness-tune-20260720';
+const CACHE_NAME = 'blackwood-cfs-v2-5-4-inventory-search-directions-style-20260728';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 

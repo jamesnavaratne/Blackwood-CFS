@@ -4681,6 +4681,69 @@ main,
   text-shadow: 0 1px 8px rgba(0,0,0,.34);
 }
 
+/* v2.5.4 inventory search — match Directions Book search treatment. */
+.search {
+  position: relative;
+  display: block;
+  margin-top: 12px;
+  background: transparent;
+}
+
+.search #search {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  padding: 14px 50px 14px 16px;
+  outline: none;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.search #search:focus {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 0 26px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.search #clearBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0 0 2px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.search #clearBtn:hover {
+  transform: translateY(-50%);
+  background: color-mix(in srgb, var(--surface-2) 82%, var(--accent) 18%);
+}
+
+.search #clearBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.search #clearBtn:active {
+  transform: translateY(-50%) scale(.97);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-title,
   h1,
@@ -4972,7 +5035,7 @@ v2.2 Android cold-start smoothing test:
   </div>
   <div class="search">
     <input id="search" placeholder="Search item, locker, description, category, tags..." autocomplete="off">
-    <button id="clearBtn">Clear</button>
+    <button id="clearBtn" type="button" aria-label="Clear search" title="Clear search">×</button>
   </div>
   <nav class="tabs" id="tabs"></nav>
 </header>
