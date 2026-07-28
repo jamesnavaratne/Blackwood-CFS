@@ -1,0 +1,14 @@
+{
+  "version": "2.5.5",
+  "date": "2026-07-28",
+  "scope": "visual-only dark neon surface consistency",
+  "checks": {
+    "drawer_theme_aware": true,
+    "drawer_active_states_preserved": true,
+    "collapsed_locker_headings_deepened": true,
+    "expanded_locker_headings_deepened": true,
+    "inventory_search_unchanged": true,
+    "inventory_data_unchanged": true,
+    "directions_unchanged": true
+  }
+}

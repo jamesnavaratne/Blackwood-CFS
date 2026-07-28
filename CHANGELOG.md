@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.5 Dark neon surface consistency — 2026-07-28
+- Restored deeper, theme-aware gradients to the hamburger drawer.
+- Reworked drawer buttons and active states with restrained neon borders and glow.
+- Restored dark neon richness to collapsed and expanded locker headings.
+- Kept the brighter v2.5.3 inventory cards and the v2.5.4 Directions-style search bar unchanged.
+- Updated the service-worker cache key for deployment.
+
 ## v2.5.4 Inventory search visual alignment — 2026-07-28
 - Restyled the inventory-page search field to match the Directions Book design language.
 - Replaced the separate **Clear** button with an inset circular **×** clear control.
