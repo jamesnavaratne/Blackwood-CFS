@@ -1,0 +1,3 @@
+# Optional local auto-rebuild reports; not needed for routine commits
+BLACKWOOD_CFS_V2_EXCEL_GOSPEL_REBUILD.json
+INVENTORY_REBUILD_REPORT.md

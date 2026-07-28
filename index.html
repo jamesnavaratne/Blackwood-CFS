@@ -5185,19 +5185,20 @@ body.dark .group-title::after {
 
 
 
-/* v2.6.0 compact locker-card status indicators
-   Card-only visual simplification: full status controls and wording in the item
-   modal remain unchanged. */
+/* v2.6.1 compact locker-card status indicator size alignment
+   Keeps the compact card-only status treatment from v2.6.0 but normalises the
+   icon sizing so the green tick and red cross match each other and sit closer
+   to the visual weight of the favourites star. Modal wording/behaviour unchanged. */
 .item > .status-pill {
   display: grid;
   place-items: center;
-  width: 23px;
-  height: 23px;
-  min-width: 23px;
+  width: 21px;
+  height: 21px;
+  min-width: 21px;
   padding: 0;
   border-radius: 50%;
-  font-size: 0.98rem;
-  font-weight: 750;
+  font-size: 0.82rem;
+  font-weight: 700;
   line-height: 1;
   text-transform: none;
   letter-spacing: 0;
@@ -5206,6 +5207,11 @@ body.dark .group-title::after {
   box-shadow:
     0 0 0 1px rgba(255,255,255,.025) inset,
     0 3px 8px rgba(0,0,0,.16);
+}
+
+.item > .status-pill.in-service,
+.item > .status-pill.not-in-service {
+  font-size: 0.82rem;
 }
 
 .item > .status-pill.in-service {

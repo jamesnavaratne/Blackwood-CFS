@@ -1,3 +1,8 @@
+## v2.6.1 - Compact status icon size alignment
+- Reduced the green tick on locker-page item cards to better match the favourites star.
+- Normalised the green tick and red cross so they render at the same compact size.
+- Left full service-status wording and modal behaviour unchanged.
+
 ## v2.6.0 - Compact locker-card status indicators
 - Replaced the full green In service badge on locker-page item cards with a compact green tick.
 - Replaced the full red Out of service badge on locker-page item cards with a compact red cross.
