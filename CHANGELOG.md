@@ -1,3 +1,8 @@
+## v2.7.1 - Directions launch clarity and title-home link
+- Gave the System Home Directions Book pill a slightly stronger filled / double-outline treatment so it stands out a little more on a job while keeping the same theme language.
+- Made the Directions Book title in the top-left header return to System Home when tapped/clicked.
+- Left the existing separate home button in place.
+
 ## v2.7.0 RC1 - Directions handoff, locker swipe cue, and ribbon edge fix
 - Built from the accepted inventory-update baseline containing 146 Blackwood Rescue items.
 - Added a dark first-paint handoff for the Directions Book to remove the white navigation flash.

@@ -48,6 +48,11 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Seg
 .search-dock { position:sticky; top:0; z-index:25; background:linear-gradient(180deg,var(--bg) 0%, color-mix(in srgb, var(--bg) 92%, transparent) 100%); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:6px 12px 10px; }
 .brandrow { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
 .brand { min-width:0; }
+
+.brand.home-link { text-decoration:none; color:inherit; display:block; cursor:pointer; }
+.brand.home-link:active { transform:scale(.995); }
+.brand.home-link h1, .brand.home-link .kicker { color:inherit; }
+
 .kicker { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:800; text-shadow:0 0 12px color-mix(in srgb, var(--accent) 60%, transparent); }
 h1 { margin:2px 0 0; font-size:22px; line-height:1.05; letter-spacing:-.03em; }
 .theme-toggle { display:flex; border:1px solid var(--accent); border-radius:999px; padding:3px; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 25%, transparent); background:var(--panel); flex:0 0 auto; }
@@ -515,7 +520,7 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
 <div class="app">
   <header class="topbar">
     <div class="brandrow">
-      <div class="brand"><div class="kicker">Blackwood CFS</div><h1>Directions Book</h1></div>
+      <a class="brand home-link" href="../index.html" aria-label="Back to system home" title="System Home"><div class="kicker">Blackwood CFS</div><h1>Directions Book</h1></a>
       <div class="header-actions">
         <button class="maps-pill" id="ubdMapsBtn" type="button">UBD Maps</button>
         <div class="theme-toggle" aria-label="Theme toggle"><button id="lightBtn">Light</button><button id="darkBtn" class="active">Dark</button></div>

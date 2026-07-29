@@ -5350,6 +5350,45 @@ main.inventory-native-swipe-zone {
   }
 }
 
+
+
+/* v2.7.1 system home directions emphasis
+   Give the Directions Book launcher just a little more visual priority on System Home
+   while keeping it in-family with the existing neon dark home treatment. */
+.v2-appliance-home .v2-system-home-directions-priority {
+  position: relative;
+  background: linear-gradient(180deg, rgba(0, 174, 239, 0.10), rgba(0, 174, 239, 0.06)) !important;
+  border-color: rgba(115, 228, 255, 0.58) !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.10) inset,
+    0 0 0 2px rgba(0, 174, 239, 0.10) inset,
+    0 0 20px rgba(0, 174, 239, 0.18),
+    0 12px 30px rgba(0, 0, 0, 0.24) !important;
+}
+
+.v2-appliance-home .v2-system-home-directions-priority::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  border: 1px solid rgba(115, 228, 255, 0.18);
+  pointer-events: none;
+}
+
+.v2-appliance-home .v2-system-home-directions-priority:hover {
+  background: linear-gradient(180deg, rgba(0, 174, 239, 0.16), rgba(0, 174, 239, 0.10)) !important;
+  border-color: rgba(115, 228, 255, 0.76) !important;
+  box-shadow:
+    0 0 0 1px rgba(115, 228, 255, 0.14) inset,
+    0 0 0 2px rgba(0, 174, 239, 0.12) inset,
+    0 0 24px rgba(0, 174, 239, 0.22),
+    0 14px 34px rgba(0, 0, 0, 0.28) !important;
+}
+
+.v2-appliance-home .v2-system-home-directions-priority strong {
+  letter-spacing: .01em;
+}
+
 </style>
 
 
@@ -5397,7 +5436,7 @@ v2.2 Android cold-start smoothing test:
       <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="cafs24">CAFS 24</button>
     </div>
     <button type="button" class="v2-system-home-search">Global Search</button>
-    <button type="button" class="v2-system-home-search v2-system-home-directions"><strong>Directions Book</strong><small>Street directions</small></button>
+    <button type="button" class="v2-system-home-search v2-system-home-directions v2-system-home-directions-priority"><strong>Directions Book</strong><small>Street directions</small></button>
     <button type="button" class="v2-appliance-home-quiz">Quiz</button>
   </div>
 </section>
@@ -8269,6 +8308,7 @@ installNativeLockerSwipe();
       setTimeout(function(){ window.location.href = "directions/index.html"; }, 140);
     };
     if (btn) {
+      btn.classList.add("v2-system-home-directions-priority");
       if (btn.dataset.v2Bound !== "1") {
         btn.dataset.v2Bound = "1";
         btn.addEventListener("click", goDirections);
@@ -8278,7 +8318,7 @@ installNativeLockerSwipe();
     const quizBtn = card.querySelector(".v2-appliance-home-quiz");
     btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "v2-system-home-search v2-system-home-directions";
+    btn.className = "v2-system-home-search v2-system-home-directions v2-system-home-directions-priority";
     btn.innerHTML = "<strong>Directions Book</strong><small>Street directions</small>";
     btn.dataset.v2Bound = "1";
     btn.addEventListener("click", goDirections);
