@@ -1,4 +1,4 @@
-name: Rebuild inventory from Excel
+name: Rebuild inventory and offline metadata
 
 on:
   workflow_dispatch:
@@ -6,6 +6,12 @@ on:
     paths:
       - 'Blackwood_CFS_Master_Inventory.xlsx'
       - 'tools/rebuild_inventory_from_excel.py'
+      - 'photos/**'
+      - 'directions/index.html'
+      - 'directions/maps/ubd/**'
+      - 'manifest.json'
+      - 'icon.png'
+      - 'icons/**'
 
 permissions:
   contents: write
@@ -23,7 +29,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Rebuild inventory data
+      - name: Rebuild inventory and offline metadata
         run: python tools/rebuild_inventory_from_excel.py
 
       - name: Check for generated changes
@@ -40,6 +46,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/inventory.json
-          git commit -m "Auto-rebuild inventory from Excel"
+          git add index.html data/inventory.json content-metadata.json offline-assets.json
+          git commit -m "Auto-rebuild inventory and offline metadata"
           git push

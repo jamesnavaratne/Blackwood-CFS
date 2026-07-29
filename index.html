@@ -5766,6 +5766,181 @@ html.inventory-light-preload body .system-home-header-btn { color: #087fb8 !impo
 body.palette-light .app-toast,
 html.inventory-light-preload body .app-toast { background: #fffaf0 !important; box-shadow: 0 14px 36px rgba(35,57,69,.20) !important; }
 
+
+
+/* v2.8.1 inventory Light mode readability correction
+   Restores explicit dark heading/counter/icon colours that were still inheriting
+   the established white-on-dark inventory rules. Directions Book remains untouched. */
+body.palette-light,
+html.inventory-light-preload body {
+  background: linear-gradient(180deg, #f7fafc 0%, #edf3f6 52%, #e7eef2 100%) !important;
+}
+
+body.palette-light header,
+html.inventory-light-preload body header {
+  background: rgba(248, 251, 253, .98) !important;
+}
+
+body.palette-light #title,
+body.palette-light .app-title,
+body.palette-light h1,
+body.palette-light h2,
+body.palette-light h3,
+body.palette-light .item-title,
+body.palette-light .item-name,
+body.palette-light .photo-text h2,
+body.palette-light .modal-title,
+body.palette-light .drawer-title,
+html.inventory-light-preload body #title,
+html.inventory-light-preload body .app-title,
+html.inventory-light-preload body h1,
+html.inventory-light-preload body h2,
+html.inventory-light-preload body h3,
+html.inventory-light-preload body .item-title,
+html.inventory-light-preload body .item-name,
+html.inventory-light-preload body .photo-text h2,
+html.inventory-light-preload body .modal-title,
+html.inventory-light-preload body .drawer-title {
+  color: #112b39 !important;
+  text-shadow: none !important;
+}
+
+body.palette-light .built,
+body.palette-light .meta,
+body.palette-light .item .meta,
+body.palette-light .item .desc,
+body.palette-light .item .notes,
+body.palette-light .photo-card p,
+body.palette-light .photo-path,
+body.palette-light .subtle,
+body.palette-light .muted,
+html.inventory-light-preload body .built,
+html.inventory-light-preload body .meta,
+html.inventory-light-preload body .item .meta,
+html.inventory-light-preload body .item .desc,
+html.inventory-light-preload body .item .notes,
+html.inventory-light-preload body .photo-card p,
+html.inventory-light-preload body .photo-path,
+html.inventory-light-preload body .subtle,
+html.inventory-light-preload body .muted {
+  color: #627b89 !important;
+  text-shadow: none !important;
+}
+
+body.palette-light .summary .stat,
+html.inventory-light-preload body .summary .stat {
+  background: linear-gradient(180deg, #ffffff, #f8fbfc) !important;
+  border-color: #c3d5de !important;
+}
+body.palette-light .summary .stat strong,
+html.inventory-light-preload body .summary .stat strong {
+  color: #183746 !important;
+  text-shadow: none !important;
+}
+body.palette-light .summary .stat span,
+html.inventory-light-preload body .summary .stat span {
+  color: #607988 !important;
+}
+body.palette-light #starredStat strong,
+html.inventory-light-preload body #starredStat strong { color: #087fb8 !important; }
+body.palette-light #expandCollapseStat strong,
+html.inventory-light-preload body #expandCollapseStat strong { color: #356273 !important; }
+body.palette-light .stat-alert strong,
+html.inventory-light-preload body .stat-alert strong { color: #b4232f !important; }
+
+body.palette-light #results > .v2-all-items-pill,
+html.inventory-light-preload body #results > .v2-all-items-pill {
+  background: linear-gradient(180deg, #ffffff, #f6fafc) !important;
+  border-color: #bdd2dc !important;
+}
+body.palette-light #results > .v2-all-items-pill h2,
+body.palette-light #results > .v2-all-items-pill .photo-text h2,
+html.inventory-light-preload body #results > .v2-all-items-pill h2,
+html.inventory-light-preload body #results > .v2-all-items-pill .photo-text h2 {
+  color: #173746 !important;
+  text-shadow: none !important;
+}
+body.palette-light #results > .v2-all-items-pill p,
+html.inventory-light-preload body #results > .v2-all-items-pill p {
+  color: #5c7887 !important;
+}
+
+body.palette-light .group-title,
+html.inventory-light-preload body .group-title {
+  background: linear-gradient(180deg, #e8f4f9 0%, #e1eff5 100%) !important;
+  border-color: #a8c8d6 !important;
+}
+body.palette-light .group-title h3,
+html.inventory-light-preload body .group-title h3 {
+  color: #173746 !important;
+  text-shadow: none !important;
+}
+body.palette-light .group-title small,
+html.inventory-light-preload body .group-title small {
+  color: #5b7786 !important;
+  text-shadow: none !important;
+}
+body.palette-light .group-title::after,
+html.inventory-light-preload body .group-title::after {
+  color: #4f7181 !important;
+  text-shadow: none !important;
+}
+
+body.palette-light .item,
+body.palette-light .item.in-service,
+body.palette-light .item.not-in-service,
+html.inventory-light-preload body .item,
+html.inventory-light-preload body .item.in-service,
+html.inventory-light-preload body .item.not-in-service {
+  background: #ffffff !important;
+}
+body.palette-light .item-name,
+html.inventory-light-preload body .item-name {
+  color: #132d3b !important;
+  text-shadow: none !important;
+}
+
+body.palette-light .menu-btn,
+html.inventory-light-preload body .menu-btn {
+  color: #173746 !important;
+  background: #ffffff !important;
+  border-color: #b9ced8 !important;
+  box-shadow: 0 2px 9px rgba(45, 77, 94, .08) !important;
+}
+body.palette-light .system-home-header-btn,
+html.inventory-light-preload body .system-home-header-btn {
+  color: #087fb8 !important;
+  background: #ffffff !important;
+  border-color: #83b7cc !important;
+  box-shadow: 0 2px 9px rgba(45, 77, 94, .08) !important;
+}
+body.palette-light .system-home-header-btn svg,
+body.palette-light .system-home-header-btn svg path,
+html.inventory-light-preload body .system-home-header-btn svg,
+html.inventory-light-preload body .system-home-header-btn svg path {
+  color: #087fb8 !important;
+  stroke: #087fb8 !important;
+  filter: none !important;
+}
+
+body.palette-light .drawer h1,
+body.palette-light .drawer h2,
+body.palette-light .drawer h3,
+body.palette-light .drawer strong,
+html.inventory-light-preload body .drawer h1,
+html.inventory-light-preload body .drawer h2,
+html.inventory-light-preload body .drawer h3,
+html.inventory-light-preload body .drawer strong {
+  color: #173746 !important;
+  text-shadow: none !important;
+}
+body.palette-light .theme-option.active strong,
+body.palette-light .truck-option.active strong,
+html.inventory-light-preload body .theme-option.active strong,
+html.inventory-light-preload body .truck-option.active strong {
+  color: #123244 !important;
+}
+
 </style>
 
 
@@ -6011,7 +6186,7 @@ v2.2 Android cold-start smoothing test:
       <div class="options-subheading">Offline use</div>
       <button id="prepareOfflineBtn" class="option-action-btn" type="button">
         <span class="option-action-icon" aria-hidden="true">⇩</span>
-        <span class="option-action-copy"><strong>Prepare for Offline Use</strong><small>Stores inventory photos, Directions Book and UBD maps</small></span>
+        <span class="option-action-copy"><strong>Prepare for Offline Use</strong><small>Stores inventory photos, Directions Book and UBD maps on this device</small></span>
       </button>
       <div id="offlineStatusCard" class="option-status-card" aria-live="polite">
         <div class="option-status-row"><span>Offline content</span><strong id="offlineStatusValue">Checking…</strong></div>
@@ -6026,7 +6201,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.8.0 RC1</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.8.1 RC2</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -9335,7 +9510,7 @@ installNativeLockerSwipe();
     resetStatusClasses();
     if (!status) {
       statusValue.textContent = "Not prepared";
-      statusDetail.textContent = "Inventory photos, Directions Book and UBD maps are not yet stored for offline use.";
+      statusDetail.textContent = "Inventory photos, Directions Book and UBD maps are not yet stored. Installing the app is recommended, but supported browsers can also work offline.";
       return;
     }
 

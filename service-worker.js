@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-8-0-volunteer-options-offline-light-20260729';
+const CACHE_NAME = 'blackwood-cfs-v2-8-1-light-readability-offline-workflow-20260730';
 
 const APP_SHELL = [
   './',

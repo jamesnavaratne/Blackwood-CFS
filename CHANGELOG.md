@@ -1,3 +1,10 @@
+## v2.8.1 RC2 - Light mode readability and offline workflow correction
+- Corrected inventory Light mode headings, counters, locker titles and header icons that were still inheriting white-on-dark styling.
+- Kept Directions Book styling unchanged.
+- Clarified that installation is recommended for offline use but is not a strict requirement in supported browsers.
+- Restored the GitHub Actions rebuild workflow that was accidentally excluded from the v2.8.0 package.
+- Expanded the workflow so inventory, photo and map changes regenerate content metadata and the offline asset version.
+
 ## v2.8.0 RC1 - Volunteer options, offline preparation and inventory light mode
 - Added a themed notification clarifying that Out of Service changes are stored only on the current device and should be reported by email through Report Issue.
 - Added a collapsed OPTIONS section after Training in the hamburger menu.
