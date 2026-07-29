@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-8-3-in-app-update-banner-20260730';
+const CACHE_NAME = 'blackwood-cfs-v2-8-4-light-font-weight-20260730';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';

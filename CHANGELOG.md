@@ -1,3 +1,8 @@
+## v2.8.4 - Light mode font-weight update test RC5
+- Slightly increased the weight of dark inventory text in Light mode for improved readability.
+- Kept colours, spacing, component layout and Directions Book styling unchanged.
+- Incremented the service-worker version specifically to test the v2.8.3 in-app Update available prompt on existing installations.
+
 ## v2.8.3 - In-app update prompt RC4
 - Added a user-controlled Update available banner shown when a newer service worker or newer published content version is detected.
 - Added Refresh now and Later actions; updates never force-reload the app during use.

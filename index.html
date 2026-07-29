@@ -5945,6 +5945,73 @@ html.inventory-light-preload body .truck-option.active strong {
 
 
 
+
+
+/* v2.8.4 Light mode typography refinement
+   Slightly increases the visual weight of dark inventory text without changing
+   layout, colours, Directions Book styling, or the established bold hierarchy. */
+body.palette-light,
+html.inventory-light-preload body {
+  font-weight: 450;
+}
+
+body.palette-light .built,
+body.palette-light .meta,
+body.palette-light .item .meta,
+body.palette-light .item .desc,
+body.palette-light .item .notes,
+body.palette-light .photo-card p,
+body.palette-light .photo-path,
+body.palette-light .subtle,
+body.palette-light .muted,
+body.palette-light .summary .stat span,
+body.palette-light #results > .v2-all-items-pill p,
+body.palette-light .group-title small,
+html.inventory-light-preload body .built,
+html.inventory-light-preload body .meta,
+html.inventory-light-preload body .item .meta,
+html.inventory-light-preload body .item .desc,
+html.inventory-light-preload body .item .notes,
+html.inventory-light-preload body .photo-card p,
+html.inventory-light-preload body .photo-path,
+html.inventory-light-preload body .subtle,
+html.inventory-light-preload body .muted,
+html.inventory-light-preload body .summary .stat span,
+html.inventory-light-preload body #results > .v2-all-items-pill p,
+html.inventory-light-preload body .group-title small {
+  font-weight: 500 !important;
+}
+
+body.palette-light #title,
+body.palette-light .app-title,
+body.palette-light h1,
+body.palette-light h2,
+body.palette-light h3,
+body.palette-light .item-title,
+body.palette-light .item-name,
+body.palette-light .photo-text h2,
+body.palette-light .modal-title,
+body.palette-light .drawer-title,
+body.palette-light .summary .stat strong,
+body.palette-light #results > .v2-all-items-pill h2,
+body.palette-light .group-title h3,
+html.inventory-light-preload body #title,
+html.inventory-light-preload body .app-title,
+html.inventory-light-preload body h1,
+html.inventory-light-preload body h2,
+html.inventory-light-preload body h3,
+html.inventory-light-preload body .item-title,
+html.inventory-light-preload body .item-name,
+html.inventory-light-preload body .photo-text h2,
+html.inventory-light-preload body .modal-title,
+html.inventory-light-preload body .drawer-title,
+html.inventory-light-preload body .summary .stat strong,
+html.inventory-light-preload body #results > .v2-all-items-pill h2,
+html.inventory-light-preload body .group-title h3 {
+  font-weight: 650 !important;
+}
+
+
 /* v2.8.3 user-controlled app update prompt */
 .app-update-banner {
   position: fixed;
@@ -6417,7 +6484,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.8.2 RC3</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.8.4 RC5</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
