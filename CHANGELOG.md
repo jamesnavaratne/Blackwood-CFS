@@ -1,3 +1,15 @@
+## v2.7.0 RC1 - Directions handoff, locker swipe cue, and ribbon edge fix
+- Built from the accepted inventory-update baseline containing 146 Blackwood Rescue items.
+- Added a dark first-paint handoff for the Directions Book to remove the white navigation flash.
+- Increased controlled horizontal locker-swipe movement and added a progressive edge arrow showing the destination locker.
+- Replaced viewport-level tab centring with contained ribbon scrolling to prevent the right-side white stripe on the final locker and Out of Service tabs.
+- Preserved inventory modal status behaviour, themes, photos, Directions data, and Excel rebuild workflow.
+
+## v2.6.2 STABLE - Inventory source update
+- Accepted the user-edited Excel/inventory build as the new stable data baseline.
+- Blackwood Rescue inventory increased from 145 to 146 items with BLOCK TRAY LAYOUT - CHOCKS in Locker 2.
+- Preserved the descriptive block_tray_layout_chocks.jpg photo filename and all other application content.
+
 ## v2.6.1 - Compact status icon size alignment
 - Reduced the green tick on locker-page item cards to better match the favourites star.
 - Normalised the green tick and red cross so they render at the same compact size.

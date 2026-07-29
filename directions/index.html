@@ -1,8 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta id="themeColorMeta" name="theme-color" content="#05070a" />
+<script>
+(function(){
+  var theme = 'dark';
+  try { theme = localStorage.getItem('blackwoodDirectionsTheme.v1') || 'dark'; } catch(e) {}
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.backgroundColor = theme === 'light' ? '#ffffff' : '#05070a';
+  document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+  var meta = document.getElementById('themeColorMeta');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#ffffff' : '#05070a');
+})();
+</script>
 <title>Blackwood CFS Directions Book — Draft</title>
 <!--
 Blackwood CFS Directions v2.1 new source update HTML test
@@ -13,6 +25,11 @@ BLACKWOOD MAIN retained from BLACKWOOD CORO EDEN HILLS ETC STREETS 122016.docx
 -->
 
 <style>
+/* v2.7.0 no-flash first paint */
+html { min-height:100%; background:#05070a; color-scheme:dark; }
+html[data-theme="light"] { background:#ffffff; color-scheme:light; }
+html[data-theme="dark"] { background:#05070a; color-scheme:dark; }
+
 :root {
   --bg:#ffffff; --panel:#ffffff; --text:#090909; --muted:#585858; --line:#d7d7d7; --soft:#f4f4f4;
   --accent:#0aa7ff; --accent2:#5fd3ff; --danger:#ff3b30; --star:#111;
@@ -626,7 +643,7 @@ const favKey = 'blackwoodDirectionsFavourites.v1';
 const themeKey = 'blackwoodDirectionsTheme.v1';
 let favourites = new Set(JSON.parse(localStorage.getItem(favKey) || '[]'));
 function saveFavs(){ localStorage.setItem(favKey, JSON.stringify([...favourites])); }
-function setTheme(t){ els.body.dataset.theme=t; localStorage.setItem(themeKey,t); els.lightBtn.classList.toggle('active',t==='light'); els.darkBtn.classList.toggle('active',t==='dark'); }
+function setTheme(t){ document.documentElement.dataset.theme=t; els.body.dataset.theme=t; document.documentElement.style.backgroundColor=t==='light'?'#ffffff':'#05070a'; document.documentElement.style.colorScheme=t==='light'?'light':'dark'; const meta=document.getElementById('themeColorMeta'); if(meta) meta.setAttribute('content',t==='light'?'#ffffff':'#05070a'); localStorage.setItem(themeKey,t); els.lightBtn.classList.toggle('active',t==='light'); els.darkBtn.classList.toggle('active',t==='dark'); }
 setTheme(localStorage.getItem(themeKey) || 'dark');
 els.lightBtn.onclick=()=>setTheme('light'); els.darkBtn.onclick=()=>setTheme('dark');
 const mapEls = {

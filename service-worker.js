@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-6-1-status-size-alignment-20260728';
+const CACHE_NAME = 'blackwood-cfs-v2-7-0-navigation-polish-rc1-20260729';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 

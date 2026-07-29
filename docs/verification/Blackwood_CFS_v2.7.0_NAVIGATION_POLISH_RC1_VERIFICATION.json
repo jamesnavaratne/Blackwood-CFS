@@ -1,0 +1,17 @@
+{
+  "version": "v2.7.0 RC1",
+  "baseline": "v2.6.2 STABLE inventory source update",
+  "checks": {
+    "inventory_rebuild": "passed: Rescue 146, 34P 142, CAFS 24 115",
+    "directions_first_paint": "dark theme established on html before body paint; dark theme-color meta present",
+    "swipe_cue": "progressive destination cue added",
+    "ribbon_edge": "manual contained scroll replaces scrollIntoView",
+    "git_history": "excluded from release package",
+    "inventory_update": "BR-0112 BLOCK TRAY LAYOUT - CHOCKS present in Locker 2 with matching auto-photo asset",
+    "javascript_syntax": "passed for all inline script blocks using node --check",
+    "mobile_layout": "430px viewport measured document scrollWidth == clientWidth; Out of Service ribbon remained contained",
+    "swipe_interaction": "touch simulation moved Cabin to Locker 1; progressive cue appeared and cleared after transition",
+    "theme_review": "Blue, Green, Yellow, and Red retained palette-specific item surfaces without viewport overflow",
+    "zip_integrity": "passed after final package test"
+  }
+}
