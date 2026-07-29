@@ -1,3 +1,11 @@
+## v2.8.2 RC3 - Persistent offline-awareness banner
+- Added a slim persistent bottom banner that appears only when the app cannot reach the live site.
+- Distinguishes current offline-ready content from outdated, incomplete or unprepared offline storage.
+- Clarifies that saved inventory/photos/maps remain available while online updates and email reports are unavailable.
+- Added the same offline-awareness treatment to Directions Book.
+- Tapping the banner opens the inventory OPTIONS section; from Directions Book it returns to the app with OPTIONS open.
+- Added a same-site network-only connectivity probe so cached files do not falsely report the device as online.
+
 ## v2.8.1 RC2 - Light mode readability and offline workflow correction
 - Corrected inventory Light mode headings, counters, locker titles and header icons that were still inheriting white-on-dark styling.
 - Kept Directions Book styling unchanged.

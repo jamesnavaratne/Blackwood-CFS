@@ -499,6 +499,56 @@ button[data-ubd]:active,
   }
 }
 
+
+
+/* v2.8.2 shared persistent offline-awareness banner */
+.offline-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: min(calc(100vw - 20px), 720px);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid #d7a92b;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel) 90%, #8b6500 10%);
+  color: var(--text);
+  box-shadow: 0 14px 38px rgba(0,0,0,.30), 0 0 18px rgba(255,193,7,.10);
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 14px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+.offline-banner.open { opacity:1; visibility:visible; pointer-events:auto; transform:translate(-50%,0); }
+.offline-banner-icon {
+  width:28px; height:28px; flex:0 0 auto; display:grid; place-items:center;
+  border-radius:999px; border:1px solid #d7a92b; background:rgba(215,169,43,.12);
+  color:#ffd166; font-size:.88rem; font-weight:950;
+}
+.offline-banner-copy { min-width:0; flex:1; display:grid; gap:1px; }
+.offline-banner-copy strong { color:#ffd166; font-size:.82rem; line-height:1.15; }
+.offline-banner-copy small { color:var(--text); font-size:.72rem; line-height:1.28; }
+.offline-banner-action { flex:0 0 auto; color:#ffd166; font-size:.72rem; font-weight:850; white-space:nowrap; }
+body.offline-banner-visible .content { padding-bottom:calc(154px + env(safe-area-inset-bottom)); }
+body[data-theme="light"] .offline-banner {
+  background:linear-gradient(180deg,#fff9e9,#fff4d6); color:#152a38;
+  border-color:#d9a91e; box-shadow:0 12px 28px rgba(31,52,65,.16);
+}
+body[data-theme="light"] .offline-banner-copy strong,
+body[data-theme="light"] .offline-banner-action { color:#865f00; }
+body[data-theme="light"] .offline-banner-copy small { color:#203747; }
+@media (max-width:520px) {
+  .offline-banner { gap:8px; padding:8px 10px; }
+  .offline-banner-action { display:none; }
+  .offline-banner-copy small { font-size:.7rem; }
+}
+
 </style>
 
 <!--
@@ -538,6 +588,12 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   <nav class="letter-jump" id="letterJump" aria-label="Jump by letter"></nav>
   <main class="content" id="directory"></main>
 </div>
+
+<button id="offlineBanner" class="offline-banner" type="button" aria-live="polite" aria-label="Offline status. Open app options for details.">
+  <span class="offline-banner-icon" aria-hidden="true">!</span>
+  <span class="offline-banner-copy"><strong>Offline</strong><small id="offlineBannerDetail">Checking saved offline content…</small></span>
+  <span class="offline-banner-action" aria-hidden="true">OPTIONS ›</span>
+</button>
 <div class="modal" id="modal" aria-hidden="true">
   <div class="scrim" id="scrim"></div>
   <article class="card" role="dialog" aria-modal="true" aria-labelledby="cardName">
@@ -1061,6 +1117,107 @@ render();
   }
   document.addEventListener("DOMContentLoaded", styleUbdButtons);
   document.addEventListener("click", function(){ setTimeout(styleUbdButtons, 0); }, true);
+})();
+</script>
+
+
+<script>
+// v2.8.2 Directions Book offline-awareness banner
+(function(){
+  const banner = document.getElementById("offlineBanner");
+  const detail = document.getElementById("offlineBannerDetail");
+  if (!banner || !detail) return;
+  let checkTimer = null;
+  let checkSequence = 0;
+
+  banner.addEventListener("click", function(){
+    window.location.href = "../index.html?openOptions=1";
+  });
+
+  async function readOfflineStatus(){
+    if (!("serviceWorker" in navigator)) return null;
+    try {
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("worker timeout")), 2500))
+      ]);
+      const worker = registration.active || registration.waiting || registration.installing;
+      if (!worker) return null;
+      return await new Promise(resolve => {
+        const channel = new MessageChannel();
+        const timeout = setTimeout(() => resolve(null), 2500);
+        channel.port1.onmessage = event => {
+          clearTimeout(timeout);
+          const data = event.data || {};
+          resolve(data.status || null);
+        };
+        worker.postMessage({ type: "GET_OFFLINE_STATUS" }, [channel.port2]);
+      });
+    } catch(e) { return null; }
+  }
+
+  async function readMetadata(){
+    try {
+      const response = await fetch("../content-metadata.json", { cache:"no-store", credentials:"same-origin" });
+      if (!response.ok) return null;
+      return await response.json();
+    } catch(e) { return null; }
+  }
+
+  async function hasUsableConnection(){
+    if (navigator.onLine === false) return false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4500);
+    try {
+      const response = await fetch("../content-metadata.json?connectivity=1&t=" + Date.now(), {
+        method:"GET", cache:"no-store", credentials:"same-origin", signal:controller.signal,
+        headers:{ "Cache-Control":"no-cache" }
+      });
+      return !!(response && response.ok);
+    } catch(e) { return false; }
+    finally { clearTimeout(timeout); }
+  }
+
+  function showBanner(status, metadata){
+    const current = !!(status && status.complete && metadata && status.version === metadata.contentVersion);
+    const stale = !!(status && status.complete && metadata && status.version !== metadata.contentVersion);
+    if (current) {
+      detail.textContent = "Saved directions and maps are available. Online updates and email reports are unavailable.";
+    } else if (stale) {
+      detail.textContent = "Saved directions are available but may be outdated. Reconnect and prepare offline content again.";
+    } else {
+      detail.textContent = "Some directions or maps may be unavailable. Reconnect and prepare offline content.";
+    }
+    banner.classList.add("open");
+    document.body.classList.add("offline-banner-visible");
+  }
+
+  function hideBanner(){
+    banner.classList.remove("open");
+    document.body.classList.remove("offline-banner-visible");
+  }
+
+  async function updateOfflineBanner(){
+    const sequence = ++checkSequence;
+    const online = await hasUsableConnection();
+    if (sequence !== checkSequence) return;
+    if (online) { hideBanner(); return; }
+    const results = await Promise.all([readOfflineStatus(), readMetadata()]);
+    if (sequence !== checkSequence) return;
+    showBanner(results[0], results[1]);
+  }
+
+  function queueCheck(delay){
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(updateOfflineBanner, delay || 0);
+  }
+
+  window.addEventListener("offline", function(){ queueCheck(0); });
+  window.addEventListener("online", function(){ queueCheck(300); });
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) queueCheck(120); });
+  navigator.serviceWorker && navigator.serviceWorker.addEventListener("controllerchange", function(){ queueCheck(250); });
+  queueCheck(350);
+  setInterval(updateOfflineBanner, 30000);
 })();
 </script>
 

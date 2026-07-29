@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-8-1-light-readability-offline-workflow-20260730';
+const CACHE_NAME = 'blackwood-cfs-v2-8-2-offline-awareness-banner-20260730';
 
 const APP_SHELL = [
   './',
@@ -57,6 +57,15 @@ async function cacheFirst(request) {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+
+  // Connectivity probes must be genuinely network-only; a cached fallback would
+  // incorrectly report the device as online.
+  if (url.origin === self.location.origin && url.searchParams.get('connectivity') === '1') {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
+
   event.respondWith(updatePreferred(event.request) ? networkFirst(event.request) : cacheFirst(event.request));
 });
 
