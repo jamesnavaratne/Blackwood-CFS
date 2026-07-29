@@ -59,14 +59,16 @@ For normal inventory edits, run:
 tools\rebuild_inventory_from_excel.bat
 ```
 
-This updates only:
+This updates the app-generated files:
 
 ```text
 index.html
 data\inventory.json
+content-metadata.json
+offline-assets.json
 ```
 
-That is deliberate. It avoids conflicts from timestamped report files.
+The metadata files record Excel's embedded last-saved date, the current content version, and the files required by **Prepare for Offline Use**. Timestamped report files are still excluded from a normal rebuild to avoid unnecessary conflicts.
 
 ## Optional report command
 
@@ -93,6 +95,8 @@ Usually commit:
 Blackwood_CFS_Master_Inventory.xlsx
 index.html
 data/inventory.json
+content-metadata.json
+offline-assets.json
 ```
 
 If you added or changed photos, also commit the relevant files under:
@@ -145,3 +149,10 @@ run tools\validate_inventory_only.bat
 run tools\rebuild_inventory_from_excel.bat
 check the app
 ```
+
+
+## Content dates and offline preparation
+
+The hamburger menu displays **Inventory Excel last updated** using the workbook's own embedded Excel save timestamp. Saving the workbook in Excel and running the rebuild updates this automatically.
+
+The rebuild also regenerates `offline-assets.json`. If inventory photos, UBD maps, icons or Directions operational files change, run the rebuild so volunteers who previously prepared offline content are shown that an update is available.

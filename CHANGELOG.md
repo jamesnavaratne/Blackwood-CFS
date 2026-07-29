@@ -1,3 +1,12 @@
+## v2.8.0 RC1 - Volunteer options, offline preparation and inventory light mode
+- Added a themed notification clarifying that Out of Service changes are stored only on the current device and should be reported by email through Report Issue.
+- Added a collapsed OPTIONS section after Training in the hamburger menu.
+- Moved the inventory theme palette into OPTIONS and added one inventory-only Light mode; Directions Book theme behaviour is unchanged.
+- Added Prepare for Offline Use with progress and device status, caching inventory photos, Directions Book content and all supplied UBD/reference maps.
+- Added automatic Inventory Excel and Directions Book update dates in OPTIONS.
+- Extended the Excel rebuild tool to read Excel's embedded last-saved timestamp and regenerate deterministic content/offline metadata.
+- Extended the GitHub workflow to refresh content metadata when inventory, photos, maps or Directions operational content changes.
+
 ## v2.7.2 - Directions pill line colours and title colour restore
 - Kept the System Home Directions Book emphasis but aligned both double-line accents with the same cyan family as the other home pills.
 - Preserved the clickable Directions Book title-home behaviour while restoring its original blue-and-white appearance.

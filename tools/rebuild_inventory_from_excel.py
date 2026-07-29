@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import hashlib
 import json
 import re
 import sys
@@ -194,6 +195,147 @@ def existing_appliances_from_index(index_path: Path):
         return json.loads(m.group(1))
     except Exception:
         return {}
+
+def workbook_modified_utc(xlsx_path: Path):
+    """Read Excel's own last-saved timestamp from docProps/core.xml.
+
+    This value travels with the workbook through Git, unlike filesystem mtimes.
+    """
+    try:
+        with zipfile.ZipFile(xlsx_path, "r") as z:
+            if "docProps/core.xml" not in z.namelist():
+                return ""
+            root = ET.fromstring(z.read("docProps/core.xml"))
+            for node in root.iter():
+                if node.tag.endswith("}modified") and node.text:
+                    return node.text.strip()
+    except Exception:
+        return ""
+    return ""
+
+
+def directions_updated_utc(repo_root: Path):
+    candidates = [
+        repo_root / "directions" / "source" / "SOURCE_GENERATION_MANIFEST.json",
+        repo_root / "docs" / "directions" / "DIRECTIONS_SOURCE_UPDATE_v2.1_BUILD_INFO.json",
+    ]
+    for path in candidates:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            value = data.get("generated_at_utc") or data.get("directions_updated_utc")
+            if value:
+                return str(value)
+        except Exception:
+            continue
+    return ""
+
+
+def _parse_iso(value):
+    if not value:
+        return None
+    try:
+        return _dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
+def _latest_iso(*values):
+    parsed = [(v, _parse_iso(v)) for v in values if v]
+    parsed = [(v, d) for v, d in parsed if d is not None]
+    if not parsed:
+        return ""
+    return max(parsed, key=lambda pair: pair[1])[0]
+
+
+def operational_asset_files(repo_root: Path):
+    """Return operational files whose contents define the offline content version."""
+    files = []
+    fixed = [
+        repo_root / "data" / "inventory.json",
+        repo_root / "manifest.json",
+        repo_root / "icon.png",
+        repo_root / "directions" / "index.html",
+        repo_root / "directions" / "maps" / "ubd" / "maps.js",
+    ]
+    files.extend(path for path in fixed if path.is_file())
+    for folder in [repo_root / "icons", repo_root / "photos", repo_root / "directions" / "maps" / "ubd"]:
+        if not folder.exists():
+            continue
+        for path in folder.rglob("*"):
+            if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}:
+                files.append(path)
+    return sorted(set(files), key=lambda path: path.relative_to(repo_root).as_posix())
+
+
+def content_version(repo_root: Path):
+    digest = hashlib.sha256()
+    for path in operational_asset_files(repo_root):
+        rel = path.relative_to(repo_root).as_posix().encode("utf-8")
+        digest.update(rel)
+        digest.update(b"\0")
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        digest.update(b"\0")
+    return "content-" + digest.hexdigest()[:20]
+
+
+def offline_asset_urls(repo_root: Path):
+    fixed = [
+        "./",
+        "./index.html",
+        "./manifest.json",
+        "./service-worker.js",
+        "./icon.png",
+        "./content-metadata.json",
+        "./offline-assets.json",
+        "./data/inventory.json",
+        "./directions/index.html",
+        "./directions/maps/ubd/maps.js",
+    ]
+    rels = []
+    for path in operational_asset_files(repo_root):
+        rel = "./" + path.relative_to(repo_root).as_posix()
+        rels.append(rel)
+    return list(dict.fromkeys(fixed + rels))
+
+
+def write_content_metadata_and_offline_manifest(repo_root: Path, index_path: Path, xlsx_path: Path):
+    inventory_updated = workbook_modified_utc(xlsx_path)
+    directions_updated = directions_updated_utc(repo_root)
+    version = content_version(repo_root)
+    assets = offline_asset_urls(repo_root)
+    metadata = {
+        "inventoryExcelModifiedUtc": inventory_updated,
+        "directionsUpdatedUtc": directions_updated,
+        "contentUpdatedUtc": _latest_iso(inventory_updated, directions_updated),
+        "contentVersion": version,
+        "offlineAssetCount": len(assets),
+    }
+
+    (repo_root / "content-metadata.json").write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (repo_root / "offline-assets.json").write_text(
+        json.dumps({
+            "version": version,
+            "contentUpdatedUtc": metadata["contentUpdatedUtc"],
+            "assets": assets,
+        }, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    html = index_path.read_text(encoding="utf-8")
+    payload = json.dumps(metadata, ensure_ascii=False, separators=(",", ":"))
+    pattern = re.compile(r"const\s+CONTENT_METADATA\s*=\s*\{.*?\};\s*\n", flags=re.S)
+    replacement = "const CONTENT_METADATA = " + payload + ";\n"
+    html, count = pattern.subn(lambda _m: replacement, html, count=1)
+    if count != 1:
+        html = html.replace("const APPLIANCES = ", replacement + "const APPLIANCES = ", 1)
+    index_path.write_text(html, encoding="utf-8")
+    return metadata
+
 
 
 def parse_master_inventory(xlsx_path: Path):
@@ -581,6 +723,8 @@ def main(argv=None):
     else:
         replace_index_appliances(index_path, appliances)
         counts = write_outputs(repo_root, appliances, xlsx_path, unknown_apps, write_report=args.write_report)
+        metadata = write_content_metadata_and_offline_manifest(repo_root, index_path, xlsx_path)
+        print(f"- Content metadata: {metadata['contentVersion']} ({metadata['offlineAssetCount']} offline assets)")
 
     print("Blackwood CFS inventory rebuild OK — validation passed")
     for app, info in counts.items():

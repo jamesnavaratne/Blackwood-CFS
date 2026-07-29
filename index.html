@@ -12,6 +12,14 @@ Every displayed file caption is intended to show the full path to use.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blackwood CFS</title>
+<script>
+try {
+  if (localStorage.getItem("inventoryPalette") === "light") {
+    document.documentElement.classList.add("inventory-light-preload");
+  }
+} catch(e) {}
+</script>
+
 
 <style>
 :root {
@@ -5389,6 +5397,375 @@ main.inventory-native-swipe-zone {
   letter-spacing: .01em;
 }
 
+
+
+/* v2.8.0 volunteer usability options, offline preparation and inventory light mode */
+.drawer {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.options-toggle-btn,
+.option-action-btn {
+  width: 100%;
+  border-radius: 16px;
+  padding: 11px 12px;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.options-toggle-copy,
+.option-action-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.options-toggle-copy strong,
+.option-action-copy strong {
+  font-size: .9rem;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.options-toggle-copy small,
+.option-action-copy small {
+  color: var(--muted);
+  font-size: .73rem;
+  line-height: 1.25;
+}
+
+.options-toggle-chevron {
+  color: var(--accent);
+  font-size: 1.2rem;
+  transition: transform .16s ease;
+}
+
+.options-toggle-btn[aria-expanded="true"] .options-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+.options-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 9px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface-2) 72%, var(--surface));
+}
+
+.options-panel[hidden] { display: none !important; }
+
+.options-subheading {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.options-subheading:first-child { margin-top: 0; }
+.options-theme-list { gap: 6px; }
+.options-theme-list .theme-option { padding: 9px 11px; }
+.theme-dot.light {
+  background: linear-gradient(135deg, #ffffff 0 52%, #bfe7f8 52% 100%);
+  border-color: #8eb9cc;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.65) inset;
+}
+
+.option-action-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.option-action-btn:disabled { opacity: .74; cursor: progress; }
+
+.option-status-card,
+.option-metadata-card {
+  display: grid;
+  gap: 7px;
+  padding: 10px 11px;
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--accent) 2%);
+}
+
+.option-status-row,
+.option-metadata-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: .75rem;
+  line-height: 1.3;
+}
+
+.option-status-row span,
+.option-metadata-row span { color: var(--muted); }
+.option-status-row strong,
+.option-metadata-row strong { color: var(--text); text-align: right; font-size: .76rem; }
+.option-status-detail { color: var(--muted); font-size: .71rem; line-height: 1.35; }
+.option-status-card.ready { border-color: color-mix(in srgb, var(--success-text) 28%, var(--line)); }
+.option-status-card.ready #offlineStatusValue { color: var(--success-text); }
+.option-status-card.stale,
+.option-status-card.incomplete { border-color: color-mix(in srgb, var(--warning-text) 34%, var(--line)); }
+.option-status-card.stale #offlineStatusValue,
+.option-status-card.incomplete #offlineStatusValue { color: var(--warning-text); }
+.option-status-card.error { border-color: color-mix(in srgb, var(--danger-text) 34%, var(--line)); }
+.option-status-card.error #offlineStatusValue { color: var(--danger-text); }
+
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 140;
+  width: min(calc(100vw - 28px), 520px);
+  transform: translate(-50%, 18px);
+  opacity: 0;
+  pointer-events: none;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 94%, var(--warning-bg) 6%);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--warning-text) 34%, var(--line));
+  box-shadow: 0 16px 44px rgba(0,0,0,.30), 0 0 18px color-mix(in srgb, var(--warning-text) 10%, transparent);
+  font-size: .84rem;
+  line-height: 1.35;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.app-toast.open { opacity: 1; transform: translate(-50%, 0); }
+.app-toast.warning { border-color: color-mix(in srgb, var(--warning-text) 42%, var(--line)); }
+
+/* Inventory-only Light mode. Directions Book remains unchanged in its own file. */
+html.inventory-light-preload body,
+body.palette-light {
+  --bg: #edf2f5 !important;
+  --surface: #ffffff !important;
+  --surface-2: #f3f6f8 !important;
+  --card: #ffffff !important;
+  --text: #142733 !important;
+  --muted: #5f7481 !important;
+  --muted-2: #718794 !important;
+  --line: #cbd8df !important;
+  --border: #c7d7df !important;
+  --accent: #087fb8 !important;
+  --accent-2: #075f8d !important;
+  --accent-3: #0c91c9 !important;
+  --accent-soft: #e7f4f9 !important;
+  --success-bg: #e5f5ed !important;
+  --success-text: #147447 !important;
+  --danger-bg: #fdebec !important;
+  --danger-text: #b4232f !important;
+  --warning-bg: #fff4d6 !important;
+  --warning-text: #7b5700 !important;
+  --shadow: 0 1px 2px rgba(26,45,58,.08), 0 10px 28px rgba(38,65,81,.10) !important;
+  --glow: none !important;
+  background: linear-gradient(180deg, #f6f8fa 0%, #eaf0f3 100%) !important;
+  color: var(--text) !important;
+  color-scheme: light !important;
+}
+
+body.palette-light header,
+html.inventory-light-preload body header {
+  background: rgba(255,255,255,.94) !important;
+  border-bottom-color: #c5d5dd !important;
+  box-shadow: 0 1px 0 rgba(8,127,184,.08), 0 7px 20px rgba(39,66,82,.08) !important;
+}
+
+body.palette-light main,
+html.inventory-light-preload body main { background: transparent !important; }
+
+body.palette-light .v2-appliance-home,
+html.inventory-light-preload body .v2-appliance-home {
+  background:
+    radial-gradient(circle at 12% 2%, rgba(8,127,184,.13), transparent 31%),
+    radial-gradient(circle at 88% 16%, rgba(77,171,211,.10), transparent 31%),
+    linear-gradient(180deg, #f7fafc 0%, #eaf1f5 100%) !important;
+  color: var(--text) !important;
+}
+
+body.palette-light .v2-appliance-home-card,
+html.inventory-light-preload body .v2-appliance-home-card {
+  background: rgba(255,255,255,.94) !important;
+  border-color: #b9d1dc !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.78) inset, 0 18px 54px rgba(43,72,89,.14) !important;
+}
+
+body.palette-light .v2-appliance-home-kicker,
+html.inventory-light-preload body .v2-appliance-home-kicker { color: #087fb8 !important; text-shadow: none !important; }
+body.palette-light .v2-appliance-home h1,
+html.inventory-light-preload body .v2-appliance-home h1 { color: #102733 !important; text-shadow: none !important; }
+
+body.palette-light .v2-appliance-home .v2-appliance-home-pill,
+body.palette-light .v2-appliance-home .v2-system-home-search,
+body.palette-light .v2-appliance-home .v2-system-home-directions,
+html.inventory-light-preload body .v2-appliance-home .v2-appliance-home-pill,
+html.inventory-light-preload body .v2-appliance-home .v2-system-home-search,
+html.inventory-light-preload body .v2-appliance-home .v2-system-home-directions {
+  background: #ffffff !important;
+  color: #15303e !important;
+  border-color: #a9c8d6 !important;
+  box-shadow: 0 1px 2px rgba(42,73,89,.07), 0 7px 18px rgba(42,73,89,.08) !important;
+}
+
+body.palette-light .v2-appliance-home .v2-system-home-directions-priority,
+html.inventory-light-preload body .v2-appliance-home .v2-system-home-directions-priority {
+  background: linear-gradient(180deg, #f0f9fd, #e7f4f9) !important;
+  border-color: #69aac8 !important;
+  box-shadow: 0 0 0 1px rgba(8,127,184,.08) inset, 0 0 0 2px rgba(8,127,184,.08) inset, 0 8px 22px rgba(42,73,89,.09) !important;
+}
+body.palette-light .v2-appliance-home .v2-system-home-directions-priority::after,
+html.inventory-light-preload body .v2-appliance-home .v2-system-home-directions-priority::after { border-color: rgba(8,127,184,.22) !important; }
+
+body.palette-light .drawer,
+html.inventory-light-preload body .drawer {
+  background: #f9fbfc !important;
+  color: var(--text) !important;
+  border-right-color: #bfd0d9 !important;
+  box-shadow: 12px 0 34px rgba(35,61,75,.18) !important;
+}
+body.palette-light .drawer-backdrop,
+html.inventory-light-preload body .drawer-backdrop { background: rgba(25,43,54,.42) !important; }
+
+body.palette-light .truck-option,
+body.palette-light .theme-option,
+body.palette-light .options-toggle-btn,
+body.palette-light .option-action-btn,
+html.inventory-light-preload body .truck-option,
+html.inventory-light-preload body .theme-option,
+html.inventory-light-preload body .options-toggle-btn,
+html.inventory-light-preload body .option-action-btn {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border-color: #c7d6de !important;
+  box-shadow: none !important;
+}
+body.palette-light .truck-option.active,
+body.palette-light .theme-option.active,
+html.inventory-light-preload body .truck-option.active,
+html.inventory-light-preload body .theme-option.active {
+  background: #e8f5fa !important;
+  color: #123244 !important;
+  border-color: #5aa5c7 !important;
+  box-shadow: 0 0 0 1px rgba(8,127,184,.08) !important;
+}
+body.palette-light .options-panel,
+html.inventory-light-preload body .options-panel { background: #eef4f7 !important; border-color: #c7d8e0 !important; }
+body.palette-light .option-status-card,
+body.palette-light .option-metadata-card,
+html.inventory-light-preload body .option-status-card,
+html.inventory-light-preload body .option-metadata-card { background: #ffffff !important; }
+
+body.palette-light input,
+html.inventory-light-preload body input {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border-color: #b8ccd6 !important;
+  box-shadow: inset 0 0 0 1px rgba(8,127,184,.025) !important;
+}
+body.palette-light input:focus,
+html.inventory-light-preload body input:focus { border-color: #087fb8 !important; box-shadow: 0 0 0 3px rgba(8,127,184,.14) !important; }
+
+body.palette-light .tabs button:not(.active),
+body.palette-light #results > .v2-all-items-pill,
+body.palette-light #lockerPhoto .photo-card,
+html.inventory-light-preload body .tabs button:not(.active),
+html.inventory-light-preload body #results > .v2-all-items-pill,
+html.inventory-light-preload body #lockerPhoto .photo-card {
+  background: #ffffff !important;
+  color: #173240 !important;
+  border-color: #bfd1da !important;
+  box-shadow: 0 3px 12px rgba(44,74,91,.08) !important;
+}
+body.palette-light .tabs button.active,
+html.inventory-light-preload body .tabs button.active {
+  background: #e1f2f9 !important;
+  color: #084b6d !important;
+  border-color: #4f9fbe !important;
+  box-shadow: 0 0 0 1px rgba(8,127,184,.08) !important;
+}
+
+body.palette-light .group,
+body.palette-light .stat,
+body.palette-light .photo-card,
+body.palette-light .item,
+body.palette-light .item.in-service,
+body.palette-light .item.not-in-service,
+html.inventory-light-preload body .group,
+html.inventory-light-preload body .stat,
+html.inventory-light-preload body .photo-card,
+html.inventory-light-preload body .item,
+html.inventory-light-preload body .item.in-service,
+html.inventory-light-preload body .item.not-in-service {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border-color: #c9d8df !important;
+  box-shadow: 0 1px 2px rgba(33,56,70,.06), 0 7px 18px rgba(44,74,91,.08) !important;
+}
+body.palette-light .item.not-in-service,
+html.inventory-light-preload body .item.not-in-service { border-color: #e0a5aa !important; }
+body.palette-light .items-grid,
+html.inventory-light-preload body .items-grid { background: #eef3f6 !important; }
+body.palette-light .group-title,
+html.inventory-light-preload body .group-title {
+  background: #eaf5f9 !important;
+  color: #17313f !important;
+  border-color: #a8cad8 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.palette-light .group-title h3,
+body.palette-light .group-title small,
+html.inventory-light-preload body .group-title h3,
+html.inventory-light-preload body .group-title small { text-shadow: none !important; }
+body.palette-light .item::before,
+html.inventory-light-preload body .item::before { opacity: .08 !important; filter: grayscale(.2) contrast(.85) !important; }
+body.palette-light .item::after,
+html.inventory-light-preload body .item::after { background: rgba(255,255,255,.86) !important; }
+
+body.palette-light .item-modal,
+body.palette-light .modal,
+body.palette-light .quiz-modal-card,
+body.palette-light .v2-global-search-dialog,
+html.inventory-light-preload body .item-modal,
+html.inventory-light-preload body .modal,
+html.inventory-light-preload body .quiz-modal-card,
+html.inventory-light-preload body .v2-global-search-dialog {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border-color: #b9ccd6 !important;
+  box-shadow: 0 20px 64px rgba(30,54,68,.24) !important;
+}
+body.palette-light .modal-backdrop,
+body.palette-light .v2-global-search-modal,
+html.inventory-light-preload body .modal-backdrop,
+html.inventory-light-preload body .v2-global-search-modal { background: rgba(28,47,58,.46) !important; }
+body.palette-light .modal-field,
+html.inventory-light-preload body .modal-field { background: #f4f7f9 !important; border-color: #d0dce2 !important; }
+body.palette-light .system-home-header-btn,
+html.inventory-light-preload body .system-home-header-btn { color: #087fb8 !important; border-color: #89b8cc !important; background: #ffffff !important; box-shadow: none !important; }
+body.palette-light .app-toast,
+html.inventory-light-preload body .app-toast { background: #fffaf0 !important; box-shadow: 0 14px 36px rgba(35,57,69,.20) !important; }
+
 </style>
 
 
@@ -5555,6 +5932,8 @@ v2.2 Android cold-start smoothing test:
 </section>
 
 
+<div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
+
 <div id="drawerBackdrop" class="drawer-backdrop"></div>
 <aside id="drawer" class="drawer" aria-label="Appliance menu">
   <div class="drawer-header">
@@ -5589,29 +5968,6 @@ v2.2 Android cold-start smoothing test:
   </div>
 
 
-  <div class="theme-section">
-    <div class="theme-section-title">Theme palette</div>
-    <div class="theme-list">
-      <button class="theme-option" type="button" data-palette="blue">
-        <span class="theme-dot blue"></span>
-        Blue
-      </button>
-      <button class="theme-option" type="button" data-palette="green">
-        <span class="theme-dot green"></span>
-        Green
-      </button>
-      <button class="theme-option" type="button" data-palette="yellow">
-        <span class="theme-dot yellow"></span>
-        Yellow
-      </button>
-      <button class="theme-option" type="button" data-palette="red">
-        <span class="theme-dot red"></span>
-        Red
-      </button>
-    </div>
-  </div>
-
-
   <div class="theme-section quiz-section">
     <div class="theme-section-title">Training</div>
     <button id="openQuizBtn" class="theme-option" type="button">
@@ -5620,7 +5976,57 @@ v2.2 Android cold-start smoothing test:
     </button>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.0</div>
+  <div class="theme-section options-section">
+    <div class="theme-section-title">Options</div>
+    <button id="optionsToggleBtn" class="options-toggle-btn" type="button" aria-expanded="false" aria-controls="optionsPanel">
+      <span class="options-toggle-copy"><strong>App options</strong><small>Theme, offline use and content dates</small></span>
+      <span class="options-toggle-chevron" aria-hidden="true">⌄</span>
+    </button>
+
+    <div id="optionsPanel" class="options-panel" hidden>
+      <div class="options-subheading">Inventory theme</div>
+      <div class="theme-list options-theme-list">
+        <button class="theme-option" type="button" data-palette="blue">
+          <span class="theme-dot blue"></span>
+          Blue
+        </button>
+        <button class="theme-option" type="button" data-palette="green">
+          <span class="theme-dot green"></span>
+          Green
+        </button>
+        <button class="theme-option" type="button" data-palette="yellow">
+          <span class="theme-dot yellow"></span>
+          Yellow
+        </button>
+        <button class="theme-option" type="button" data-palette="red">
+          <span class="theme-dot red"></span>
+          Red
+        </button>
+        <button class="theme-option" type="button" data-palette="light">
+          <span class="theme-dot light"></span>
+          Light mode
+        </button>
+      </div>
+
+      <div class="options-subheading">Offline use</div>
+      <button id="prepareOfflineBtn" class="option-action-btn" type="button">
+        <span class="option-action-icon" aria-hidden="true">⇩</span>
+        <span class="option-action-copy"><strong>Prepare for Offline Use</strong><small>Stores inventory photos, Directions Book and UBD maps</small></span>
+      </button>
+      <div id="offlineStatusCard" class="option-status-card" aria-live="polite">
+        <div class="option-status-row"><span>Offline content</span><strong id="offlineStatusValue">Checking…</strong></div>
+        <div id="offlineStatusDetail" class="option-status-detail">Checking this device.</div>
+      </div>
+
+      <div class="options-subheading">Content dates</div>
+      <div class="option-metadata-card">
+        <div class="option-metadata-row"><span>Inventory Excel last updated</span><strong id="inventoryUpdatedValue">—</strong></div>
+        <div class="option-metadata-row"><span>Directions Book last updated</span><strong id="directionsUpdatedValue">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-note"><strong>Version:</strong> v2.8.0 RC1</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -5681,6 +6087,7 @@ v2.2 Android cold-start smoothing test:
 </main>
 
 <script>
+const CONTENT_METADATA = {"inventoryExcelModifiedUtc":"2026-07-28T14:28:14Z","directionsUpdatedUtc":"2026-07-19T11:53:13Z","contentUpdatedUtc":"2026-07-28T14:28:14Z","contentVersion":"content-4527393b910c79f56afe","offlineAssetCount":64};
 const APPLIANCES = {"Blackwood Rescue":{"appliance":"Blackwood Rescue","records":[{"id":"BR-0136","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Driver","subsection":"","item":"DRIVERS LOG BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0137","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Driver","subsection":"","item":"ISUZU OWNER MANUAL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0138","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Driver","subsection":"","item":"APPLIANCE SERVICE BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0139","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"MAGLIGHT x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0140","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"GRN Radio - Portable","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0141","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"VHF RADIO - Portable","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0142","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"RESCUE Vests x 2 (Officer and Driver)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0143","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"Rescue Gloves","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0144","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"Nitrile Gloves","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0145","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"Glasses","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0146","appliance":"Blackwood Rescue","locker":"Cabin","section":"Console","subsection":"","item":"Dust Mask","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0147","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"Black Center Pouch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0148","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"GRN Battery x 1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0149","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"OIC NOTEBOOK – Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0150","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"MULTI CHARGER PACK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0151","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"CAMERA","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0152","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"RED POUCH with RING CUTTER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0153","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"BP Fuel Card (center consol slot)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0154","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"Shell Fuel Card (center consol slot)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0155","appliance":"Blackwood Rescue","locker":"Cabin","section":"Above Officer","subsection":"","item":"PENCIL CASE","quantity":"","category":"","description":"Chinagraph pencil\nPoint Marker Pen\nT-Cards\nMatches\nAirbag Warning stickers\nVHF Quick reference guide\nSite attendance book A5\nSturt Group calling cards\nMitcham Council Keys\nOnko Park Keys\nNPWS Keys\nSIMS Key\nRED CFS Key","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0169","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"RCR CREW COMPOSITION x 4 (roof)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0170","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"VHF Battery x 4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0171","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"VHF RADIO – Portable x 3","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0172","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"MAGLIGHT CONES x 3","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0173","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"Rural TIC & spare Battery","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0174","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"BIO WASTE DISPOSAL BAGS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0175","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"RESCUE Vests x 4 (Rear)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0176","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"Rescue Gloves","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0177","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"Nitrile Gloves","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0178","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"Glasses","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0179","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"Dust Mask","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0180","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"RADIO BELT w/ working torch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0181","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"BOX OF NITRILE GLOVES","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0182","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"BOX OF SURGICAL MASKS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0183","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"JACK WHEEL BRACE w/ Handles","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0184","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"PRIMARY ENTRY KIT [x2]","quantity":"","category":"","description":"Rescue Knife\nEmergency Hammer\n200mm Adjustable Spanner\nPhilips Head Screwdriver\nFlat Blade Screwdriver\nCable Cutters\nSeat belt webbing\nUniversal Shears\nTrim Removal tool [x3 total]","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0194","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"YELLOW POUCH LAMINATED MAPS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0195","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"UBD STREET DIRECTORY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0196","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"DIRECTIONS BOOK – White, A5","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0197","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"DANGEROUS GOODS GUIDE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0198","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"RESCUERS GUIDE TO AIRBAGS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0199","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"A3 LAMINATED NATIONAL PARKS MAP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0200","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"CFS MAP BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0201","appliance":"Blackwood Rescue","locker":"Cabin","section":"Rear Seats","subsection":"","item":"BAG, CLEAR SAFETY GLASSES","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"BR-0001","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"BOLT CUTTERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0002","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"SLEDGEHAMMER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0003","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"SHOVEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0004","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"JEMMY BAR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0005","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"SIDE STABILISER w/ratchets in bag","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0006","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"SHADE WINDER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0007","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"HALLIGAN TOOL [x1]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0008","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"STABFAST KIT, BAGS x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0009","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"STOP/SLOW BAT- w/ handles [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0010","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"ACCESS TOOL KIT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0011","appliance":"Blackwood Rescue","locker":"Locker 1","section":"","subsection":"","item":"BATTERY POWERED LIGHTS [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 1"},{"id":"BR-0112","appliance":"Blackwood Rescue","locker":"Locker 2","section":"","subsection":"","item":"BLOCK TRAY LAYOUT - CHOCKS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0012","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"BAG OF ROPE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0013","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"BAG w/ BLANKETS & Trauma Teddies x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0014","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"AIRBAG RESTRAINT SYSTEM","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0015","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"GLASS MANAGER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0016","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"SOFT PROTECTION SHEETS x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0017","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"Disposable line - red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0018","appliance":"Blackwood Rescue","locker":"Locker 2","section":"TOP","subsection":"","item":"Clear Windscreen Protection Roll x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0019","appliance":"Blackwood Rescue","locker":"Locker 2","section":"MIDDLE","subsection":"","item":"BAG, SOFT & PVC SHARPS PROTECTION","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0020","appliance":"Blackwood Rescue","locker":"Locker 2","section":"MIDDLE","subsection":"","item":"FIRST AID KIT 02, DEFIB","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0021","appliance":"Blackwood Rescue","locker":"Locker 2","section":"MIDDLE","subsection":"","item":"PVC GLOVES x2 pr (In decon. bag)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0022","appliance":"Blackwood Rescue","locker":"Locker 2","section":"MIDDLE","subsection":"","item":"DECONTAMINATION BAG","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0023","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Tray 1","subsection":"","item":"Step Wedges - blue x4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0024","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Tray 1","subsection":"","item":"Wheel Chocks - red x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0025","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"GREEN STAGING SHEET X1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0026","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"90 x 90 Blocks- purple x2 each","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0027","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"90 x 45 Blocks- yellow x3 each","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0028","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"Large Wedges - red x3 each","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0029","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"Small Wedges - Green x3 each","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0030","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"Hardwood Wedges x5 each","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0031","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Trays 2, 3, 4","subsection":"","item":"Rubber Mallet x2 total","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0032","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Metal Box","subsection":"","item":"90 x 90 Blocks- purple x9","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0033","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Metal Box","subsection":"","item":"90 x 45 Blocks - yellow x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0034","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Metal Box","subsection":"","item":"Small Wedges - green x1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0035","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Metal Box","subsection":"","item":"Large Wedge - red x1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0036","appliance":"Blackwood Rescue","locker":"Locker 2","section":"Metal Box","subsection":"","item":"LARGE RATCHET STRAPS [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 2"},{"id":"BR-0037","appliance":"Blackwood Rescue","locker":"Locker 3","section":"","subsection":"","item":"LONG HARDWOOD CHOCKS x6","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 3"},{"id":"BR-0038","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"CROWBAR (behind botton drawer)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0039","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HYDRAULIC HOSE [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0040","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"RED & GREEN SALVAGE SHEETS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0041","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"LITTLE GIANT LADDER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0042","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"STOKES LITTER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0043","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"EXTRICATION BOARD","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0044","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"EXTRICATION BOARD STRAPS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0045","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"SCENE SCREEN IN BLACK BAG","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0046","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"LIGHT TRIPODS WITH CABLES [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0047","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HYDRAULIC FLUID","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0048","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"FUEL CONTAINER –10lt, UNLEADED (RED)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0049","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"SPOUT – for fuel containers [x1]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0050","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"FUNNEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0051","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"CHAINSAW BAR OIL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0052","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"PEDAL CUTTER (LUCAS IN BOX)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0053","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HARD PROTECTION BOARDS [x6]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0054","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HOLMATRO LARGE RAM (1510mm)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0055","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HOLMATRO SMALL RAM (1285mm)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0056","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HAND PUMP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0057","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HOLMATRO CUTTERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0058","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HOLMATRO SPREADERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0059","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"MINI CUTTERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0060","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"MAIN RESCUE PUMP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0061","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"AUXILIARY RESCUE PUMP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0062","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"HOLMATRO CHAINS (ORANGE BOX)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0063","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"BLACK PLASTIC CASE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0064","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"AIRBAG CONTROLS","quantity":"","category":"","description":"HOSES, red & yellow x 1 of each\nSHORT HOSE w/ shut off valves x2\nSMALL AIR BAG\nLARGE AIR BAGS x2","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0069","appliance":"Blackwood Rescue","locker":"Locker 4","section":"","subsection":"","item":"BA CYLINDER","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 4"},{"id":"BR-0082","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"RECIP SAW & CORDLESS DRILL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0083","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"DRILL BIT SET RED Milwaukee","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0084","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"DRILL BIT SET RED 25 PIECE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0085","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"DREMEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0086","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"SOCKET SET","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0087","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Top Drawer","subsection":"","item":"SILICON SPRAY CAN & WD40 SPRAY CAN","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0088","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"CHAINSAW BOX containing","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0089","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Chaps","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0090","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Helmet w/ earmuffs","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0091","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Ear Plugs","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0092","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Chainsaw spanner","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0093","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Spare Chain [x1]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0094","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"File and guide","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0095","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"EXTENSION CORD & RCD","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0096","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"CHAINSAW (Electric) with Battery","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0097","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"QUICKCUT (Electric) with Battery","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0098","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Middle Drawer","subsection":"","item":"Stihl Box with 2x Batteries and charger","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0099","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"TOOLBOX (orange) containing","quantity":"","category":"","description":"Cold Chisel\nAllen Key Set\nPhilips Head Screwdrivers [x3]\nFlat Blade Screwdrivers [x4]\nLarge Tapered Spikes [x2]\nSmall Tapered Spikes [x2]\nadjustable Spanner 375mm\nadjustable Spanner 300mm\nadjustable spanner 250mm\nadjustable spanner 150mm\nwire cutter\nUniversal Shears\nCombination Pliers\nMulti Grips\nStanley Knife\nSpare blades – Stanley knife\nRoll Duct Tape\nSpeed Brace\nChainsaw Spanner\nClaw Hammer\nHacksaw & spare blade\nSockets (27mm, 30mm, 32mm)\nRoll of Webbing\nroll of electrical tape\nCable cutter\nneedle nose pliers\nWindscreen Knife\nMini Jimmy Bar\n11 piece Torx set\nHolmatro line pressure release tool","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0130","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"WINCH w/ lever","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0131","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"WINCH CABLE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0132","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"WINCH STRAPS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0133","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"RAM SUPPORT/SILL CLAMP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0134","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"GO JACKS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0135","appliance":"Blackwood Rescue","locker":"Locker 5","section":"Bottom Drawer","subsection":"","item":"WHEEL CHOCKS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 5"},{"id":"BR-0070","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"DEBRIS BAGS w/ cable ties","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0071","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"DRUM OF ABSORBENT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0072","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"BAG OF ABSORBENT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0073","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"HAZARD TAPE [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0074","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"PLUG & DIKE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0075","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"TRAFFIC CONES [x10]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0076","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"BAG OF E-FLARES [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0077","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"CO2 EXTINGUISHER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0078","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"DRY CHEM EXTINGUISHER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0079","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"FOAM EXTINGUISHER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0080","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"RAIN COAT PANTS x 6","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"},{"id":"BR-0081","appliance":"Blackwood Rescue","locker":"Locker 6","section":"","subsection":"","item":"BROOM [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Locker 6"}],"lockers":["Cabin","Locker 1","Locker 2","Locker 3","Locker 4","Locker 5","Locker 6"],"lockerPhotos":{"Cabin":{"photo":"cabin.jpg","title":"Cabin","description":"Main photo shown at top of this locker page","frontPhoto":"cabin_front.jpg","rearPhoto":"cabin_rear.jpg"},"Locker 1":{"photo":"locker_1.jpg","title":"Locker 1","description":"Main photo shown at top of this locker page"},"Locker 2":{"photo":"locker_2.jpg","title":"Locker 2","description":"Main photo shown at top of this locker page"},"Locker 3":{"photo":"locker_3.jpg","title":"Locker 3","description":"Main photo shown at top of this locker page"},"Locker 4":{"photo":"locker_4.jpg","title":"Locker 4","description":"Main photo shown at top of this locker page"},"Locker 5":{"photo":"locker_5.jpg","title":"Locker 5","description":"Main photo shown at top of this locker page"},"Locker 6":{"photo":"locker_6.jpg","title":"Locker 6","description":"Main photo shown at top of this locker page"},"Locker 7":{"photo":"locker_7.jpg","title":"Locker 7","description":"Main photo shown at top of this locker page"}},"built":"2026-07-06","version":"v2.0 RC1 - Excel gospel rebuild"},"34P":{"appliance":"34P","records":[{"id":"34P-0001","appliance":"34P","locker":"Cabin","section":"Above Driver","subsection":"","item":"DRIVERS LOG BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0002","appliance":"34P","locker":"Cabin","section":"Above Driver","subsection":"","item":"ISUZU OWNER MANUAL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0003","appliance":"34P","locker":"Cabin","section":"Above Driver","subsection":"","item":"APPLIANCE SERVICE BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0004","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"FIRE EXTINGUISHER – 2kg Dry Chemical","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0005","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"GUIDE FOR AIRCRAFT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0006","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"GRN RADIO – Portable","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0007","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"BP CARD & SHELL CARD - in dash","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0008","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"SUNSCREEN","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0009","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"RADIO CONTROL CARD","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0010","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"MAGLIGHT CONES [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0011","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"OIC NOTEBOOK – Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0012","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"ROLLER DOOR REMOTE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0013","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"GRN BATTERY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0014","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"VHF BATTERIES [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0015","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"VHF RADIO – Portable x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0016","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"MAGLIGHT TORCH","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0017","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"MULTI CHARGER PACK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0018","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"POUCH","quantity":"","category":"","description":"Keys [A, R, S]\nSquare Key\nRed CFS Key\n003 Key\nST Johns Gate Key\nTelstra Key Card \nLift Key (round top)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0024","appliance":"34P","locker":"Cabin","section":"Console","subsection":"","item":"PENCIL CASE","quantity":"","category":"","description":"Chinagraph pencil\nT-Cards\nSturt Group Calling Cards\nCompass\nAirbag warning stickers\nMatches","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0030","appliance":"34P","locker":"Cabin","section":"Above Officer","subsection":"","item":"FIRST ARRIVAL OFFICERS FORMS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0031","appliance":"34P","locker":"Cabin","section":"Above Officer","subsection":"","item":"SITE HANDOVER FORMS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0032","appliance":"34P","locker":"Cabin","section":"Above Officer","subsection":"","item":"BINOCULARS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0033","appliance":"34P","locker":"Cabin","section":"Above Officer","subsection":"","item":"A6 SITE ATTENDANCE BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0034","appliance":"34P","locker":"Cabin","section":"Above Officer","subsection":"","item":"TABARD PANELS POUCH","quantity":"","category":"","description":"Incident Controller/Media Liaison [x2]\nIncident Controller / Sector Commander\nSafety Officer [x1]\nSector Commander / Operations Officer [x2]\nStrike Team Leader / Divisional Commander [x2]\nHLO (Helicopter Landing Officer)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0040","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"VHF RADIO – Portable [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0041","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"MAGLIGHT TORCH","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0042","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"BA TORCHES x4","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0043","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"CONTAINER w/ P2 Masks","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0044","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"NITRILE GLOVES in CONTAINER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0045","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"IN-CAB BREATHING MASKS [x6] – in bags","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0046","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"SMOKE GOGGLES AND P2 MASK [x6] - in BA bags","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0047","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"PERSONAL PROTECTION BLANKET - Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0048","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"DIRECTIONS BOOK – White, A5","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0049","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"UBD STREET DIRECTORY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0050","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"CFS MAP BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0051","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"A3 LAMINATED NATIONAL PARKS MAP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0052","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"HAZMAT ACTION GUIDE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0053","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"DANGEROUS GOODS GUIDE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0054","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"MULTI RAY ATMOSPHERIC MONITOR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0055","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"THERMAL IMAGING CAMERA","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0056","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"RADIO BELT w/ working torch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0057","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"TYRE BAR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0058","appliance":"34P","locker":"Cabin","section":"Rear Seat","subsection":"","item":"JACK HANDLE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"34P-0059","appliance":"34P","locker":"P1","section":"","subsection":"","item":"BLANK CAP (HYDRANT FILL)","quantity":"","category":"","description":"Hydrant fill below Locker P1","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"34P-0060","appliance":"34P","locker":"P1","section":"","subsection":"","item":"SUCTION HOSE–64mm w/storz couplings [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"34P-0061","appliance":"34P","locker":"P1","section":"","subsection":"","item":"CROWBAR–32mm X 1.8m","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"34P-0062","appliance":"34P","locker":"P2","section":"","subsection":"","item":"RECIP SAW - w/ Battery & Blades","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0063","appliance":"34P","locker":"P2","section":"","subsection":"","item":"DRILL SET–w/ 25 piece drill bit set and battery","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0064","appliance":"34P","locker":"P2","section":"","subsection":"","item":"BATTERY PORTABLE SCENE LIGHTS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0065","appliance":"34P","locker":"P2","section":"","subsection":"","item":"CHAINSAW BOX","quantity":"","category":"","description":"Chaps\nSafety glasses\nHelmet w/ earmuffs\nSpare Chain [x2]\nEar Plugs\nFile and guide\nWedge [x2]\nSparkplug\nChainsaw spanner","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0074","appliance":"34P","locker":"P2","section":"","subsection":"","item":"SPARE BLADES for QUICK CUT SAW [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0075","appliance":"34P","locker":"P2","section":"","subsection":"","item":"QUICK CUT SAW","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0076","appliance":"34P","locker":"P2","section":"","subsection":"","item":"CHAINSAW","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0077","appliance":"34P","locker":"P2","section":"","subsection":"","item":"FUNNEL - Red (in two parts)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0078","appliance":"34P","locker":"P2","section":"","subsection":"","item":"BAR AND CHAIN OIL – 1ltr","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0079","appliance":"34P","locker":"P2","section":"","subsection":"","item":"PPV FAN","quantity":"","category":"","description":"(Keyword: Positive Pressure Ventilation) ","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0080","appliance":"34P","locker":"P2","section":"","subsection":"","item":"FUEL CONTAINER –10lt, RED UNLEADED","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0081","appliance":"34P","locker":"P2","section":"","subsection":"","item":"FUEL CONTAINER –10lt, GREY 2-STROKE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0082","appliance":"34P","locker":"P2","section":"","subsection":"","item":"FUEL CONTAINER –10lt, GREEN FIRELIGHTER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0083","appliance":"34P","locker":"P2","section":"","subsection":"","item":"SPOUTS – for fuel containers [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"34P-0084","appliance":"34P","locker":"P3","section":"","subsection":"","item":"PVC GLOVES [x1 pair]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0085","appliance":"34P","locker":"P3","section":"","subsection":"","item":"DISPOSABLE LINE–thin and BLUE, 60m","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0086","appliance":"34P","locker":"P3","section":"","subsection":"","item":"BA GUIDELINE BAG–Green, 60m","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0087","appliance":"34P","locker":"P3","section":"","subsection":"","item":"BA ENTRY CONTROL EASEL","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0088","appliance":"34P","locker":"P3","section":"","subsection":"","item":"SHORT LINE – 16mm x15m (Blue)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0089","appliance":"34P","locker":"P3","section":"","subsection":"","item":"GENERAL PURPOSE LINE – 16mm x 30m (Green)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0090","appliance":"34P","locker":"P3","section":"","subsection":"","item":"FIRE BLANKET – 1.8m x 1.2m","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0091","appliance":"34P","locker":"P3","section":"","subsection":"","item":"Whiteboard","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0092","appliance":"34P","locker":"P3","section":"","subsection":"","item":"MIRROR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0093","appliance":"34P","locker":"P3","section":"","subsection":"","item":"SPARE BA CYLINDERS [x4]","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0094","appliance":"34P","locker":"P3","section":"","subsection":"","item":"CABA SETS– w/cylinder [x4]","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0095","appliance":"34P","locker":"P3","section":"","subsection":"","item":"BA ENTRY CONTROL BOARD","quantity":"","category":"","description":"ECO Tabard\nPen\nWhiteboard marker\nEntry Control sheets A4\nAtmospheric Monitoring log book sheets A4\nClock\nLight\n(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"34P-0164","appliance":"34P","locker":"P4","section":"","subsection":"","item":"DELIVERY HOSE – 38mm w/ Wayjax couplings [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"34P-0165","appliance":"34P","locker":"P4","section":"","subsection":"","item":"DELIVERY HOSE – 64mm w/storz [x1]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"34P-0166","appliance":"34P","locker":"P4","section":"","subsection":"","item":"DEFENSIVE HOSE BAG - green - [x2] w/","quantity":"","category":"","description":"Delivery Hose–25mmx30m [x2]\nStrap and Carabiner clips\nWater Thieves [x2]\n25mm Wayjax to Hose theft fitting [x2]","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"34P-0170","appliance":"34P","locker":"P5","section":"","subsection":"","item":"COMBINATION KEY [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0171","appliance":"34P","locker":"P5","section":"","subsection":"","item":"COUPLING KEY–storz, 64mm [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0172","appliance":"34P","locker":"P5","section":"","subsection":"","item":"COUPLING KEY – storz, 100mm [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0173","appliance":"34P","locker":"P5","section":"","subsection":"","item":"BRANCH – B Class Foam, w/ induction tube","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0174","appliance":"34P","locker":"P5","section":"","subsection":"","item":"BRANCH – TFT 50-350, w/ Storz coupling [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0175","appliance":"34P","locker":"P5","section":"","subsection":"","item":"BREECHING PIECE – 64mm Storz","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0176","appliance":"34P","locker":"P5","section":"","subsection":"","item":"ADAPTOR 38mm Wayjax – 64mm Storz [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0177","appliance":"34P","locker":"P5","section":"","subsection":"","item":"ADAPTOR 64mm storz – 64mm SA Round (female) [x3]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0178","appliance":"34P","locker":"P5","section":"","subsection":"","item":"ADAPTOR 64mm storz – 64mm SA Round (male) [x3]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0179","appliance":"34P","locker":"P5","section":"","subsection":"","item":"DIVIDING Y-PIECE – 25mm Wayjax","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0180","appliance":"34P","locker":"P5","section":"","subsection":"","item":"GATED Y PIECE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0181","appliance":"34P","locker":"P5","section":"","subsection":"","item":"HYDRANT WHEEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0182","appliance":"34P","locker":"P5","section":"","subsection":"","item":"BASKET w/ suction strainer and 64mm storz","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0183","appliance":"34P","locker":"P5","section":"","subsection":"","item":"STANDPIPE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P5"},{"id":"34P-0184","appliance":"34P","locker":"P Reel","section":"","subsection":"","item":"PLATE COVER LIFTER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P Reel"},{"id":"34P-0185","appliance":"34P","locker":"P Reel","section":"","subsection":"","item":"TURNOCK KEY & HANDLE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P Reel"},{"id":"34P-0186","appliance":"34P","locker":"P Reel","section":"","subsection":"","item":"BRANCH ON HOSE REEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P Reel"},{"id":"34P-0102","appliance":"34P","locker":"D1","section":"","subsection":"","item":"CEILING HOOK - on pole","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0116","appliance":"34P","locker":"D1","section":"","subsection":"","item":"HALLIGAN TOOL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0117","appliance":"34P","locker":"D1","section":"","subsection":"","item":"BOLTCUTTERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0118","appliance":"34P","locker":"D1","section":"","subsection":"","item":"SHOVEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0119","appliance":"34P","locker":"D1","section":"","subsection":"","item":"EXTENSION POLE – 1.2m [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0120","appliance":"34P","locker":"D1","section":"","subsection":"","item":"SLEDGEHAMMER – 5kg","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0121","appliance":"34P","locker":"D1","section":"","subsection":"","item":"SHARPS CONTAINER - Yellow","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0122","appliance":"34P","locker":"D1","section":"","subsection":"","item":"AXE – 2.5kg","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0123","appliance":"34P","locker":"D1","section":"","subsection":"","item":"JEMMY BAR – 600mm, 2.5kg","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"34P-0103","appliance":"34P","locker":"D2","section":"","subsection":"","item":"ATTACK HOSE BAG (black) [x4] ","quantity":"","category":"","description":"Delivery Hose - 25mm x 30m\nHose Strangler","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"34P-0105","appliance":"34P","locker":"D2","section":"","subsection":"","item":"CLEVELAND LOAD x4 & BRANCH TFT10-125 x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"34P-0106","appliance":"34P","locker":"D2","section":"","subsection":"","item":"SALVAGE SHEET–4m x 4m Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"34P-0107","appliance":"34P","locker":"D2","section":"","subsection":"","item":"SALVAGE SHEET–4m x 4m Green","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"34P-0108","appliance":"34P","locker":"D3","section":"","subsection":"","item":"ARM CORE COOLER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0109","appliance":"34P","locker":"D3","section":"","subsection":"","item":"WOOLLEN BLANKET – Grey [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0110","appliance":"34P","locker":"D3","section":"","subsection":"","item":"JUMP LEADS - w/ Limiter","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0111","appliance":"34P","locker":"D3","section":"","subsection":"","item":"PLUG AND DYKE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0112","appliance":"34P","locker":"D3","section":"","subsection":"","item":"HOSE WINDER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0113","appliance":"34P","locker":"D3","section":"","subsection":"","item":"GAS CLAMP LARGE & GAS CLAMP SMALL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0114","appliance":"34P","locker":"D3","section":"","subsection":"","item":"FIRST AID KIT, DEFIBRILATOR, OXY VIVA","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0115","appliance":"34P","locker":"D3","section":"","subsection":"","item":"E-FLARE – Bag of 4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0124","appliance":"34P","locker":"D3","section":"","subsection":"","item":"RED DECONTAMINATION BAG","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0125","appliance":"34P","locker":"D3","section":"","subsection":"","item":"FLAGGING TAPE CONTAINER","quantity":"","category":"","description":"Fluro Green\nFluro Yellow\nFluro Pink\nFluro Orange\nYellow/Black\nRed/White (CFS)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0131","appliance":"34P","locker":"D3","section":"","subsection":"","item":"TOOL BOX","quantity":"","category":"","description":"Claw hammer\nNeedle nose pliers\nAllen Key Set\nHacksaw, w/ 6 spare blades\nMulti-grips\nAdjustable spanner, 300mm\nAdjustable spanner, 250mm\nAdjustable spanner, 150mm\nFlatblade screwdrivers [x3]\nPhillips Head screwdrivers [x3]\nCold Chisel\nStanley Knife\nWire cutter\nCable cutters\nUniversal Shears\nRoll Duct Tape\nRoll Electrical Tape\nRoll Plumbers Tape\nTapered Spike - Large [x2]\nTapered Spike - Small [x2]\n38mm Wayjax washer [x2]\n64mm Stortz washer, black [x2]\n64mm Stortz washer, white [x2]\n100mm Stortz washer, white [x2]\n64mm Stortz washer, reinforced [x2]\nFlat nose pliers\nThimble\nSplit chain links [2]","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0159","appliance":"34P","locker":"D3","section":"","subsection":"","item":"WHEEL BRACE, HANDLE & JACK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0160","appliance":"34P","locker":"D3","section":"","subsection":"","item":"SILICON SPRAY CAN & WD40 SPRAY CAN","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0161","appliance":"34P","locker":"D3","section":"","subsection":"","item":"BUCKET - SPILL SWEEP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0162","appliance":"34P","locker":"D3","section":"","subsection":"","item":"STRIKE TEAM PACK AND TOILET PAPER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0163","appliance":"34P","locker":"D3","section":"","subsection":"","item":"YELLOW RUBBISH BAGS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D3"},{"id":"34P-0198","appliance":"34P","locker":"D4","section":"","subsection":"","item":"DELIVERY HOSE – 64mm [x5]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D4"},{"id":"34P-0199","appliance":"34P","locker":"D4","section":"","subsection":"","item":"FILLER HOSE – 64mm [x1]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D4"},{"id":"34P-0195","appliance":"34P","locker":"D5","section":"","subsection":"","item":"FIRE EXTINGUISHER–9kg Dry Chem","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D5"},{"id":"34P-0196","appliance":"34P","locker":"D5","section":"","subsection":"","item":"FIRE EXTINGUISHER–Water","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D5"},{"id":"34P-0197","appliance":"34P","locker":"D5","section":"","subsection":"","item":"KNAPSACK – Collapsible [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D5"},{"id":"34P-0192","appliance":"34P","locker":"D Reel","section":"","subsection":"","item":"BRANCH ON HOSE REEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D Reel"},{"id":"34P-0193","appliance":"34P","locker":"D Reel","section":"","subsection":"","item":"FOAM CONTAINERS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D Reel"},{"id":"34P-0194","appliance":"34P","locker":"D Reel","section":"","subsection":"","item":"TRAFFIC CONES [x10]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D Reel"},{"id":"34P-0187","appliance":"34P","locker":"Pump Panel","section":"","subsection":"","item":"LADDER – 3 Stage","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"34P-0188","appliance":"34P","locker":"Pump Panel","section":"","subsection":"","item":"BLANK CAPS – 64mm [x4]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"34P-0189","appliance":"34P","locker":"Pump Panel","section":"","subsection":"","item":"BLANK CAP – 100mm","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"34P-0190","appliance":"34P","locker":"Pump Panel","section":"","subsection":"","item":"BLANK CAP – 38mm","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"34P-0191","appliance":"34P","locker":"Pump Panel","section":"","subsection":"","item":"SUCTION HOSE – 100mm w/storz couplings [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"34P-0200","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"DRIPTORCH – Firebug [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0201","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"FOAM DRUMS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0202","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"BROOMS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0203","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"LADDER - LITTLE GIANT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0204","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"RAKEHOES [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0205","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"STOP/SLOW BAT w/ cover [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0206","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"CREW PROTECTION LINES w/ branches [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"},{"id":"34P-0207","appliance":"34P","locker":"Crew Deck","section":"","subsection":"","item":"FRIDGE - w/water bottles","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Crew Deck"}],"lockers":["Cabin","P1","P2","P3","P4","P5","P Reel","D1","D2","D3","D4","D5","D Reel","Pump Panel","Crew Deck"],"lockerPhotos":{"Cabin":{"photo":"34p_cabin_front.jpg","title":"Cabin","description":"Cabin front/rear photos shown at top of this location page","frontPhoto":"34p_cabin_front.jpg","rearPhoto":"34p_cabin_rear.jpg"},"P1":{"photo":"34p_p1.jpg","title":"P1","description":"Main photo shown at top of this location page"},"P2":{"photo":"34p_p2.jpg","title":"P2","description":"Main photo shown at top of this location page"},"P3":{"photo":"34p_p3.jpg","title":"P3","description":"Main photo shown at top of this location page"},"P4":{"photo":"34p_p4.jpg","title":"P4","description":"Main photo shown at top of this location page"},"P5":{"photo":"34p_p5.jpg","title":"P5","description":"Main photo shown at top of this location page"},"P Reel":{"photo":"34p_p_reel.jpg","title":"P Reel","description":"Main photo shown at top of this location page"},"D1":{"photo":"34p_d1.jpg","title":"D1","description":"Main photo shown at top of this location page"},"D2":{"photo":"34p_d2.jpg","title":"D2","description":"Main photo shown at top of this location page"},"D3":{"photo":"34p_d3.jpg","title":"D3","description":"Main photo shown at top of this location page"},"D4":{"photo":"34p_d4.jpg","title":"D4","description":"Main photo shown at top of this location page"},"D5":{"photo":"34p_d5.jpg","title":"D5","description":"Main photo shown at top of this location page"},"D Reel":{"photo":"34p_d_reel.jpg","title":"D Reel","description":"Main photo shown at top of this location page"},"Pump Panel":{"photo":"34p_pump_panel.jpg","title":"Pump Panel","description":"Main photo shown at top of this location page"},"Crew Deck":{"photo":"34p_crew_deck.jpg","title":"Crew Deck","description":"Main photo shown at top of this location page"}},"built":"2026-07-06","version":"v2.0 RC1 - Excel gospel rebuild"},"CAFS 24":{"appliance":"CAFS 24","records":[{"id":"CAFS24-0001","appliance":"CAFS 24","locker":"Cabin","section":"Above Driver","subsection":"","item":"DRIVERS LOG BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0002","appliance":"CAFS 24","locker":"Cabin","section":"Above Driver","subsection":"","item":"APPLIANCE SERVICE BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0003","appliance":"CAFS 24","locker":"Cabin","section":"Above Officer","subsection":"","item":"SIGHT HANDOVER FORMS (a5)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0004","appliance":"CAFS 24","locker":"Cabin","section":"Above Officer","subsection":"","item":"TABARD POUCH ","quantity":"","category":"","description":"1 x Tabard\nIncident Controller patch\nSector Commander patch\nSafety Officer patch\nHLO patch\nMedia Liaison patch","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0010","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"DCP EXTINGUISHER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0011","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"BP Card - in dash","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0012","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"GRN RADIO – Portable","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0013","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"P2 MASKS in BOX - under Officers Seat","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0014","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"DIGITAL THERMOMETER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0015","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"MAGLIGHT X2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0016","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"MAGLIGHT CONES x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0017","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"OIC NOTEBOOK – Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0018","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"MONITOR CONTROL WITH X2 SPARE AA BATTERIES","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0019","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"GRN BATTERY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0020","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"VHF RADIO – Portable x 1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0021","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"VHF BATTERIES x 4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0022","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"MULTI PURPOSE CHARGER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0024","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"TIC BATTERY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0023","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"POUCH","quantity":"","category":"","description":"Keys [A, R, S]\n003 Keys\nSquare Key\nRed Key\nSt Johns Gate Key\nTelstra keycard","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0029","appliance":"CAFS 24","locker":"Cabin","section":"Console","subsection":"","item":"PENCIL CASE","quantity":"","category":"","description":"T Cards\nTelstra card\nAirbag warning stickers\nHAZMAT guide\nGuide for aircraft\nSturt Group Calling Cards\nBox of matches\nCompass","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0037","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"RED TOOL BOX FLAGGING TAPE","quantity":"","category":"","description":"Fluoro green\nFluoro yellow\nFluoro pink\nFluoro orange\nHazard tape black/yellow\nScene tape red/white","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0043","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"VHF RADIO – Portable x 3","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0044","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"Tabards x4 (Fire and Rescue)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0045","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"PERSONAL PROTECTION BLANKET (RED) x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0046","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"RADIO BELT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0047","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"BA Torches x2","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0048","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"BOX NITRILE GLOVES","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0049","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"BOX SURGICAL MASKS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0050","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"BAG ON RAIL - SAFETY GLASSES/RESCUE GLOVES","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0051","appliance":"CAFS 24","locker":"Cabin","section":"Behind Officer","subsection":"","item":"WET WEATHER JACKETS x 6","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0052","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"BLACK MAP BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0053","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"A3 LAMINATED NATIONAL PARKS MAP","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0054","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"CFS MAP BOOK","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0055","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"YELLOW FOLDER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0056","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"UBD STREET DIRECTORY","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0057","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"DIRECTIONS BOOK – White, A5","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0058","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"TIC + Battery","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0059","appliance":"CAFS 24","locker":"Cabin","section":"Behind Driver","subsection":"","item":"DANGEROUS GOODS GUIDE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Cabin"},{"id":"CAFS24-0160","appliance":"CAFS 24","locker":"P1","section":"","subsection":"","item":"STOKES LITTER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"CAFS24-0161","appliance":"CAFS 24","locker":"P1","section":"","subsection":"","item":"HARD SUCTION HOSES x 4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"CAFS24-0162","appliance":"CAFS 24","locker":"P1","section":"","subsection":"","item":"STOP/SLOW BAT – w/ handles x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"CAFS24-0163","appliance":"CAFS 24","locker":"P1","section":"","subsection":"","item":"BROOMS w/ handles x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"CAFS24-0164","appliance":"CAFS 24","locker":"P1","section":"","subsection":"","item":"CEILING HOOK w/ handle","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P1"},{"id":"CAFS24-0165","appliance":"CAFS 24","locker":"P2","section":"","subsection":"","item":"CROWBAR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P2"},{"id":"CAFS24-0166","appliance":"CAFS 24","locker":"Pump Panel","section":"","subsection":"","item":"BLANK CAPS – 64mm Stortz x 5","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"CAFS24-0167","appliance":"CAFS 24","locker":"Pump Panel","section":"","subsection":"","item":"BLANK CAP – 100mm Stortz","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"CAFS24-0168","appliance":"CAFS 24","locker":"Pump Panel","section":"","subsection":"","item":"38MM HOSE – on reel w/ Straight bore branch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Pump Panel"},{"id":"CAFS24-0169","appliance":"CAFS 24","locker":"P-Tube","section":"","subsection":"","item":"SPARE BA CYLINDER","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P-Tube"},{"id":"CAFS24-0170","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"CABA SETS x 4","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0171","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"BATTERY PORTABLE SCENE LIGHTS [x2]","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0172","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"BA ENTRY CONTROL BOARD","quantity":"","category":"","description":"ECO tabard\nChinagraph pencil\nWhiteboard\nLight\nClock\nEntry Control sheets\n(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0178","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"PUMP RADIO HEADSET","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0179","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"PVC CHEMICAL GLOVES x2 pair","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0180","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"FOAM SUCTION HOSE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0181","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"FOAM DRUM SPANNER (PURPLE)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0182","appliance":"CAFS 24","locker":"P3","section":"","subsection":"","item":"TYRE INFLATION HOSE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P3"},{"id":"CAFS24-0183","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"25mm PROTECTION LINE & BRANCH","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0184","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"64mm50-350 TFT BRANCH","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0185","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"38mm GATED DIVIDER w/ Forestry coupling","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0186","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"POK straight bore Branch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0187","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"PROTEK straight bore branch w/Stortz coupling x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0188","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"Hydrant Wheel","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0189","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"PROTEK FOG/JET NOZZLE (#361) x2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0190","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"64mm STORTZ COUPLING HARDENER x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0191","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"GATED WYE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0192","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"COMBINATION KEY x 1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0193","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"ADAPTORS","quantity":"","category":"","description":"London Round Female to Stortz x 3\nLondon Round Male to Stortz x 2\nStortz to Forestry x 2","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0196","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"DELIVERY HOSE 38mm Hose – x 6","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0197","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"FILLER HOSE – 64mm w/Stortz couplings x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0198","appliance":"CAFS 24","locker":"P4","section":"","subsection":"","item":"DELIVERY HOSE – 64mm w/Stortz couplings x 5","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"P4"},{"id":"CAFS24-0060","appliance":"CAFS 24","locker":"D-Tube","section":"","subsection":"","item":"38mm HOSE – on reel w/ Fog branch","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D-Tube"},{"id":"CAFS24-0061","appliance":"CAFS 24","locker":"D-Tube","section":"","subsection":"","item":"BA CYLINDER IN TUBE","quantity":"","category":"","description":"(Keyword: Breathing Apparatus)","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D-Tube"},{"id":"CAFS24-0062","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"FORCE AXE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0063","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"HALLIGAN TOOL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0064","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"BOLT CUTTERS","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0065","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"SHOVEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0066","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"SLEDGE HAMMER ","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0067","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"JEMMY BAR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0068","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"DRY CHEM EXTINGUISHER 9KG","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0069","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"TRAFFIC CONES x10","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0070","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"FIRE BLANKET","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0071","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"BAG OF WET WEATHER GEAR (Pants only)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0072","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"DEFIBRILLATOR","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0073","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"FIRST AID KIT","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0074","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"LARGE ROPE x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0075","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"WOOLLEN BLANKET (grey) x1","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0076","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"HAZARD TAPE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0077","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"Knapsacks x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0078","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"EQUIP CLEANING KIT - Green bag","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0079","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"WHEEL BRACE w/ Handle","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0080","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"JACK w/ Handle","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0081","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"FRIDGE Full of Water","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0082","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"MANUAL HOSEREEL WINDER","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0083","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"SALVAGE SHEET – 4m x 4m, Green","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0084","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"SALVAGE SHEET – 4m x 4m, Red","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0085","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"DISPOSABLE LINE - RED","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0086","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"PLUG AND DYKE","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0087","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"BAG OF E-FLARES x 4","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0088","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"STRIKE TEAM PACK (BUCKET)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0089","appliance":"CAFS 24","locker":"D1","section":"","subsection":"","item":"D1 TOOLBOX","quantity":"","category":"","description":"Allen Key Set\nUniversal Shears\nPhillips Head Screwdrivers x 3\nFlat Blade Screwdrivers x 3\nTapered Spike small\nLarge Tapered Spike x 2\nAdjustable spanner, 300mm\nAdjustable spanner, 250mm\nAdjustable spanner, 150mm\nNeedle nose pliers\nCombination plier\nwire cutter\nCable cutters\nHacksaw & spare blades\nMulti Grips\nStanley Knife\nCold Chisel\nWashers x 4\nRoll Duct Tape\nClaw Hammer\nSpindle\nThimble","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D1"},{"id":"CAFS24-0111","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"GROUND MONITOR w/Stortz coupling","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0112","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"SABERMASTER BRANCH - Fog / Smooth Bore","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0113","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"BASKET - w/ Suction Strainer","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0114","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"BAR AND CHAIN OIL – 1ltr","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0115","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"D2 TOOLBOX","quantity":"","category":"","description":"Allen Key Set\nUniversal Shears\nPhillips Head Screwdrivers x 3\nFlat Blade Screwdrivers x 3\nTapered Spike small\nLarge Tapered Spike x 2\nAdjustable spanner, 300mm\nAdjustable spanner, 250mm\nAdjustable spanner, 150mm\nNeedle nose pliers\nCombination plier\nwire cutter\nCable cutters\nHacksaw & spare blades\nMulti Grips\nStanley Knife\nCold Chisel\nWashers x 4\nRoll Duct Tape\nClaw Hammer\nSpindle\nThimble","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0137","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"CHAINSAW BOX ","quantity":"","category":"","description":"Chaps\nSafety glasses\nHelmet w/ earmuffs\nSpare Chain [x2]\nEar Plugs\nFile and guide\nWedge [x2]\nSparkplug\nChainsaw spanner","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0146","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"CHAINSAW - Stihl","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0147","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"FUEL CONTAINER –10lt, UNLEADED (RED)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0148","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"FUEL CONTAINER –10lt, 2-STROKE (GREY)","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0149","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"FUNNEL","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0150","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"SPOUT – for fuel containers","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0151","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"25mm PROTECTION LINE & BRANCH","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0152","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"ATTACK HOSE BAG (black) X2","quantity":"","category":"","description":"Delivery Hose–25mmx30m\nHose clamp x1","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0154","appliance":"CAFS 24","locker":"D2","section":"","subsection":"","item":"DELIVERY HOSE 25mm Hose – x 2","quantity":"","category":"","description":"","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"D2"},{"id":"CAFS24-0155","appliance":"CAFS 24","locker":"Rear","section":"","subsection":"","item":"TROOPER TROLLEY","quantity":"","category":"","description":"Standpipe\nHeavy Plate lifter\nE Flare\nTurncock Key\nLITTLE GIANT LADDER","status":"In service","photo":"","extraPhoto":"","lastChecked":"","checkedBy":"","tags":"","notes":"","location":"Rear"}],"lockers":["Cabin","P1","P2","Pump Panel","P-Tube","P3","P4","D-Tube","D1","D2","Rear"],"lockerPhotos":{"Cabin":{"photo":"cafs24_cabin_front.jpg","title":"Cabin","description":"Cabin front/rear photos shown at top of this location page","frontPhoto":"cafs24_cabin_front.jpg","rearPhoto":"cafs24_cabin_rear.jpg"},"P1":{"photo":"cafs24_p1.jpg","title":"P1","description":"Main photo shown at top of this location page"},"P2":{"photo":"cafs24_p2.jpg","title":"P2","description":"Main photo shown at top of this location page"},"Pump Panel":{"photo":"cafs24_pump_panel.jpg","title":"Pump Panel","description":"Main photo shown at top of this location page"},"P-Tube":{"photo":"cafs24_p_tube.jpg","title":"P-Tube","description":"Main photo shown at top of this location page"},"P3":{"photo":"cafs24_p3.jpg","title":"P3","description":"Main photo shown at top of this location page"},"P4":{"photo":"cafs24_p4.jpg","title":"P4","description":"Main photo shown at top of this location page"},"D-Tube":{"photo":"cafs24_d_tube.jpg","title":"D-Tube","description":"Main photo shown at top of this location page"},"D1":{"photo":"cafs24_d1.jpg","title":"D1","description":"Main photo shown at top of this location page"},"D2":{"photo":"cafs24_d2.jpg","title":"D2","description":"Main photo shown at top of this location page"},"Rear":{"photo":"cafs24_rear.jpg","title":"Rear","description":"Main photo shown at top of this location page"}},"built":"2026-07-06","version":"v2.0 RC1 - Excel gospel rebuild"}};
 window.APPLIANCES = APPLIANCES;
 window.INVENTORY_DATA = Object.values(APPLIANCES).flatMap(app => app.records || []);
@@ -5795,13 +6202,17 @@ function setTheme(mode) {
 }
 
 function setPalette(palette) {
-  const valid = ["blue", "green", "yellow", "red"];
+  const valid = ["blue", "green", "yellow", "red", "light"];
   const chosen = valid.includes(palette) ? palette : "blue";
-  document.body.classList.remove("palette-blue", "palette-green", "palette-yellow", "palette-red");
+  document.body.classList.remove("palette-blue", "palette-green", "palette-yellow", "palette-red", "palette-light");
   document.body.classList.add("palette-" + chosen);
-  document.querySelectorAll(".theme-option").forEach(btn => {
+  document.documentElement.classList.toggle("inventory-light-preload", chosen === "light");
+  setTheme(chosen === "light" ? "light" : "dark");
+  document.querySelectorAll(".theme-option[data-palette]").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.palette === chosen);
   });
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute("content", chosen === "light" ? "#f4f7fa" : "#06142d");
   try { localStorage.setItem("inventoryPalette", chosen); } catch(e) {}
 }
 
@@ -5824,7 +6235,7 @@ try {
   setPalette("blue");
 }
 
-document.querySelectorAll(".theme-option").forEach(btn => {
+document.querySelectorAll(".theme-option[data-palette]").forEach(btn => {
   btn.addEventListener("click", () => setPalette(btn.dataset.palette));
 });
 
@@ -6544,6 +6955,9 @@ function setModalServiceStatus(status) {
   saveLocalItemEdits();
   render();
   updateModalServiceButtons(status);
+  if (!isInService(status) && typeof window.showAppToast === "function") {
+    window.showAppToast("Out of Service is stored on this device’s in-app list only. Use Report Issue to email a report.", "warning");
+  }
 }
 
 function updateModalServiceButtons(status) {
@@ -8586,40 +9000,33 @@ installNativeLockerSwipe();
 
 
 <script>
-// v2.0 default to Dark Blue
+// v2.8.0 inventory palette startup enforcement
 (function(){
-  function applyDefaultRescueBlue(){
-    // Do not override the curated light theme if user has explicitly chosen it.
-    let saved = "";
-    try { saved = localStorage.getItem("theme") || ""; } catch(e) {}
+  function applySavedInventoryPalette(){
+    let chosen = "blue";
+    try { chosen = localStorage.getItem("inventoryPalette") || "blue"; } catch(e) {}
+    const light = chosen === "light";
 
-    if (saved === "rescue-frost") return;
-
-    document.documentElement.classList.remove("light", "light-mode", "theme-light");
-    document.body && document.body.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
-
-    document.documentElement.classList.add("dark");
-    document.body && document.body.classList.add("dark");
+    document.documentElement.classList.toggle("inventory-light-preload", light);
+    document.documentElement.classList.toggle("dark", !light);
+    if (document.body) {
+      document.body.classList.toggle("dark", !light);
+      document.body.classList.toggle("palette-light", light);
+    }
 
     if (document.documentElement.dataset) {
-      document.documentElement.dataset.mode = "dark";
-      document.documentElement.dataset.theme = "rescue-blue";
+      document.documentElement.dataset.mode = light ? "light" : "dark";
+      document.documentElement.dataset.theme = light ? "inventory-light" : "rescue-blue";
     }
     if (document.body && document.body.dataset) {
-      document.body.dataset.mode = "dark";
-      document.body.dataset.theme = "rescue-blue";
+      document.body.dataset.mode = light ? "light" : "dark";
+      document.body.dataset.theme = light ? "inventory-light" : "rescue-blue";
     }
-
-    try {
-      if (!saved || /light/i.test(saved)) localStorage.setItem("theme", "rescue-blue");
-      localStorage.setItem("themeMode", "dark");
-      localStorage.setItem("mode", "dark");
-    } catch(e) {}
   }
 
   document.addEventListener("DOMContentLoaded", function(){
-    applyDefaultRescueBlue();
-    setTimeout(applyDefaultRescueBlue, 100);
+    applySavedInventoryPalette();
+    setTimeout(applySavedInventoryPalette, 100);
   });
 })();
 </script>
@@ -8654,55 +9061,28 @@ installNativeLockerSwipe();
 
 
 <script>
-// v2.0 dark-only final enforcement
+// v2.8.0 final inventory palette enforcement
 (function(){
-  function forceDarkOnly(){
-    try {
-      if ((localStorage.getItem("theme") || "") === "rescue-frost") localStorage.setItem("theme", "rescue-blue");
-      if (/light/i.test(localStorage.getItem("theme") || "")) localStorage.setItem("theme", "rescue-blue");
-      localStorage.setItem("themeMode", "dark");
-      localStorage.setItem("mode", "dark");
-    } catch(e) {}
+  function enforceInventoryPalette(){
+    let chosen = "blue";
+    try { chosen = localStorage.getItem("inventoryPalette") || "blue"; } catch(e) {}
+    const light = chosen === "light";
 
-    document.documentElement.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
-    if (document.body) document.body.classList.remove("light", "light-mode", "theme-light", "theme-rescue-frost");
-
-    document.documentElement.classList.add("dark");
-    if (document.body) document.body.classList.add("dark");
-
-    if (document.documentElement.dataset) {
-      document.documentElement.dataset.mode = "dark";
-      if (document.documentElement.dataset.theme === "rescue-frost") document.documentElement.dataset.theme = "rescue-blue";
-    }
-    if (document.body && document.body.dataset) {
-      document.body.dataset.mode = "dark";
-      if (document.body.dataset.theme === "rescue-frost") document.body.dataset.theme = "rescue-blue";
+    document.documentElement.classList.toggle("inventory-light-preload", light);
+    document.documentElement.classList.toggle("dark", !light);
+    if (document.body) {
+      document.body.classList.toggle("dark", !light);
+      document.body.classList.toggle("palette-light", light);
     }
 
     document.querySelectorAll(".theme-rescue-frost-button, [data-theme='rescue-frost'], button[value='light'], button[data-mode='light'], option[value='light'], option[value='rescue-frost']").forEach(function(el){
-      el.remove();
-    });
-
-    Array.from(document.querySelectorAll("button, label, option, a, span, div")).forEach(function(el){
-      const txt = (el.textContent || "").trim();
-      const attrs = [
-        el.getAttribute("data-theme"),
-        el.getAttribute("data-mode"),
-        el.getAttribute("value"),
-        el.getAttribute("aria-label"),
-        el.getAttribute("title"),
-        el.className
-      ].join(" ");
-      if (/\brescue frost\b|\blight theme\b|\blight mode\b/i.test(txt + " " + attrs)) {
-        if (el.tagName === "OPTION") el.remove();
-        else if (el.tagName === "BUTTON" || el.tagName === "LABEL" || el.tagName === "A") el.remove();
-      }
+      if (!el.matches("[data-palette='light']")) el.remove();
     });
   }
 
   document.addEventListener("DOMContentLoaded", function(){
-    forceDarkOnly();
-    setTimeout(forceDarkOnly, 150);
+    enforceInventoryPalette();
+    setTimeout(enforceInventoryPalette, 150);
   });
 })();
 </script>
@@ -8728,7 +9108,7 @@ installNativeLockerSwipe();
         /^(light|dark|light mode|dark mode)$/i.test(text);
 
       // Do not remove palette cards for colour selection.
-      const isPaletteTheme = /rescue blue|brick red|safe green|cfs yellow|blue|green|yellow|red|palette/i.test(text);
+      const isPaletteTheme = el.matches("[data-palette]") || /rescue blue|brick red|safe green|cfs yellow|blue|green|yellow|red|light mode|palette/i.test(text);
 
       if (looksLikeToggle && !isPaletteTheme) {
         el.remove();
@@ -8892,6 +9272,182 @@ installNativeLockerSwipe();
     bindHeaderHomeButton();
     setTimeout(bindHeaderHomeButton, 150);
   });
+})();
+</script>
+
+
+<script>
+// v2.8.0 OPTIONS panel, content dates, offline preparation and themed toast
+(function(){
+  const toggle = document.getElementById("optionsToggleBtn");
+  const panel = document.getElementById("optionsPanel");
+  const prepareBtn = document.getElementById("prepareOfflineBtn");
+  const statusCard = document.getElementById("offlineStatusCard");
+  const statusValue = document.getElementById("offlineStatusValue");
+  const statusDetail = document.getElementById("offlineStatusDetail");
+  const inventoryDate = document.getElementById("inventoryUpdatedValue");
+  const directionsDate = document.getElementById("directionsUpdatedValue");
+  const toast = document.getElementById("appToast");
+  let toastTimer = null;
+
+  window.showAppToast = function(message, tone){
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = "app-toast " + (tone || "");
+    requestAnimationFrame(function(){ toast.classList.add("open"); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove("open"); }, 5200);
+  };
+
+  function formatDate(iso, includeTime){
+    if (!iso) return "Not recorded";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "Not recorded";
+    const options = includeTime
+      ? { day:"numeric", month:"short", year:"numeric", hour:"numeric", minute:"2-digit", timeZone:"Australia/Adelaide" }
+      : { day:"numeric", month:"short", year:"numeric", timeZone:"Australia/Adelaide" };
+    return new Intl.DateTimeFormat("en-AU", options).format(d);
+  }
+
+  function setOptionsOpen(open){
+    if (!toggle || !panel) return;
+    toggle.setAttribute("aria-expanded", String(open));
+    panel.hidden = !open;
+    try { localStorage.setItem("inventoryOptionsOpen", open ? "1" : "0"); } catch(e) {}
+  }
+
+  if (toggle && panel) {
+    let open = false;
+    try { open = localStorage.getItem("inventoryOptionsOpen") === "1"; } catch(e) {}
+    setOptionsOpen(open);
+    toggle.addEventListener("click", function(){ setOptionsOpen(toggle.getAttribute("aria-expanded") !== "true"); });
+  }
+
+  if (inventoryDate) inventoryDate.textContent = formatDate(CONTENT_METADATA.inventoryExcelModifiedUtc, false);
+  if (directionsDate) directionsDate.textContent = formatDate(CONTENT_METADATA.directionsUpdatedUtc, false);
+
+  function resetStatusClasses(){
+    if (!statusCard) return;
+    statusCard.classList.remove("ready", "stale", "incomplete", "error");
+  }
+
+  function renderOfflineStatus(status){
+    resetStatusClasses();
+    if (!status) {
+      statusValue.textContent = "Not prepared";
+      statusDetail.textContent = "Inventory photos, Directions Book and UBD maps are not yet stored for offline use.";
+      return;
+    }
+
+    const current = status.version === CONTENT_METADATA.contentVersion;
+    if (status.complete && current) {
+      statusCard.classList.add("ready");
+      statusValue.textContent = "Ready";
+      statusDetail.textContent = "Content " + formatDate(CONTENT_METADATA.contentUpdatedUtc, false) + " • Prepared " + formatDate(status.preparedAtUtc, true) + ".";
+      return;
+    }
+
+    if (status.complete && !current) {
+      statusCard.classList.add("stale");
+      statusValue.textContent = "Update available";
+      statusDetail.textContent = "This device has an older offline copy. Prepare again to store the current content.";
+      return;
+    }
+
+    statusCard.classList.add("incomplete");
+    statusValue.textContent = "Incomplete";
+    const failed = Array.isArray(status.failed) ? status.failed.length : (status.failedCount || 0);
+    statusDetail.textContent = failed ? failed + " file" + (failed === 1 ? "" : "s") + " could not be stored. Check reception and try again." : "Offline preparation did not finish. Try again while connected.";
+  }
+
+  async function activeWorker(){
+    if (!("serviceWorker" in navigator)) throw new Error("Offline storage is not supported in this browser.");
+    const registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Offline storage is available after the app is installed or opened from GitHub Pages.")), 8000))
+    ]);
+    return registration.active || registration.waiting || registration.installing;
+  }
+
+  async function sendWorkerMessage(message, onProgress){
+    const worker = await activeWorker();
+    if (!worker) throw new Error("The offline service is not ready yet. Close and reopen the app, then try again.");
+    return new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+      const timeout = setTimeout(() => reject(new Error("The offline request timed out.")), 20 * 60 * 1000);
+      channel.port1.onmessage = event => {
+        const data = event.data || {};
+        if (data.type === "progress") {
+          if (onProgress) onProgress(data);
+          return;
+        }
+        if (data.type === "error") {
+          clearTimeout(timeout);
+          reject(new Error(data.message || "Offline preparation failed."));
+          return;
+        }
+        if (data.type === "complete" || data.type === "status") {
+          clearTimeout(timeout);
+          resolve(data.status || null);
+        }
+      };
+      worker.postMessage(message, [channel.port2]);
+    });
+  }
+
+  async function refreshOfflineStatus(){
+    try {
+      const status = await sendWorkerMessage({ type: "GET_OFFLINE_STATUS" });
+      renderOfflineStatus(status);
+    } catch(e) {
+      resetStatusClasses();
+      statusCard.classList.add("error");
+      statusValue.textContent = "Unavailable";
+      statusDetail.textContent = e.message || "Offline status could not be checked.";
+    }
+  }
+
+  if (prepareBtn) {
+    prepareBtn.addEventListener("click", async function(){
+      prepareBtn.disabled = true;
+      resetStatusClasses();
+      statusValue.textContent = "Preparing…";
+      statusDetail.textContent = "Starting offline storage. Keep the app open and connected.";
+      try {
+        if (navigator.storage && navigator.storage.persist) {
+          try { await navigator.storage.persist(); } catch(e) {}
+        }
+        const manifestResponse = await fetch("./offline-assets.json", { cache: "no-cache" });
+        if (!manifestResponse.ok) throw new Error("Offline asset list could not be loaded.");
+        const manifest = await manifestResponse.json();
+        const status = await sendWorkerMessage({
+          type: "PREPARE_OFFLINE",
+          version: manifest.version,
+          contentUpdatedUtc: manifest.contentUpdatedUtc,
+          assets: manifest.assets
+        }, function(progress){
+          statusValue.textContent = "Preparing " + progress.completed + "/" + progress.total;
+          statusDetail.textContent = progress.failedCount
+            ? progress.failedCount + " file" + (progress.failedCount === 1 ? "" : "s") + " not stored yet; continuing."
+            : "Storing inventory photos and UBD maps on this device.";
+        });
+        renderOfflineStatus(status);
+        if (status && status.complete) window.showAppToast("Offline content is ready on this device.", "");
+        else window.showAppToast("Offline preparation was incomplete. Check reception and try again.", "warning");
+      } catch(e) {
+        resetStatusClasses();
+        statusCard.classList.add("error");
+        statusValue.textContent = "Could not prepare";
+        statusDetail.textContent = e.message || "Check reception and try again.";
+        window.showAppToast(statusDetail.textContent, "warning");
+      } finally {
+        prepareBtn.disabled = false;
+      }
+    });
+  }
+
+  window.addEventListener("load", function(){ setTimeout(refreshOfflineStatus, 250); });
+  navigator.serviceWorker && navigator.serviceWorker.addEventListener("controllerchange", function(){ setTimeout(refreshOfflineStatus, 150); });
 })();
 </script>
 
