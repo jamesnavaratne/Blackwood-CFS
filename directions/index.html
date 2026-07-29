@@ -501,6 +501,41 @@ button[data-ubd]:active,
 
 
 
+
+
+/* v2.8.3 user-controlled app update prompt */
+.app-update-banner {
+  position:fixed; left:50%; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:44;
+  width:min(calc(100vw - 20px),720px); min-height:58px; display:flex; align-items:center;
+  gap:10px; padding:9px 10px 9px 12px; border:1px solid var(--accent); border-radius:16px;
+  background:color-mix(in srgb,var(--panel) 88%,var(--accent) 12%); color:var(--text);
+  box-shadow:0 14px 38px rgba(0,0,0,.30),0 0 20px color-mix(in srgb,var(--accent) 16%,transparent);
+  opacity:0; visibility:hidden; pointer-events:none; transform:translate(-50%,14px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
+}
+.app-update-banner.open { opacity:1; visibility:visible; pointer-events:auto; transform:translate(-50%,0); }
+.app-update-icon { width:30px; height:30px; flex:0 0 auto; display:grid; place-items:center; border-radius:999px; border:1px solid var(--accent); background:color-mix(in srgb,var(--accent) 14%,transparent); color:var(--accent); font-size:1rem; font-weight:950; }
+.app-update-copy { min-width:0; flex:1; display:grid; gap:1px; }
+.app-update-copy strong { color:var(--accent); font-size:.84rem; line-height:1.15; }
+.app-update-copy small { color:var(--text); font-size:.72rem; line-height:1.28; }
+.app-update-actions { flex:0 0 auto; display:flex; align-items:center; gap:6px; }
+.app-update-actions button { min-height:34px; border-radius:999px; padding:0 10px; border:1px solid var(--accent); background:var(--panel); color:var(--text); font-size:.7rem; font-weight:850; white-space:nowrap; }
+.app-update-actions .app-update-refresh { background:var(--accent); color:#00131f; }
+body.app-update-banner-visible .content { padding-bottom:calc(164px + env(safe-area-inset-bottom)); }
+body[data-theme="light"] .app-update-banner { background:linear-gradient(180deg,#f4fbff,#e8f6fc); color:#152a38; border-color:#138cc1; box-shadow:0 12px 28px rgba(31,52,65,.16); }
+body[data-theme="light"] .app-update-copy strong { color:#087fb8; }
+body[data-theme="light"] .app-update-copy small { color:#203747; }
+body[data-theme="light"] .app-update-actions button { color:#173746; background:#f8fcfe; border-color:#70b9d8; }
+body[data-theme="light"] .app-update-actions .app-update-refresh { color:#fff; background:#087fb8; border-color:#087fb8; }
+@media (max-width:520px) {
+  .app-update-banner { gap:8px; padding:8px 9px; }
+  .app-update-icon { width:27px; height:27px; }
+  .app-update-copy small { font-size:.68rem; }
+  .app-update-actions { gap:4px; }
+  .app-update-actions button { padding:0 8px; font-size:.66rem; }
+}
+
+
 /* v2.8.2 shared persistent offline-awareness banner */
 .offline-banner {
   position: fixed;
@@ -587,6 +622,12 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   </div>
   <nav class="letter-jump" id="letterJump" aria-label="Jump by letter"></nav>
   <main class="content" id="directory"></main>
+</div>
+
+<div id="appUpdateBanner" class="app-update-banner" role="status" aria-live="polite" aria-label="App update available">
+  <span class="app-update-icon" aria-hidden="true">↻</span>
+  <span class="app-update-copy"><strong>Update available</strong><small>Refresh to load the latest app and inventory. Re-prepare offline content if OPTIONS prompts you.</small></span>
+  <span class="app-update-actions"><button id="appUpdateLater" type="button">Later</button><button id="appUpdateRefresh" class="app-update-refresh" type="button">Refresh now</button></span>
 </div>
 
 <button id="offlineBanner" class="offline-banner" type="button" aria-live="polite" aria-label="Offline status. Open app options for details.">
@@ -1120,6 +1161,149 @@ render();
 })();
 </script>
 
+
+
+<script>
+// v2.8.3 in-app update detection: waiting service worker OR newer content metadata.
+(function(){
+  const banner = document.getElementById("appUpdateBanner");
+  const refreshBtn = document.getElementById("appUpdateRefresh");
+  const laterBtn = document.getElementById("appUpdateLater");
+  if (!banner || !refreshBtn || !laterBtn || !("serviceWorker" in navigator)) return;
+
+  const SEEN_KEY = "blackwoodLastSeenContentVersion";
+  const DEFER_KEY = "blackwoodUpdateDeferredUntil";
+  let registration = null;
+  let waitingWorker = null;
+  let remoteVersion = "";
+  let reloadRequested = false;
+  let checkTimer = null;
+
+  function deferred(){
+    try { return Number(localStorage.getItem(DEFER_KEY) || 0) > Date.now(); }
+    catch(e) { return false; }
+  }
+
+  function showBanner(){
+    if (deferred() || navigator.onLine === false) return;
+    const offlineBanner = document.getElementById("offlineBanner");
+    if (offlineBanner) offlineBanner.classList.remove("open");
+    document.body.classList.remove("offline-banner-visible");
+    banner.classList.add("open");
+    document.body.classList.add("app-update-banner-visible");
+  }
+
+  function hideBanner(){
+    banner.classList.remove("open");
+    document.body.classList.remove("app-update-banner-visible");
+  }
+
+  function rememberVersion(version){
+    if (!version) return;
+    try { localStorage.setItem(SEEN_KEY, version); } catch(e) {}
+  }
+
+  function watchWorker(worker){
+    if (!worker || worker.__blackwoodUpdateWatched) return;
+    worker.__blackwoodUpdateWatched = true;
+    worker.addEventListener("statechange", function(){
+      if (worker.state === "installed" && navigator.serviceWorker.controller) {
+        waitingWorker = worker;
+        showBanner();
+      }
+    });
+  }
+
+  function watchRegistration(reg){
+    if (!reg) return;
+    registration = reg;
+    if (reg.waiting) {
+      waitingWorker = reg.waiting;
+      showBanner();
+    }
+    if (reg.installing) watchWorker(reg.installing);
+    if (!reg.__blackwoodUpdateWatched) {
+      reg.__blackwoodUpdateWatched = true;
+      reg.addEventListener("updatefound", function(){ watchWorker(reg.installing); });
+    }
+  }
+
+  async function fetchRemoteMetadata(){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch("../content-metadata.json?connectivity=1&updatecheck=" + Date.now(), {
+        cache: "no-store", credentials: "same-origin", signal: controller.signal,
+        headers: { "Cache-Control": "no-cache" }
+      });
+      if (!response.ok) return null;
+      return await response.json();
+    } catch(e) { return null; }
+    finally { clearTimeout(timeout); }
+  }
+
+  async function checkForUpdate(){
+    if (navigator.onLine === false) { hideBanner(); return; }
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      watchRegistration(reg);
+      if (reg) {
+        try { await reg.update(); } catch(e) {}
+        if (reg.waiting) {
+          waitingWorker = reg.waiting;
+          showBanner();
+        }
+      }
+    } catch(e) {}
+
+    const metadata = await fetchRemoteMetadata();
+    if (!metadata || !metadata.contentVersion) return;
+    remoteVersion = String(metadata.contentVersion);
+    let seen = "";
+    try { seen = localStorage.getItem(SEEN_KEY) || ""; } catch(e) {}
+    if (!seen) {
+      seen = remoteVersion;
+      rememberVersion(seen);
+    }
+    if (remoteVersion !== seen) showBanner();
+  }
+
+  function queueCheck(delay){
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(checkForUpdate, delay || 0);
+  }
+
+  refreshBtn.addEventListener("click", function(){
+    refreshBtn.disabled = true;
+    rememberVersion(remoteVersion);
+    try { localStorage.removeItem(DEFER_KEY); } catch(e) {}
+    reloadRequested = true;
+    const worker = (registration && registration.waiting) || waitingWorker;
+    if (worker) {
+      worker.postMessage({ type: "SKIP_WAITING" });
+      setTimeout(function(){ if (reloadRequested) window.location.reload(); }, 3500);
+    } else {
+      window.location.reload();
+    }
+  });
+
+  laterBtn.addEventListener("click", function(){
+    try { localStorage.setItem(DEFER_KEY, String(Date.now() + 15 * 60 * 1000)); } catch(e) {}
+    hideBanner();
+  });
+
+  navigator.serviceWorker.addEventListener("controllerchange", function(){
+    if (!reloadRequested) return;
+    reloadRequested = false;
+    window.location.reload();
+  });
+  window.addEventListener("online", function(){ queueCheck(300); });
+  window.addEventListener("offline", hideBanner);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) queueCheck(150); });
+  window.addEventListener("load", function(){ queueCheck(300); });
+  setInterval(checkForUpdate, 5 * 60 * 1000);
+})();
+</script>
 
 <script>
 // v2.8.2 Directions Book offline-awareness banner
