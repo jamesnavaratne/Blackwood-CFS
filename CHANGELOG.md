@@ -1,3 +1,7 @@
+## v2.7.2 - Directions pill line colours and title colour restore
+- Kept the System Home Directions Book emphasis but aligned both double-line accents with the same cyan family as the other home pills.
+- Preserved the clickable Directions Book title-home behaviour while restoring its original blue-and-white appearance.
+
 ## v2.7.1 - Directions launch clarity and title-home link
 - Gave the System Home Directions Book pill a slightly stronger filled / double-outline treatment so it stands out a little more on a job while keeping the same theme language.
 - Made the Directions Book title in the top-left header return to System Home when tapped/clicked.

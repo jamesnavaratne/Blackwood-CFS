@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-7-1-directions-pill-title-home-20260729';
+const CACHE_NAME = 'blackwood-cfs-v2-7-2-directions-pill-line-colours-20260729';
 
 const APP_SHELL = ['./','./index.html','./manifest.json','./service-worker.js','./icon.png'];
 
