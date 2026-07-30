@@ -1,3 +1,5 @@
+> Historical v2.9.1 five-street merge report. Superseded by `FULL_HYDRANTS_ROLLOUT_TEST_REPORT.md` and the full reports in `directions/hydrants/`.
+
 # Blackwood CFS v2.9.1 Personal UBD Live Hydrants Merge Test RC1
 
 ## Source baseline
@@ -33,7 +35,7 @@ The link opens the live Location SA Roads viewer at zoom 18 with hydrant layer U
 
 ## Rebuild behaviour
 
-The normal rebuild wrappers first reapply accepted official hydrant coordinates with `tools/rebuild_directions_hydrants.py --geocode-missing`, then rebuild inventory and offline metadata.
+The normal rebuild wrappers first reapply accepted official hydrant coordinates with `tools/rebuild_directions_hydrants.py`, then rebuild inventory and offline metadata.
 
 ## Validation completed
 

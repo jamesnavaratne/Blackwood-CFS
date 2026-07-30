@@ -3,71 +3,50 @@ from __future__ import annotations
 
 import argparse
 import csv
-import datetime as dt
+import html as html_lib
 import json
 import re
+import shutil
 import sys
-import urllib.parse
-import urllib.request
+from collections import Counter
 from pathlib import Path
 
-OFFICIAL_ENDPOINT = "https://location.sa.gov.au/arcgis/rest/services/Locators/SAGAF_PLUS/GeocodeServer/findAddressCandidates"
-DEFAULT_THRESHOLD = 95.0
-DEFAULT_BOUNDS = {
-    "minLongitude": 138.45,
-    "maxLongitude": 138.85,
-    "minLatitude": -35.25,
-    "maxLatitude": -34.80,
+ACCEPTED_STATUSES = {
+    "Accepted",
+    "Accepted (preserved validated)",
+    "Manual lookup override accepted",
 }
-STREET_TYPE_ALIASES = {
-    "RD": "ROAD", "ROAD": "ROAD",
-    "ST": "STREET", "STREET": "STREET",
-    "AVE": "AVENUE", "AV": "AVENUE", "AVENUE": "AVENUE",
-    "DR": "DRIVE", "DVE": "DRIVE", "DRIVE": "DRIVE",
-    "CRES": "CRESCENT", "CR": "CRESCENT", "CRESCENT": "CRESCENT",
-    "CT": "COURT", "CRT": "COURT", "COURT": "COURT",
-    "TCE": "TERRACE", "TERRACE": "TERRACE",
-    "PDE": "PARADE", "PARADE": "PARADE",
-    "HWY": "HIGHWAY", "HIGHWAY": "HIGHWAY",
-    "LN": "LANE", "LANE": "LANE",
-    "CL": "CLOSE", "CLOSE": "CLOSE",
-    "PL": "PLACE", "PLACE": "PLACE",
-    "GR": "GROVE", "GROVE": "GROVE",
-    "CCT": "CIRCUIT", "CIRCUIT": "CIRCUIT",
-    "BVD": "BOULEVARD", "BLVD": "BOULEVARD", "BOULEVARD": "BOULEVARD",
-    "WAY": "WAY", "WALK": "WALK", "TRACK": "TRACK", "TRK": "TRACK",
-    "RETREAT": "RETREAT", "RISE": "RISE", "VIEW": "VIEW",
-}
+
 
 def load_json(path: Path, default):
     if not path.exists():
         return default
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
+
 def save_json(path: Path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-def norm_words(value: str) -> str:
-    text = re.sub(r"[^A-Z0-9]+", " ", str(value or "").upper()).strip()
-    words = text.split()
-    if words:
-        words[-1] = STREET_TYPE_ALIASES.get(words[-1], words[-1])
-    return " ".join(words)
 
-def norm_locality(value: str) -> str:
+def normalise(value: str) -> str:
     return re.sub(r"[^A-Z0-9]+", " ", str(value or "").upper()).strip()
 
-def key_for(street: str, suburb: str) -> str:
-    return f"{norm_words(street)}|{norm_locality(suburb)}"
 
-def direction_suburb(entry: dict) -> str | None:
-    areas = [str(x).strip() for x in entry.get("areas", []) if str(x).strip() and not str(x).strip().startswith("(")]
-    unique = []
-    for area in areas:
-        if area not in unique:
-            unique.append(area)
-    return unique[0] if len(unique) == 1 else None
+def key_for(street: str, locality: str) -> str:
+    return f"{normalise(street)}|{normalise(locality)}"
+
+
+def valid_coordinates(record: dict | None) -> bool:
+    if not isinstance(record, dict):
+        return False
+    try:
+        longitude = float(record.get("longitude"))
+        latitude = float(record.get("latitude"))
+    except (TypeError, ValueError):
+        return False
+    return 138.45 <= longitude <= 138.85 and -35.25 <= latitude <= -34.80
+
 
 def parse_directions_html(path: Path):
     html = path.read_text(encoding="utf-8")
@@ -76,299 +55,342 @@ def parse_directions_html(path: Path):
         raise RuntimeError("Could not locate const DIRECTIONS in directions/index.html")
     return html, match, json.loads(match.group(1))
 
+
 def write_directions_html(path: Path, html: str, match, entries: list[dict]):
     payload = json.dumps(entries, ensure_ascii=False, separators=(",", ":"))
     updated = html[:match.start(1)] + payload + html[match.end(1):]
     path.write_text(updated, encoding="utf-8")
 
-def candidate_valid(candidate: dict, street: str, suburb: str, threshold: float, bounds: dict):
-    attrs = candidate.get("attributes") or {}
-    official_street = " ".join(part for part in [attrs.get("StreetName", ""), attrs.get("StreetType", "")] if part)
-    locality = attrs.get("Locality", "")
-    score = float(candidate.get("score") or attrs.get("Score") or 0)
-    location = candidate.get("location") or {}
-    longitude = location.get("x")
-    latitude = location.get("y")
-    if norm_words(official_street) != norm_words(street):
-        return False, "Returned street does not match"
-    if norm_locality(locality) != norm_locality(suburb):
-        return False, "Returned suburb/locality does not match"
-    if score < threshold:
-        return False, f"Score below threshold ({score:g} < {threshold:g})"
-    if not isinstance(longitude, (int, float)) or not isinstance(latitude, (int, float)):
-        return False, "Missing WGS84 coordinates"
-    if not (bounds["minLongitude"] <= longitude <= bounds["maxLongitude"] and bounds["minLatitude"] <= latitude <= bounds["maxLatitude"]):
-        return False, "Coordinates outside configured sensible area"
-    return True, ""
 
-def convert_candidate(candidate: dict):
-    attrs = candidate.get("attributes") or {}
-    return {
-        "address": candidate.get("address") or attrs.get("Match_addr") or "",
-        "score": candidate.get("score") or attrs.get("Score") or 0,
-        "location": candidate.get("location") or {"x": attrs.get("X"), "y": attrs.get("Y")},
-        "attributes": {
-            "Match_addr": attrs.get("Match_addr", ""),
-            "HouseNumber": attrs.get("HouseNumber", ""),
-            "StreetName": attrs.get("StreetName", ""),
-            "StreetType": attrs.get("StreetType", ""),
-            "StreetDir": attrs.get("StreetDir", ""),
-            "Locality": attrs.get("Locality", ""),
-            "State": attrs.get("State", ""),
-            "Postcode": attrs.get("Postcode", ""),
-            "Addr_type": attrs.get("Addr_type", ""),
-            "X": attrs.get("X"),
-            "Y": attrs.get("Y"),
-            "Ref_ID": attrs.get("Ref_ID"),
-            "Comp_score": attrs.get("Comp_score", ""),
-        }
-    }
-
-def request_candidates(street_query: str, locality: str):
-    body = urllib.parse.urlencode({
-        "Street": street_query,
-        "Locality": locality,
-        "State": "SA",
-        "outFields": "*",
-        "maxLocations": "10",
-        "outSR": "4326",
-        "f": "json",
-    }).encode("utf-8")
-    request = urllib.request.Request(
-        OFFICIAL_ENDPOINT,
-        data=body,
-        headers={"Accept": "application/json", "Content-Type": "application/x-www-form-urlencoded"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-    if payload.get("error"):
-        raise RuntimeError(payload["error"].get("message", "Official geocoder error"))
-    return [convert_candidate(x) for x in payload.get("candidates", []) if x]
-
-def select_from_attempts(street: str, suburb: str, attempts: list[dict], threshold: float, bounds: dict):
-    reasons = []
-    for attempt in attempts:
-        valid = []
-        for candidate in attempt.get("candidates", []):
-            ok, reason = candidate_valid(candidate, street, suburb, threshold, bounds)
-            if ok:
-                valid.append(candidate)
-            else:
-                reasons.append(f"{attempt.get('method')}: {reason}")
-        if not valid:
-            continue
-        if attempt.get("method") == "street-only" and len(valid) != 1:
-            return None, "Multiple plausible street-only results"
-        return (attempt, valid[0]), ""
-    return None, "; ".join(reasons) or "No official match"
-
-def perform_official_lookup(street: str, suburb: str, threshold: float, bounds: dict):
-    attempts = []
-    for method, number in [("No. 1", "1"), ("No. 2", "2"), ("street-only", "")]:
-        street_query = f"{number} {street}".strip()
-        query = f"{street_query}, {suburb} SA"
-        try:
-            candidates = request_candidates(street_query, suburb)
-            attempts.append({"method": method, "query": query, "candidates": candidates})
-        except Exception as exc:
-            attempts.append({"method": method, "query": query, "candidates": [], "error": str(exc)})
-        selected, reason = select_from_attempts(street, suburb, attempts[-1:], threshold, bounds)
-        if selected:
-            return selected[0], selected[1], attempts, ""
-    selected, reason = select_from_attempts(street, suburb, attempts, threshold, bounds)
-    return (selected[0], selected[1], attempts, "") if selected else (None, None, attempts, reason)
-
-def record_from_selection(street: str, suburb: str, attempt: dict, candidate: dict, generated_at: str):
-    location = candidate.get("location") or {}
-    return {
-        "street": street,
-        "suburb": suburb,
-        "longitude": location.get("x"),
-        "latitude": location.get("y"),
-        "matchedAddress": candidate.get("address") or (candidate.get("attributes") or {}).get("Match_addr") or "",
-        "score": candidate.get("score") or 0,
-        "method": attempt.get("method"),
-        "query": attempt.get("query"),
-        "requestMode": attempt.get("selectedRequestMode", "StreetLocalityState"),
-        "status": "Accepted",
-        "source": "Location SA SAGAF_PLUS",
-        "officialEndpoint": OFFICIAL_ENDPOINT,
-        "outSR": 4326,
-        "manualOverride": False,
-        "sourceGeneratedAtUtc": generated_at,
-    }
-
-def import_collector_results(path: Path, cache: dict, threshold: float, bounds: dict):
-    doc = load_json(path, {})
-    for target in doc.get("testSet", []):
-        street = target.get("street", "")
-        suburb = target.get("suburb", "")
-        selected, reason = select_from_attempts(street, suburb, target.get("attempts", []), threshold, bounds)
-        if selected:
-            attempt, candidate = selected
-            cache.setdefault("records", {})[key_for(street, suburb)] = record_from_selection(
-                street, suburb, attempt, candidate, doc.get("generatedAtUtc", "")
-            )
-    cache["officialEndpoint"] = doc.get("officialEndpoint", OFFICIAL_ENDPOINT)
-    cache["outSR"] = doc.get("outputSpatialReference", 4326)
-    return cache
-
-def rollout_targets(entries: list[dict], config: dict):
-    mode = config.get("rolloutMode", "test")
-    if mode == "test":
-        return [(x["street"], x["suburb"]) for x in config.get("testTargets", [])]
-    seen = set()
-    targets = []
-    for entry in entries:
-        suburb = direction_suburb(entry)
-        if not suburb:
-            continue
-        pair = (entry.get("name", ""), suburb)
-        key = key_for(*pair)
-        if key not in seen:
-            seen.add(key)
-            targets.append(pair)
-    return targets
-
-def apply_cache(entries: list[dict], cache: dict, overrides: dict):
-    accepted = {}
-    for key, record in cache.get("records", {}).items():
-        if record.get("status") == "Accepted":
-            accepted[key] = record
-    for key, record in overrides.get("records", {}).items():
-        if record:
-            merged = dict(record)
-            merged["manualOverride"] = True
-            merged["method"] = "manual override"
-            merged["status"] = "Manual override used"
-            accepted[key] = merged
-    applied = 0
-    for entry in entries:
-        entry.pop("hydrant", None)
-        suburb = direction_suburb(entry)
-        if not suburb:
-            continue
-        record = accepted.get(key_for(entry.get("name", ""), suburb))
-        if not record:
-            continue
-        entry["hydrant"] = {
-            "longitude": record.get("longitude"),
-            "latitude": record.get("latitude"),
-            "matchedAddress": record.get("matchedAddress", ""),
-            "score": record.get("score"),
-            "method": record.get("method"),
-            "query": record.get("query", ""),
-            "status": record.get("status", "Accepted"),
-        }
-        applied += 1
-    return applied
-
-def write_review(repo_root: Path, targets, cache: dict, overrides: dict, review_reasons: dict):
-    out_dir = repo_root / "directions" / "hydrants"
-    fieldnames = [
-        "Directions entry", "Query attempted", "Matched official address",
-        "Method used", "Score", "Latitude", "Longitude", "Status"
+def compact_record(record: dict) -> dict:
+    fields = [
+        "key", "street", "suburb", "longitude", "latitude", "matchedAddress",
+        "score", "method", "query", "status", "reason", "source",
+        "officialEndpoint", "outSR", "manualLookupOverride", "manualOverrideNote",
+        "preservedValidated", "collectedAtUtc", "sourceGeneratedAtUtc",
     ]
-    rows = []
-    for street, suburb in targets:
-        key = key_for(street, suburb)
-        record = (overrides.get("records", {}).get(key) or cache.get("records", {}).get(key))
-        if record:
-            status = "Manual override used" if record.get("manualOverride") or key in overrides.get("records", {}) else record.get("status", "Accepted")
-            rows.append({
-                "Directions entry": f"{street} — {suburb}",
-                "Query attempted": record.get("query", ""),
-                "Matched official address": record.get("matchedAddress", ""),
-                "Method used": record.get("method", ""),
-                "Score": record.get("score", ""),
-                "Latitude": record.get("latitude", ""),
-                "Longitude": record.get("longitude", ""),
-                "Status": status,
-            })
-        else:
-            rows.append({
-                "Directions entry": f"{street} — {suburb}",
-                "Query attempted": "",
-                "Matched official address": "",
-                "Method used": "",
-                "Score": "",
-                "Latitude": "",
-                "Longitude": "",
-                "Status": review_reasons.get(key, "Manual review required"),
-            })
-    with (out_dir / "GEOCODING_REVIEW_CURRENT.csv").open("w", newline="", encoding="utf-8-sig") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-    return rows
+    output = {field: record.get(field) for field in fields if field in record}
+    if "key" not in output and record.get("street") and record.get("suburb"):
+        output["key"] = key_for(record["street"], record["suburb"])
+    return output
 
-def main():
-    parser = argparse.ArgumentParser(description="Apply and optionally refresh official Location SA street coordinates for Directions Hydrants links.")
+
+def compact_entry_result(result: dict) -> dict:
+    fields = [
+        "entryIndex", "entryId", "directionsEntry", "streetField",
+        "authoritativeLocalities", "lookupStreet", "lookupLocality", "lookupKey",
+        "source", "reviewCategory", "status", "queryAttempted",
+        "matchedOfficialAddress", "methodUsed", "score", "latitude", "longitude", "notes",
+    ]
+    return {field: result.get(field) for field in fields if field in result}
+
+
+def import_collector(collector_path: Path, hydrants_dir: Path):
+    collector = load_json(collector_path, {})
+    if not collector.get("complete"):
+        raise RuntimeError("Collector JSON is not marked complete.")
+    if collector.get("officialEndpoint", "").find("SAGAF_PLUS") < 0:
+        raise RuntimeError("Collector JSON is not from the official Location SA SAGAF_PLUS endpoint.")
+    if int(collector.get("outSR", 0)) != 4326:
+        raise RuntimeError("Collector JSON does not use outSR=4326.")
+    if len(collector.get("entryResults", [])) != 678:
+        raise RuntimeError("Collector JSON does not contain all 678 Directions entry results.")
+
+    records = {key: compact_record(value) for key, value in collector.get("records", {}).items()}
+    entry_results = [compact_entry_result(value) for value in collector.get("entryResults", [])]
+    fallback = dict(collector.get("fallbackStation", {}))
+    fallback_record = collector.get("fallbackStationRecord") or {}
+    if not valid_coordinates(fallback_record):
+        raise RuntimeError("The official Blackwood CFS fallback address did not resolve to valid coordinates.")
+    fallback.update({
+        "longitude": fallback_record.get("longitude"),
+        "latitude": fallback_record.get("latitude"),
+        "matchedAddress": fallback_record.get("matchedAddress", ""),
+        "score": fallback_record.get("score"),
+        "method": fallback_record.get("method", ""),
+        "query": fallback_record.get("query", ""),
+        "source": fallback_record.get("source", "Location SA SAGAF_PLUS"),
+        "officialEndpoint": fallback_record.get("officialEndpoint", collector.get("officialEndpoint", "")),
+        "outSR": fallback_record.get("outSR", 4326),
+    })
+
+    geocodes = {
+        "schemaVersion": 2,
+        "collector": collector.get("collector", ""),
+        "generatedAtUtc": collector.get("generatedAtUtc", ""),
+        "inputSha256": collector.get("inputSha256", ""),
+        "officialEndpoint": collector.get("officialEndpoint", ""),
+        "outSR": collector.get("outSR", 4326),
+        "confidenceThreshold": collector.get("confidenceThreshold", 95),
+        "sensibleBounds": collector.get("sensibleBounds", {}),
+        "attemptOrder": collector.get("attemptOrder", []),
+        "records": records,
+        "entryResults": entry_results,
+        "fallbackStation": fallback,
+        "collectorSummary": collector.get("summary", {}),
+        "complete": True,
+    }
+    save_json(hydrants_dir / "geocodes.json", geocodes)
+    shutil.copy2(collector_path, hydrants_dir / "official-collector-results.json")
+    return geocodes
+
+
+def override_for(entry_id: str, lookup_key: str, overrides: dict):
+    entry_override = (overrides.get("entries") or {}).get(entry_id)
+    if valid_coordinates(entry_override):
+        return dict(entry_override), "entry"
+    key_override = (overrides.get("records") or {}).get(lookup_key)
+    if valid_coordinates(key_override):
+        return dict(key_override), "street/locality"
+    return None, ""
+
+
+def active_payload(record: dict, *, manual: bool = False, override_scope: str = ""):
+    payload = {
+        "longitude": float(record.get("longitude")),
+        "latitude": float(record.get("latitude")),
+        "matchedAddress": record.get("matchedAddress", ""),
+        "score": record.get("score"),
+        "method": record.get("method", "manual override" if manual else ""),
+        "query": record.get("query", ""),
+        "status": "Manual override used" if manual else record.get("status", "Accepted"),
+        "source": record.get("source", "Manual override" if manual else "Location SA SAGAF_PLUS"),
+        "outSR": record.get("outSR", 4326),
+    }
+    if manual:
+        payload["manualOverride"] = True
+        payload["manualOverrideScope"] = override_scope
+        payload["manualOverrideNote"] = record.get("note") or record.get("manualOverrideNote", "")
+    if record.get("preservedValidated"):
+        payload["preservedValidated"] = True
+    return payload
+
+
+def fallback_payload(fallback: dict, review: dict):
+    return {
+        "longitude": float(fallback["longitude"]),
+        "latitude": float(fallback["latitude"]),
+        "matchedAddress": fallback.get("matchedAddress", fallback.get("address", "")),
+        "method": fallback.get("method", "Blackwood CFS fallback"),
+        "query": fallback.get("query", fallback.get("address", "")),
+        "status": "Fallback — unresolved Directions entry",
+        "source": fallback.get("source", "Location SA SAGAF_PLUS"),
+        "outSR": fallback.get("outSR", 4326),
+        "fallbackLabel": fallback.get("label", "Blackwood CFS"),
+        "reviewStatus": review.get("status", "Unresolved"),
+        "reviewReason": review.get("notes", ""),
+    }
+
+
+def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
+    records = geocodes.get("records", {})
+    fallback = geocodes.get("fallbackStation") or {}
+    if not valid_coordinates(fallback):
+        raise RuntimeError("Stored Blackwood CFS fallback coordinates are missing or invalid.")
+
+    reviews_by_id = {row.get("entryId"): row for row in geocodes.get("entryResults", []) if row.get("entryId")}
+    rows = []
+    counts = Counter()
+    key_frequency = Counter(row.get("lookupKey") for row in reviews_by_id.values() if row.get("lookupKey"))
+
+    for index, entry in enumerate(entries, start=1):
+        for field in ("hydrant", "hydrantFallback", "hydrantReview"):
+            entry.pop(field, None)
+
+        entry_id = entry.get("id", "")
+        review = dict(reviews_by_id.get(entry_id) or {})
+        lookup_key = review.get("lookupKey", "")
+        record = records.get(lookup_key) if lookup_key else None
+        manual_record, override_scope = override_for(entry_id, lookup_key, overrides)
+
+        button_mode = "Grey fallback"
+        category = review.get("reviewCategory") or review.get("status") or "Ambiguous"
+        status = review.get("status") or "Ambiguous"
+        reason = review.get("notes", "") or (record or {}).get("reason", "")
+        applied_record = None
+
+        if manual_record:
+            applied_record = manual_record
+            entry["hydrant"] = active_payload(manual_record, manual=True, override_scope=override_scope)
+            category = "Manual override"
+            status = "Manual override used"
+            reason = manual_record.get("note") or manual_record.get("manualOverrideNote", "")
+            button_mode = "Active"
+            counts["manual"] += 1
+        elif record and record.get("status") in ACCEPTED_STATUSES and valid_coordinates(record):
+            applied_record = record
+            entry["hydrant"] = active_payload(record)
+            category = "Accepted"
+            status = record.get("status", "Accepted")
+            reason = ""
+            button_mode = "Active"
+            counts["accepted"] += 1
+        else:
+            entry["hydrantFallback"] = fallback_payload(fallback, review)
+            entry["hydrantReview"] = {
+                "status": status,
+                "category": category,
+                "reason": reason,
+                "lookupKey": lookup_key,
+            }
+            if category == "Failed" or status == "Failed":
+                counts["failed"] += 1
+            else:
+                counts["ambiguous"] += 1
+
+        street = review.get("streetField") or entry.get("name", "")
+        localities = review.get("authoritativeLocalities") or []
+        locality_display = " · ".join(localities) if localities else ""
+        rows.append({
+            "Entry number": index,
+            "Entry ID": entry_id,
+            "Source": review.get("source") or entry.get("source", ""),
+            "Street field": street,
+            "Authoritative locality field(s)": locality_display,
+            "Lookup street": review.get("lookupStreet", ""),
+            "Lookup locality": review.get("lookupLocality", ""),
+            "Lookup key": lookup_key,
+            "Duplicate lookup reused": "Yes" if lookup_key and key_frequency[lookup_key] > 1 else "No",
+            "Review category": category,
+            "Status": status,
+            "Hydrants pill": button_mode,
+            "Query attempted": (applied_record or record or {}).get("query", review.get("queryAttempted", "")),
+            "Matched official address": (applied_record or record or {}).get("matchedAddress", review.get("matchedOfficialAddress", "")),
+            "Method used": (applied_record or record or {}).get("method", review.get("methodUsed", "")),
+            "Score": (applied_record or record or {}).get("score", review.get("score", "")),
+            "Latitude": (applied_record or record or {}).get("latitude", review.get("latitude", "")),
+            "Longitude": (applied_record or record or {}).get("longitude", review.get("longitude", "")),
+            "Manual override": "Yes" if manual_record else "No",
+            "Notes / unresolved reason": reason,
+            "Fallback address when grey": fallback.get("matchedAddress", fallback.get("address", "")) if button_mode == "Grey fallback" else "",
+        })
+
+    if len(rows) != len(entries):
+        raise RuntimeError("Hydrants review row count does not match Directions entry count.")
+    return rows, counts
+
+
+def write_csv(path: Path, rows: list[dict], fieldnames: list[str] | None = None):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = fieldnames or (list(rows[0].keys()) if rows else [])
+    with path.open("w", newline="", encoding="utf-8-sig") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        if fieldnames:
+            writer.writeheader()
+        writer.writerows(rows)
+
+
+def write_html_report(path: Path, rows: list[dict], summary: dict, geocodes: dict):
+    headers = list(rows[0].keys()) if rows else []
+    body_rows = []
+    for row in rows:
+        category = row.get("Review category", "").lower().replace(" ", "-")
+        cells = "".join(f"<td>{html_lib.escape(str(row.get(header, '')))}</td>" for header in headers)
+        body_rows.append(f'<tr class="{html_lib.escape(category)}">{cells}</tr>')
+    generated = html_lib.escape(str(geocodes.get("generatedAtUtc", "")))
+    doc = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blackwood CFS Live Hydrants Geocoding Review</title>
+<style>
+body{{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f5f7fa;color:#17202a}}
+header{{padding:24px;background:#081522;color:white}} h1{{margin:0 0 8px;font-size:24px}}
+.summary{{display:flex;flex-wrap:wrap;gap:10px;padding:16px 24px;background:white;border-bottom:1px solid #d9e0e7}}
+.pill{{padding:8px 12px;border-radius:999px;background:#e9eef3;font-weight:700}}
+.wrap{{padding:16px;overflow:auto}} table{{border-collapse:collapse;width:max-content;min-width:100%;background:white;font-size:12px}}
+th,td{{border:1px solid #d8dee6;padding:7px 9px;vertical-align:top;max-width:380px}} th{{position:sticky;top:0;background:#172b3a;color:white;text-align:left;z-index:1}}
+tr.accepted td:first-child,tr.manual-override td:first-child{{border-left:5px solid #16833c}} tr.failed td:first-child{{border-left:5px solid #a22}} tr.ambiguous td:first-child{{border-left:5px solid #8a6500}}
+small{{color:#aab8c4}}
+</style></head><body>
+<header><h1>Blackwood CFS Directions Book — Live Hydrants Geocoding Review</h1><small>Official Location SA SAGAF_PLUS, outSR=4326 · collector generated {generated}</small></header>
+<div class="summary">
+<span class="pill">Entries: {summary['entries']}</span><span class="pill">Accepted: {summary['accepted']}</span><span class="pill">Manual overrides: {summary['manual']}</span><span class="pill">Failed: {summary['failed']}</span><span class="pill">Ambiguous: {summary['ambiguous']}</span><span class="pill">Grey fallback: {summary['failed'] + summary['ambiguous']}</span>
+</div><div class="wrap"><table><thead><tr>{''.join(f'<th>{html_lib.escape(h)}</th>' for h in headers)}</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>
+</body></html>"""
+    path.write_text(doc, encoding="utf-8")
+
+
+def write_reports(hydrants_dir: Path, rows: list[dict], counts: Counter, geocodes: dict):
+    summary = {
+        "entries": len(rows),
+        "accepted": counts["accepted"],
+        "manual": counts["manual"],
+        "failed": counts["failed"],
+        "ambiguous": counts["ambiguous"],
+    }
+    fieldnames = list(rows[0].keys()) if rows else []
+    write_csv(hydrants_dir / "GEOCODING_REVIEW_FULL.csv", rows, fieldnames)
+    write_csv(hydrants_dir / "GEOCODING_REVIEW_CURRENT.csv", rows, fieldnames)
+    write_csv(hydrants_dir / "ACCEPTED_ENTRIES.csv", [r for r in rows if r["Review category"] == "Accepted"], fieldnames)
+    write_csv(hydrants_dir / "FAILED_ENTRIES.csv", [r for r in rows if r["Review category"] == "Failed"], fieldnames)
+    write_csv(hydrants_dir / "AMBIGUOUS_ENTRIES.csv", [r for r in rows if r["Review category"] == "Ambiguous"], fieldnames)
+    write_csv(hydrants_dir / "MANUALLY_OVERRIDDEN_ENTRIES.csv", [r for r in rows if r["Review category"] == "Manual override"], fieldnames)
+    write_csv(hydrants_dir / "UNRESOLVED_ENTRIES.csv", [r for r in rows if r["Hydrants pill"] == "Grey fallback"], fieldnames)
+    write_html_report(hydrants_dir / "GEOCODING_REVIEW_FULL.html", rows, summary, geocodes)
+
+    markdown = f"""# Full Directions Book Live Hydrants geocoding review
+
+- Directions entries: **{summary['entries']}**
+- Accepted active Hydrants links: **{summary['accepted']}**
+- Manual coordinate overrides used: **{summary['manual']}**
+- Failed entries using the grey Blackwood CFS fallback: **{summary['failed']}**
+- Ambiguous entries using the grey Blackwood CFS fallback: **{summary['ambiguous']}**
+- Total unresolved entries retained for later review: **{summary['failed'] + summary['ambiguous']}**
+
+Official source: Government of South Australia Location SA `SAGAF_PLUS` geocoder with `outSR=4326`.
+
+The complete entry-by-entry review is in `GEOCODING_REVIEW_FULL.csv` and `GEOCODING_REVIEW_FULL.html`. The permanent unresolved list is `UNRESOLVED_ENTRIES.csv`.
+
+Normal rebuilds reapply stored coordinates only. They do not contact the geocoder and the installed app never geocodes at runtime. Future coordinate overrides in `manual-overrides.json` take priority over official collected results.
+"""
+    (hydrants_dir / "GEOCODING_REVIEW_SUMMARY.md").write_text(markdown, encoding="utf-8")
+    save_json(hydrants_dir / "GEOCODING_REVIEW_SUMMARY.json", summary)
+    return summary
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Apply stored official Location SA coordinates to all Directions Hydrants links without runtime or rebuild-time geocoding.")
     parser.add_argument("--repo-root", default=None)
-    parser.add_argument("--import-results", default=None)
-    parser.add_argument("--geocode-missing", action="store_true")
-    args = parser.parse_args()
+    parser.add_argument("--import-collector", default=None, help="Import a completed official collector JSON before applying coordinates.")
+    parser.add_argument("--validate-only", action="store_true")
+    args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root).resolve() if args.repo_root else Path(__file__).resolve().parents[1]
     directions_path = repo_root / "directions" / "index.html"
     hydrants_dir = repo_root / "directions" / "hydrants"
-    config = load_json(hydrants_dir / "geocode-config.json", {
-        "rolloutMode": "test", "testTargets": [], "confidenceThreshold": DEFAULT_THRESHOLD, "sensibleBounds": DEFAULT_BOUNDS
-    })
-    threshold = float(config.get("confidenceThreshold", DEFAULT_THRESHOLD))
-    bounds = dict(DEFAULT_BOUNDS)
-    bounds.update(config.get("sensibleBounds", {}))
-    cache = load_json(hydrants_dir / "geocodes.json", {
-        "schemaVersion": 1, "rolloutMode": config.get("rolloutMode", "test"), "officialEndpoint": OFFICIAL_ENDPOINT,
-        "outSR": 4326, "confidenceThreshold": threshold, "sensibleBounds": bounds, "records": {}
-    })
-    cache_before = json.loads(json.dumps(cache))
-    overrides = load_json(hydrants_dir / "manual-overrides.json", {"schemaVersion": 1, "records": {}})
+    geocodes_path = hydrants_dir / "geocodes.json"
+    overrides_path = hydrants_dir / "manual-overrides.json"
 
-    if args.import_results:
-        cache = import_collector_results(Path(args.import_results), cache, threshold, bounds)
-
-    html, match, entries = parse_directions_html(directions_path)
-    targets = rollout_targets(entries, config)
-    review_reasons = {}
-    if args.geocode_missing:
-        for street, suburb in targets:
-            key = key_for(street, suburb)
-            if key in overrides.get("records", {}) or key in cache.get("records", {}):
-                continue
-            attempt, candidate, attempts, reason = perform_official_lookup(street, suburb, threshold, bounds)
-            if candidate:
-                cache.setdefault("records", {})[key] = record_from_selection(
-                    street, suburb, attempt, candidate, dt.datetime.now(dt.timezone.utc).isoformat()
-                )
-            else:
-                review_reasons[key] = "No official match" if "No official match" in reason else "Manual review required"
-
-    cache["rolloutMode"] = config.get("rolloutMode", "test")
-    cache["confidenceThreshold"] = threshold
-    cache["sensibleBounds"] = bounds
-    before_compare = dict(cache_before)
-    after_compare = dict(cache)
-    before_compare.pop("generatedAtUtc", None)
-    after_compare.pop("generatedAtUtc", None)
-    if before_compare != after_compare:
-        cache["generatedAtUtc"] = dt.datetime.now(dt.timezone.utc).isoformat()
+    if args.import_collector:
+        geocodes = import_collector(Path(args.import_collector).resolve(), hydrants_dir)
     else:
-        cache["generatedAtUtc"] = cache_before.get("generatedAtUtc", cache.get("generatedAtUtc", ""))
-    save_json(hydrants_dir / "geocodes.json", cache)
+        geocodes = load_json(geocodes_path, {})
+    if not geocodes.get("complete") or len(geocodes.get("entryResults", [])) != 678:
+        raise RuntimeError("Stored full-rollout geocodes are incomplete. Import the completed official collector JSON first.")
 
-    applied = apply_cache(entries, cache, overrides)
-    write_directions_html(directions_path, html, match, entries)
-    rows = write_review(repo_root, targets, cache, overrides, review_reasons)
+    overrides = load_json(overrides_path, {"schemaVersion": 2, "records": {}, "entries": {}})
+    html, match, entries = parse_directions_html(directions_path)
+    if len(entries) != 678:
+        raise RuntimeError(f"Expected 678 Directions entries, found {len(entries)}.")
 
-    accepted = sum(1 for row in rows if row["Status"] in {"Accepted", "Manual override used"})
-    unresolved = len(rows) - accepted
-    print(f"Directions hydrants rebuild OK — {applied} direction entries linked")
-    print(f"- Accepted/manual override targets: {accepted}")
-    print(f"- Manual review/no match targets: {unresolved}")
-    print(f"- Rollout mode: {config.get('rolloutMode', 'test')}")
+    rows, counts = apply_hydrants(entries, geocodes, overrides)
+    summary = write_reports(hydrants_dir, rows, counts, geocodes)
+    if not args.validate_only:
+        write_directions_html(directions_path, html, match, entries)
+
+    if summary != {"entries": 678, "accepted": 461, "manual": 0, "failed": 77, "ambiguous": 140} and not overrides.get("records") and not overrides.get("entries"):
+        raise RuntimeError(f"Unexpected collector rollout counts: {summary}")
+
+    print(f"Directions hydrants rebuild OK — {summary['entries']} entries processed")
+    print(f"- Active accepted links: {summary['accepted']}")
+    print(f"- Manual overrides used: {summary['manual']}")
+    print(f"- Grey fallback links: {summary['failed'] + summary['ambiguous']} ({summary['failed']} failed, {summary['ambiguous']} ambiguous)")
+    print("- Network geocoding: disabled; stored coordinates only")
     return 0
 
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except Exception as exc:
+        print(f"Hydrants rebuild failed: {exc}", file=sys.stderr)
+        raise

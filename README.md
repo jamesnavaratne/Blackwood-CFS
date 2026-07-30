@@ -48,11 +48,15 @@ Commit and push in GitHub Desktop
 
 ## Current rebuild behaviour
 
-Routine rebuild updates:
+Routine rebuild reapplies stored Directions Hydrants coordinates, regenerates the Hydrants review reports, and then updates inventory/offline metadata:
 
 ```text
+directions/index.html
+directions/hydrants/GEOCODING_REVIEW_*
 index.html
 data/inventory.json
+content-metadata.json
+offline-assets.json
 ```
 
 Optional report rebuild:
@@ -64,7 +68,7 @@ tools\rebuild_inventory_from_excel_with_report.bat
 ## Stable operational constraints
 
 - Excel is the inventory source of truth.
-- Directions Book data is not rebuilt by the inventory tool.
+- Directions wording/source data is not rebuilt by the inventory tool; stored Hydrants fields are reapplied before each normal rebuild.
 - Photos stay in `photos/`.
 - UBD maps stay in `directions/maps/ubd/`.
 - CAFS 24 locker order must remain:

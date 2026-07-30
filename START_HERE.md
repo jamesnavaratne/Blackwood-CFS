@@ -16,14 +16,18 @@ tools\rebuild_inventory_from_excel.bat
 5. Open `index.html` locally and check the change.
 6. Commit and push these app files with GitHub Desktop.
 
-The routine rebuild updates only:
+The routine rebuild now reapplies the stored Directions Hydrants coordinates first, then rebuilds inventory and offline metadata. Expected generated changes include:
 
 ```text
+directions\index.html
+directions\hydrants\GEOCODING_REVIEW_*.csv/.html/.json/.md
 index.html
 data\inventory.json
+content-metadata.json
+offline-assets.json
 ```
 
-It does **not** update the timestamped report files, so routine inventory changes should avoid annoying Git conflicts.
+The Hydrants step is offline-safe: it uses stored official results and manual overrides only and never calls the geocoder.
 
 ## Important rule
 

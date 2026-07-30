@@ -62,14 +62,14 @@ It checks for:
 
 It does not change app files.
 
-## Directions Live Hydrants rebuild (v2.9.1 test)
+## Directions Live Hydrants rebuild (v2.9.2 full rollout)
 
 The normal rebuild wrappers first run:
 
 ```text
-python tools/rebuild_directions_hydrants.py --geocode-missing
+python tools\rebuild_directions_hydrants.py
 ```
 
-This reapplies the five validated official Location SA coordinates to the generated Directions data before the inventory/offline metadata rebuild. The script uses only Location SA SAGAF_PLUS, preserves accepted results, gives manual overrides priority, and never performs runtime geocoding when a volunteer taps Hydrants.
+This reapplies the stored official Location SA coordinates to all 678 Directions entries before the inventory/offline metadata rebuild. It does **not** contact the geocoder. Manual coordinate overrides are applied first, followed by accepted stored official results; failed or ambiguous entries retain a grey Hydrants pill linked to the official live map at Blackwood CFS.
 
-The current rollout remains in **test mode** for Gorse Avenue, Rosella Avenue, Hannaford Road, Keith Road and Nama Drive. No hydrant map, tile or dataset is stored offline.
+No hydrant data, map or tiles are stored offline, and the installed app never geocodes at runtime. Complete and category-specific review reports are regenerated in `directions/hydrants/`.

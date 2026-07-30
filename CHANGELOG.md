@@ -1,3 +1,15 @@
+## v2.9.2 PERSONAL UBD - Full Live Hydrants rollout test RC1
+- Built from the confirmed v2.9.1 Personal UBD + Read Aloud + five-street Live Hydrants working baseline.
+- Processed all 678 Directions entries with the official Government of South Australia Location SA SAGAF_PLUS collector using outSR=4326.
+- Added 461 active stored-coordinate Hydrants links and 217 grey unresolved fallback links: 77 failed and 140 ambiguous.
+- Preserved the five user-validated coordinates exactly.
+- Grey Hydrants pills open the live Location SA Roads map at Blackwood CFS, 16A Gorse Avenue, Hawthorndene, with hydrant layer UID 334 enabled.
+- Retained UPPER STURT ROAD HAWTHORNDENE as unresolved after the explicit 192 Upper Sturt Road official lookup returned no exact candidate.
+- Added permanent full, accepted, failed, ambiguous, manual-override and unresolved review reports.
+- Normal Windows and GitHub rebuilds now reapply stored coordinates without network geocoding; future manual coordinate overrides take priority.
+- Preserved Read Aloud, Super UBD, Blackwood CFS Response Zone, UBD behaviour, all inventory data, favourites, search, photos, offline assets and rebuild workflow.
+- Hydrant data, maps and tiles remain excluded from offline preparation.
+
 ## v2.9.1 PERSONAL UBD - Live Hydrants merge test RC1
 - Built from the reviewed `v2.9.0 PERSONAL UBD` baseline, not from the reduced hydrants test package.
 - Added the validated five-street Live Hydrants implementation from v2.9.1 Hydrants Test RC2.

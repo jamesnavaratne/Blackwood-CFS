@@ -1,4 +1,6 @@
 {
-  "schemaVersion": 1,
-  "records": {}
+  "schemaVersion": 2,
+  "description": "Future manual coordinate overrides. Entry-specific overrides take priority over street/locality overrides, and all manual coordinate overrides take priority over collected geocodes.",
+  "records": {},
+  "entries": {}
 }

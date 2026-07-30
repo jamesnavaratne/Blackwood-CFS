@@ -1,33 +1,18 @@
 {
-  "schemaVersion": 1,
-  "rolloutMode": "test",
-  "testTargets": [
-    {
-      "street": "Gorse Avenue",
-      "suburb": "Hawthorndene"
-    },
-    {
-      "street": "Rosella Avenue",
-      "suburb": "Glenalta"
-    },
-    {
-      "street": "Hannaford Road",
-      "suburb": "Blackwood"
-    },
-    {
-      "street": "Keith Road",
-      "suburb": "Blackwood"
-    },
-    {
-      "street": "Nama Drive",
-      "suburb": "Hawthorndene"
+  "schemaVersion": 2,
+  "rolloutMode": "full",
+  "directionsEntryCount": 678,
+  "officialEndpoint": "https://location.sa.gov.au/arcgis/rest/services/Locators/SAGAF_PLUS/GeocodeServer/findAddressCandidates",
+  "outSR": 4326,
+  "attemptOrder": ["No. 1", "No. 2", "street-only"],
+  "runtimeGeocoding": false,
+  "normalRebuildGeocoding": false,
+  "unresolvedButtonBehaviour": "Show a grey Hydrants pill and open the official live Location SA hydrant map at Blackwood CFS, 16A Gorse Avenue, Hawthorndene.",
+  "manualLookupAddressOverrides": {
+    "BLACKWOOD MAIN-433": {
+      "entry": "UPPER STURT ROAD HAWTHORNDENE",
+      "officialLookupAddress": "192 Upper Sturt Road, Hawthorndene SA",
+      "result": "No exact SAGAF_PLUS candidate returned; retain unresolved grey fallback until manually reviewed."
     }
-  ],
-  "confidenceThreshold": 95,
-  "sensibleBounds": {
-    "minLongitude": 138.45,
-    "maxLongitude": 138.85,
-    "minLatitude": -35.25,
-    "maxLatitude": -34.8
   }
 }

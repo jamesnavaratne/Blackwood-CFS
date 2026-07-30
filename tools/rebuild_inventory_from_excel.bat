@@ -2,9 +2,9 @@
 setlocal
 cd /d "%~dp0\.."
 
-REM Rebuild Directions hydrant links from preserved official coordinates first.
-REM In test mode this only checks the five approved test streets.
-python tools\rebuild_directions_hydrants.py --geocode-missing
+REM Rebuild all Directions hydrant links from stored official coordinates first.
+REM This step is offline-safe and never contacts the geocoder.
+python tools\rebuild_directions_hydrants.py
 if errorlevel 1 (
   echo.
   echo Hydrants rebuild failed. Check the error message above.

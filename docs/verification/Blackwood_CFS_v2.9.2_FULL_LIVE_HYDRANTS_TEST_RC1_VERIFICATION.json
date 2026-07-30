@@ -1,0 +1,117 @@
+{
+  "status": "passed",
+  "results": {
+    "collector": {
+      "sha256": "82f0187bb24bfdd8144a44bcc392be068a60357bb285ef9891ced7c0ac741db6",
+      "complete": true,
+      "entryResults": 678,
+      "uniqueLookupRecords": 632,
+      "officialEndpoint": "https://location.sa.gov.au/arcgis/rest/services/Locators/SAGAF_PLUS/GeocodeServer/findAddressCandidates",
+      "outSR": 4326
+    },
+    "directions": {
+      "entries": 678,
+      "nonHydrantFieldsIdenticalToWorkingBaseline": true,
+      "active": 461,
+      "greyFallback": 217
+    },
+    "validatedFive": {
+      "GORSE AVENUE|HAWTHORNDENE": [
+        138.62679988692054,
+        -35.023253935910596,
+        true
+      ],
+      "HANNAFORD ROAD|BLACKWOOD": [
+        138.6093353184496,
+        -35.01504179262541,
+        true
+      ],
+      "KEITH ROAD|BLACKWOOD": [
+        138.619550289012,
+        -35.02584040971901,
+        true
+      ],
+      "NAMA DRIVE|HAWTHORNDENE": [
+        138.6359534070555,
+        -35.02472167974781,
+        true
+      ],
+      "ROSELLA AVENUE|GLENALTA": [
+        138.62414866232348,
+        -35.011429623632715,
+        true
+      ]
+    },
+    "reviewReports": {
+      "allEntries": 678,
+      "categories": {
+        "Ambiguous": 140,
+        "Accepted": 461,
+        "Failed": 77
+      },
+      "unresolvedRows": 217,
+      "manualOverrideRows": 0,
+      "upperSturt": {
+        "Entry number": "614",
+        "Entry ID": "BLACKWOOD MAIN-433",
+        "Source": "BLACKWOOD MAIN",
+        "Street field": "UPPER STURT ROAD HAWTHORNDENE",
+        "Authoritative locality field(s)": "",
+        "Lookup street": "UPPER STURT ROAD",
+        "Lookup locality": "HAWTHORNDENE",
+        "Lookup key": "UPPER STURT ROAD|HAWTHORNDENE",
+        "Duplicate lookup reused": "No",
+        "Review category": "Failed",
+        "Status": "Failed",
+        "Hydrants pill": "Grey fallback",
+        "Query attempted": "192 UPPER STURT ROAD, HAWTHORNDENE SA",
+        "Matched official address": "",
+        "Method used": "",
+        "Score": "",
+        "Latitude": "",
+        "Longitude": "",
+        "Manual override": "No",
+        "Notes / unresolved reason": "No exact official candidate returned",
+        "Fallback address when grey": "16A GORSE AVENUE, HAWTHORNDENE, SOUTH AUSTRALIA, 5051"
+      }
+    },
+    "lookupHandling": {
+      "duplicateLookupKeysReused": 15,
+      "streetNamesWithMultipleSeparateLocalities": 15,
+      "andersonAvenueLocalities": [
+        "HAWTHORNDENE",
+        "MITCHAM"
+      ]
+    },
+    "manualOverridePriorityTest": "passed",
+    "preservation": {
+      "inventoryCounts": {
+        "Blackwood Rescue": 146,
+        "34P": 142,
+        "CAFS 24": 115
+      },
+      "preservedFileHashesChecked": 81,
+      "mismatches": [],
+      "readAloudPresent": true,
+      "favouritesPresent": true,
+      "streetNameOnlySearchPatchPresent": true,
+      "superUbdPresent": true,
+      "responseZonePresent": true
+    },
+    "offlineAndRuntime": {
+      "offlineAssetCount": 65,
+      "hydrantOfflineAssets": [],
+      "runtimeGeocoding": false,
+      "normalRebuildNetworkGeocoding": false
+    },
+    "syntax": {
+      "nodeScriptsChecked": 29,
+      "pythonCompile": "passed"
+    },
+    "rebuildValidation": {
+      "hydrantsValidateOnly": "passed",
+      "inventoryCheckOnly": "passed"
+    },
+    "noGit": true
+  }
+}

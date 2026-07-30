@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0\.."
 
-python tools\rebuild_directions_hydrants.py --geocode-missing
+python tools\rebuild_directions_hydrants.py
 if errorlevel 1 (
   echo.
   echo Hydrants rebuild failed. Check the error message above.
