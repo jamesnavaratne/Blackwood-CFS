@@ -36,12 +36,8 @@ window.UBD_MAPS = [
     "file": "UBD 168.jpg"
   },
   {
-    "title": "Super UBD",
-    "file": "Super UBD.png"
-  },
-  {
-    "title": "Blackwood CFS Response Zone",
-    "file": "Blackwood CFS Response Zone.jpg"
+    "title": "Blackwood Primary Response Zone",
+    "file": "Blackwood Primary Response Zone.jpg"
   },
   {
     "title": "Belair National Park Map",

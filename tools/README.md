@@ -61,3 +61,26 @@ It checks for:
 - unusual status values
 
 It does not change app files.
+
+
+## Directions Hydrants rebuild
+
+The normal rebuild wrappers now run:
+
+```text
+rebuild_directions_hydrants.py --geocode-missing
+```
+
+before rebuilding the inventory and offline metadata.
+
+The hydrant script:
+
+- uses only the official Location SA SAGAF_PLUS endpoint;
+- reuses preserved accepted street/suburb coordinates;
+- gives `manual-overrides.json` priority;
+- geocodes only missing configured targets;
+- writes accepted coordinates into generated Directions data;
+- records unresolved entries in the review report;
+- never geocodes when a volunteer taps the Hydrants button.
+
+The current `geocode-config.json` is in **test mode**, so only the five approved test streets are processed. Full rollout is enabled later by changing the rollout mode after test-link validation.
