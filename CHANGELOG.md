@@ -1,3 +1,10 @@
+## v2.9.0 - Directions read-aloud RC1
+- Added a compact speaker pill beside Report issue in each Directions modal.
+- Uses the device's built-in speech synthesis; no audio files or server service are included.
+- Reads only the street name followed by the Directions text exactly as stored.
+- The pill toggles between Read and Stop, and speech stops when the modal closes or another street is opened.
+- Directions data, wording and formatting are unchanged.
+
 ## v2.8.4 - Light mode font-weight update test RC5
 - Slightly increased the weight of dark inventory text in Light mode for improved readability.
 - Kept colours, spacing, component layout and Directions Book styling unchanged.

@@ -473,13 +473,47 @@ button[data-ubd]:active,
   padding: 0;
 }
 
-.direction-source-report-row .direction-report-pill {
+.direction-source-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.direction-source-report-row .direction-report-pill,
+.direction-source-report-row .direction-speech-pill {
   flex: 0 0 auto;
   padding: 3px 8px;
   font-size: 9.5px;
   line-height: 1.15;
   letter-spacing: .07em;
   opacity: .9;
+}
+
+.direction-speech-pill {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 850;
+  text-transform: uppercase;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.direction-speech-pill:hover,
+.direction-speech-pill:focus,
+.direction-speech-pill.is-speaking {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--soft);
+  outline: none;
+  opacity: 1;
+}
+
+.direction-speech-pill:active {
+  transform: scale(.985);
 }
 
 .direction-source-report-row .direction-report-pill:hover,
@@ -493,7 +527,12 @@ button[data-ubd]:active,
     gap: 6px;
   }
 
-  .direction-source-report-row .direction-report-pill {
+  .direction-source-actions {
+    gap: 5px;
+  }
+
+  .direction-source-report-row .direction-report-pill,
+  .direction-source-report-row .direction-speech-pill {
     padding: 3px 7px;
     font-size: 9px;
   }
@@ -649,7 +688,10 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
       <div class="book-copy" id="bookCopy"></div>
       <div class="direction-source-report-row">
         <div class="source" id="sourceText"></div>
-        <button class="direction-report-pill" id="directionReportBtn" type="button">Report issue</button>
+        <div class="direction-source-actions">
+          <button class="direction-speech-pill" id="directionSpeechBtn" type="button" aria-label="Read street name and directions aloud" title="Read directions aloud">🔊 Read</button>
+          <button class="direction-report-pill" id="directionReportBtn" type="button">Report issue</button>
+        </div>
       </div>
     </div>
   </article>
@@ -729,7 +771,7 @@ const els = {
   modal: document.getElementById('modal'), scrim: document.getElementById('scrim'), close: document.getElementById('closeBtn'),
   cardName: document.getElementById('cardName'), cardSub: document.getElementById('cardSub'), cardInfo: document.getElementById('cardInfo'),
   bookCopy: document.getElementById('bookCopy'), sourceText: document.getElementById('sourceText'), streetUbdBtn: document.getElementById('streetUbdBtn'), starBtn: document.getElementById('starBtn'),
-  reportBtn: document.getElementById('directionReportBtn'),
+  speechBtn: document.getElementById('directionSpeechBtn'), reportBtn: document.getElementById('directionReportBtn'),
   directionIssueModal: document.getElementById('directionIssueModal'),
   directionIssueScrim: document.getElementById('directionIssueScrim'),
   directionIssueClose: document.getElementById('directionIssueClose'),
@@ -744,6 +786,58 @@ let directionIssueType = "Wrong directions";
 let selected = null;
 const favKey = 'blackwoodDirectionsFavourites.v1';
 const themeKey = 'blackwoodDirectionsTheme.v1';
+let activeDirectionSpeech = null;
+let activeDirectionSpeechId = null;
+
+function directionSpeechSupported(){
+  return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+}
+
+function updateDirectionSpeechButton(){
+  if(!els.speechBtn) return;
+  if(!directionSpeechSupported()){
+    els.speechBtn.hidden = true;
+    return;
+  }
+  els.speechBtn.hidden = false;
+  const speaking = !!activeDirectionSpeech && activeDirectionSpeechId === selected?.id;
+  els.speechBtn.textContent = speaking ? '■ Stop' : '🔊 Read';
+  els.speechBtn.classList.toggle('is-speaking', speaking);
+  els.speechBtn.setAttribute('aria-label', speaking ? 'Stop reading directions aloud' : 'Read street name and directions aloud');
+  els.speechBtn.title = speaking ? 'Stop reading' : 'Read directions aloud';
+}
+
+function stopDirectionSpeech(){
+  if(directionSpeechSupported()) window.speechSynthesis.cancel();
+  activeDirectionSpeech = null;
+  activeDirectionSpeechId = null;
+  updateDirectionSpeechButton();
+}
+
+function speakSelectedDirection(){
+  if(!selected || !directionSpeechSupported()) return;
+  if(activeDirectionSpeech && activeDirectionSpeechId === selected.id){
+    stopDirectionSpeech();
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(`${selected.name}. ${selected.directions || ''}`);
+  utterance.lang = 'en-AU';
+  activeDirectionSpeech = utterance;
+  activeDirectionSpeechId = selected.id;
+  utterance.onstart = updateDirectionSpeechButton;
+  utterance.onend = () => {
+    if(activeDirectionSpeech === utterance){
+      activeDirectionSpeech = null;
+      activeDirectionSpeechId = null;
+      updateDirectionSpeechButton();
+    }
+  };
+  utterance.onerror = utterance.onend;
+  updateDirectionSpeechButton();
+  window.speechSynthesis.speak(utterance);
+}
 let favourites = new Set(JSON.parse(localStorage.getItem(favKey) || '[]'));
 function saveFavs(){ localStorage.setItem(favKey, JSON.stringify([...favourites])); }
 function setTheme(t){ document.documentElement.dataset.theme=t; els.body.dataset.theme=t; document.documentElement.style.backgroundColor=t==='light'?'#ffffff':'#05070a'; document.documentElement.style.colorScheme=t==='light'?'light':'dark'; const meta=document.getElementById('themeColorMeta'); if(meta) meta.setAttribute('content',t==='light'?'#ffffff':'#05070a'); localStorage.setItem(themeKey,t); els.lightBtn.classList.toggle('active',t==='light'); els.darkBtn.classList.toggle('active',t==='dark'); }
@@ -1022,6 +1116,7 @@ function render(){
   updateCurrentFromScroll();
 }
 function openEntry(id){
+  if(activeDirectionSpeechId && activeDirectionSpeechId !== id) stopDirectionSpeech();
   selected = DIRECTIONS.find(e=>e.id===id); if(!selected) return;
   els.cardName.textContent = selected.name;
   els.cardSub.textContent = (selected.areas||[]).join(' · ');
@@ -1032,6 +1127,7 @@ function openEntry(id){
   els.cardInfo.innerHTML=info.join('');
   els.bookCopy.innerHTML = formatDirectionsHtml(selected);
   els.sourceText.textContent = 'Source: ' + selected.source;
+  updateDirectionSpeechButton();
   updateStar();
   updateDirectionIssuePreview();
   els.modal.classList.add('open'); els.modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); document.querySelector('.card').scrollTop = 0;
@@ -1110,6 +1206,7 @@ function updateStar(){
 }
 els.starBtn.onclick=()=>{ if(!selected) return; favourites.has(selected.id)?favourites.delete(selected.id):favourites.add(selected.id); saveFavs(); updateStar(); render(); };
 function closeModal(){
+  stopDirectionSpeech();
   els.modal.classList.remove('open');
   els.modal.setAttribute('aria-hidden','true');
 
@@ -1125,6 +1222,7 @@ function closeModal(){
   }
 }
 els.close.onclick=closeModal; els.scrim.onclick=closeModal;
+if(els.speechBtn) els.speechBtn.onclick=speakSelectedDirection;
 if(els.reportBtn) els.reportBtn.onclick=openDirectionIssueModal;
 if(els.directionIssueClose) els.directionIssueClose.onclick=closeDirectionIssueModal;
 if(els.directionIssueScrim) els.directionIssueScrim.onclick=closeDirectionIssueModal;
@@ -1143,6 +1241,8 @@ if(els.directionEmailIssueBtn) {
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(els.directionIssueModal.classList.contains('open')) closeDirectionIssueModal(); else if(mapEls.viewerModal.classList.contains('open')) closeMapViewer(); else if(mapEls.listModal.classList.contains('open')) closeMapList(); else closeModal(); });
 els.search.addEventListener('input', render); els.clear.onclick=()=>{ els.search.value=''; render(); els.search.focus(); };
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+window.addEventListener('pagehide', stopDirectionSpeech);
+updateDirectionSpeechButton();
 render();
 </script>
 
