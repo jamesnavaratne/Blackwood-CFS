@@ -1,4 +1,4 @@
-name: Rebuild inventory and offline metadata
+name: Rebuild inventory, hydrants and offline metadata
 
 on:
   workflow_dispatch:
@@ -6,8 +6,11 @@ on:
     paths:
       - 'Blackwood_CFS_Master_Inventory.xlsx'
       - 'tools/rebuild_inventory_from_excel.py'
-      - 'photos/**'
+      - 'tools/rebuild_directions_hydrants.py'
+      - 'directions/hydrants/**'
       - 'directions/index.html'
+      - 'directions/source/**'
+      - 'photos/**'
       - 'directions/maps/ubd/**'
       - 'manifest.json'
       - 'icon.png'
@@ -17,7 +20,7 @@ permissions:
   contents: write
 
 jobs:
-  rebuild-inventory:
+  rebuild-app:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +31,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+
+      - name: Rebuild Directions hydrant links
+        run: python tools/rebuild_directions_hydrants.py --geocode-missing
 
       - name: Rebuild inventory and offline metadata
         run: python tools/rebuild_inventory_from_excel.py
@@ -46,6 +52,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/inventory.json content-metadata.json offline-assets.json
-          git commit -m "Auto-rebuild inventory and offline metadata"
+          git add index.html data/inventory.json content-metadata.json offline-assets.json \
+            directions/index.html directions/hydrants/geocodes.json \
+            directions/hydrants/GEOCODING_REVIEW_CURRENT.csv
+          git commit -m "Auto-rebuild inventory, hydrants and offline metadata"
           git push

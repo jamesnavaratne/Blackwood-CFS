@@ -1,3 +1,10 @@
+## v2.9.1 PERSONAL UBD - Live Hydrants merge test RC1
+- Built from the reviewed `v2.9.0 PERSONAL UBD` baseline, not from the reduced hydrants test package.
+- Added the validated five-street Live Hydrants implementation from v2.9.1 Hydrants Test RC2.
+- Preserved Directions Read Aloud, all 678 Directions entries, Super UBD, Blackwood CFS Response Zone, Belair National Park map, all nine UBD pages, inventory data, photos, offline preparation and Excel rebuild workflow.
+- Hydrants links use live Location SA Roads at zoom 18 with hydrant layer UID 334 and no pin.
+- Added official-coordinate cache/review files and rebuild tooling; no hydrant tiles or hydrant dataset are stored offline.
+
 ## v2.9.0 - Directions read-aloud RC1
 - Added a compact speaker pill beside Report issue in each Directions modal.
 - Uses the device's built-in speech synthesis; no audio files or server service are included.
