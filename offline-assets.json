@@ -1,5 +1,5 @@
 {
-  "version": "content-9880a8a034245b2c04b5",
+  "version": "content-3abe67eb2252e39d128b",
   "contentUpdatedUtc": "2026-07-28T14:28:14Z",
   "assets": [
     "./",
@@ -13,7 +13,8 @@
     "./directions/index.html",
     "./directions/maps/ubd/maps.js",
     "./directions/maps/ubd/Belair National Park Map.jpg",
-    "./directions/maps/ubd/Blackwood Primary Response Zone.jpg",
+    "./directions/maps/ubd/Blackwood CFS Response Zone.jpg",
+    "./directions/maps/ubd/Super UBD.png",
     "./directions/maps/ubd/UBD 142.jpg",
     "./directions/maps/ubd/UBD 143.jpg",
     "./directions/maps/ubd/UBD 144.jpg",
