@@ -1,11 +1,3 @@
-## v2.9.1 - Live Hydrants initial test RC2
-- Built on v2.9.0 Read Aloud RC1 and retained all v2.8.4 stable functionality.
-- Added a theme-matched Hydrants pill immediately left of the UBD pill for five officially validated test streets.
-- Hydrants links use Location SA Roads, zoom 18, hydrant layer UID 334, WGS84 longitude/latitude and no pin.
-- Added an official-only hydrant geocoding cache, manual override file, review reports and rebuild tooling.
-- No hydrant tiles or hydrant data are cached; existing offline preparation behaviour is unchanged.
-- All other Directions entries keep the Hydrants action hidden until an official coordinate is accepted.
-
 ## v2.9.0 - Directions read-aloud RC1
 - Added a compact speaker pill beside Report issue in each Directions modal.
 - Uses the device's built-in speech synthesis; no audio files or server service are included.
