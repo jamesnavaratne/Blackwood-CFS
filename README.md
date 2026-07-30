@@ -26,6 +26,12 @@ docs/          human instructions and release notes
 .github/       GitHub Actions workflow
 ```
 
+## Current test baseline
+
+`v2.9.3 Personal UBD Hydrants Second-Pass Test RC1` keeps 677 stored-coordinate Hydrants links active and one deliberately unresolved grey fallback. Reviewed vicinity anchors are recorded separately from exact official address selections in `directions/hydrants/`.
+
+The Directions UBD viewer now permits up to 8× zoom, and the in-app `Refresh now` update action shows an immediate pressed/loading state.
+
 ## Start here
 
 Open:

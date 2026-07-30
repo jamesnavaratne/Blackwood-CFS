@@ -62,7 +62,7 @@ It checks for:
 
 It does not change app files.
 
-## Directions Live Hydrants rebuild (v2.9.2 full rollout)
+## Directions Live Hydrants rebuild (v2.9.3 reviewed second pass)
 
 The normal rebuild wrappers first run:
 

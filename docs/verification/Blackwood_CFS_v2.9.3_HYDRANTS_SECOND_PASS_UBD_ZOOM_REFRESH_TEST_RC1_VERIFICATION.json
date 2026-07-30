@@ -1,0 +1,83 @@
+{
+  "status": "passed",
+  "results": {
+    "directions": {
+      "entries": 678,
+      "nonHydrantFieldsIdenticalToV2_9_2Baseline": true,
+      "originalAccepted": 461,
+      "reviewedExact": 154,
+      "reviewedVicinity": 62,
+      "active": 677,
+      "greyFallback": 1,
+      "remainingUnresolved": "GOVERNMENT ROAD|SPRINGFIELD"
+    },
+    "validatedFive": {
+      "GORSE AVENUE|HAWTHORNDENE": [
+        138.62679988692054,
+        -35.023253935910596,
+        true
+      ],
+      "ROSELLA AVENUE|GLENALTA": [
+        138.62414866232348,
+        -35.011429623632715,
+        true
+      ],
+      "HANNAFORD ROAD|BLACKWOOD": [
+        138.6093353184496,
+        -35.01504179262541,
+        true
+      ],
+      "KEITH ROAD|BLACKWOOD": [
+        138.619550289012,
+        -35.02584040971901,
+        true
+      ],
+      "NAMA DRIVE|HAWTHORNDENE": [
+        138.6359534070555,
+        -35.02472167974781,
+        true
+      ]
+    },
+    "reviewReports": {
+      "allEntries": 678,
+      "reviewedExactRows": 154,
+      "reviewedVicinityRows": 62,
+      "unresolvedRows": 1
+    },
+    "manualOverridePriorityTest": "passed",
+    "preservation": {
+      "nonHydrantDirectionsDataIdentical": true,
+      "preservedFileHashesChecked": 81,
+      "mismatches": [],
+      "inventoryCounts": {
+        "Blackwood Rescue": 146,
+        "34P": 142,
+        "CAFS 24": 115
+      },
+      "readAloudPresent": true,
+      "superUbdPresent": true,
+      "responseZonePresent": true
+    },
+    "uiChanges": {
+      "ubdMaximumZoomBefore": 4,
+      "ubdMaximumZoomNow": 8,
+      "refreshPressedLoadingFeedback": true
+    },
+    "offlineAndRuntime": {
+      "offlineAssetCount": 65,
+      "hydrantOfflineAssets": [],
+      "runtimeGeocoding": false,
+      "normalRebuildNetworkGeocoding": false
+    },
+    "rebuildWorkflow": {
+      "windows": true,
+      "githubActions": true
+    },
+    "syntax": {
+      "nodeScriptsChecked": 29,
+      "inlineScriptsChecked": 27,
+      "pythonFilesCompiled": 3
+    },
+    "noGit": true
+  }
+}

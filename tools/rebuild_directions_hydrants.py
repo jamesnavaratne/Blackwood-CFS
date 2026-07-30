@@ -145,7 +145,17 @@ def override_for(entry_id: str, lookup_key: str, overrides: dict):
     return None, ""
 
 
-def active_payload(record: dict, *, manual: bool = False, override_scope: str = ""):
+def reviewed_for(entry_id: str, lookup_key: str, reviewed: dict):
+    entry_resolution = (reviewed.get("entries") or {}).get(entry_id)
+    if valid_coordinates(entry_resolution):
+        return dict(entry_resolution), "entry"
+    record_resolution = (reviewed.get("records") or {}).get(lookup_key)
+    if valid_coordinates(record_resolution):
+        return dict(record_resolution), "street/locality"
+    return None, ""
+
+
+def active_payload(record: dict, *, manual: bool = False, reviewed: bool = False, override_scope: str = ""):
     payload = {
         "longitude": float(record.get("longitude")),
         "latitude": float(record.get("latitude")),
@@ -161,6 +171,14 @@ def active_payload(record: dict, *, manual: bool = False, override_scope: str = 
         payload["manualOverride"] = True
         payload["manualOverrideScope"] = override_scope
         payload["manualOverrideNote"] = record.get("note") or record.get("manualOverrideNote", "")
+    if reviewed:
+        payload["reviewedResolution"] = True
+        payload["resolutionCategory"] = record.get("resolutionCategory", "Reviewed resolution")
+        payload["resolutionConfidence"] = record.get("resolutionConfidence", "")
+        payload["resolutionReason"] = record.get("resolutionReason", "")
+        payload["approximate"] = bool(record.get("approximate"))
+        payload["anchorKey"] = record.get("anchorKey", "")
+        payload["secondaryEvidence"] = record.get("secondaryEvidence", [])
     if record.get("preservedValidated"):
         payload["preservedValidated"] = True
     return payload
@@ -182,7 +200,7 @@ def fallback_payload(fallback: dict, review: dict):
     }
 
 
-def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
+def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict, reviewed: dict):
     records = geocodes.get("records", {})
     fallback = geocodes.get("fallbackStation") or {}
     if not valid_coordinates(fallback):
@@ -202,12 +220,18 @@ def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
         lookup_key = review.get("lookupKey", "")
         record = records.get(lookup_key) if lookup_key else None
         manual_record, override_scope = override_for(entry_id, lookup_key, overrides)
+        reviewed_record, reviewed_scope = reviewed_for(entry_id, lookup_key, reviewed)
 
         button_mode = "Grey fallback"
-        category = review.get("reviewCategory") or review.get("status") or "Ambiguous"
-        status = review.get("status") or "Ambiguous"
+        original_category = review.get("reviewCategory") or review.get("status") or "Ambiguous"
+        original_status = review.get("status") or "Ambiguous"
+        category = original_category
+        status = original_status
         reason = review.get("notes", "") or (record or {}).get("reason", "")
         applied_record = None
+        approximate = False
+        resolution_confidence = ""
+        resolution_evidence = []
 
         if manual_record:
             applied_record = manual_record
@@ -217,6 +241,17 @@ def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
             reason = manual_record.get("note") or manual_record.get("manualOverrideNote", "")
             button_mode = "Active"
             counts["manual"] += 1
+        elif reviewed_record:
+            applied_record = reviewed_record
+            entry["hydrant"] = active_payload(reviewed_record, reviewed=True, override_scope=reviewed_scope)
+            approximate = bool(reviewed_record.get("approximate"))
+            category = reviewed_record.get("resolutionCategory", "Reviewed resolution")
+            status = reviewed_record.get("status", "Reviewed resolution")
+            reason = reviewed_record.get("resolutionReason", "")
+            resolution_confidence = reviewed_record.get("resolutionConfidence", "")
+            resolution_evidence = reviewed_record.get("secondaryEvidence", []) or []
+            button_mode = "Active"
+            counts["reviewed_vicinity" if approximate else "reviewed_exact"] += 1
         elif record and record.get("status") in ACCEPTED_STATUSES and valid_coordinates(record):
             applied_record = record
             entry["hydrant"] = active_payload(record)
@@ -233,7 +268,7 @@ def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
                 "reason": reason,
                 "lookupKey": lookup_key,
             }
-            if category == "Failed" or status == "Failed":
+            if original_category == "Failed" or original_status == "Failed":
                 counts["failed"] += 1
             else:
                 counts["ambiguous"] += 1
@@ -251,9 +286,15 @@ def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
             "Lookup locality": review.get("lookupLocality", ""),
             "Lookup key": lookup_key,
             "Duplicate lookup reused": "Yes" if lookup_key and key_frequency[lookup_key] > 1 else "No",
+            "Original collector category": original_category,
+            "Original collector status": original_status,
             "Review category": category,
             "Status": status,
             "Hydrants pill": button_mode,
+            "Reviewed resolution": "Yes" if reviewed_record else "No",
+            "Resolution confidence": resolution_confidence,
+            "Approximate vicinity anchor": "Yes" if approximate else "No",
+            "Anchor key": (applied_record or {}).get("anchorKey", ""),
             "Query attempted": (applied_record or record or {}).get("query", review.get("queryAttempted", "")),
             "Matched official address": (applied_record or record or {}).get("matchedAddress", review.get("matchedOfficialAddress", "")),
             "Method used": (applied_record or record or {}).get("method", review.get("methodUsed", "")),
@@ -262,13 +303,13 @@ def apply_hydrants(entries: list[dict], geocodes: dict, overrides: dict):
             "Longitude": (applied_record or record or {}).get("longitude", review.get("longitude", "")),
             "Manual override": "Yes" if manual_record else "No",
             "Notes / unresolved reason": reason,
+            "Secondary evidence": " | ".join(str(v) for v in resolution_evidence),
             "Fallback address when grey": fallback.get("matchedAddress", fallback.get("address", "")) if button_mode == "Grey fallback" else "",
         })
 
     if len(rows) != len(entries):
         raise RuntimeError("Hydrants review row count does not match Directions entry count.")
     return rows, counts
-
 
 def write_csv(path: Path, rows: list[dict], fieldnames: list[str] | None = None):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -298,12 +339,14 @@ header{{padding:24px;background:#081522;color:white}} h1{{margin:0 0 8px;font-si
 .pill{{padding:8px 12px;border-radius:999px;background:#e9eef3;font-weight:700}}
 .wrap{{padding:16px;overflow:auto}} table{{border-collapse:collapse;width:max-content;min-width:100%;background:white;font-size:12px}}
 th,td{{border:1px solid #d8dee6;padding:7px 9px;vertical-align:top;max-width:380px}} th{{position:sticky;top:0;background:#172b3a;color:white;text-align:left;z-index:1}}
-tr.accepted td:first-child,tr.manual-override td:first-child{{border-left:5px solid #16833c}} tr.failed td:first-child{{border-left:5px solid #a22}} tr.ambiguous td:first-child{{border-left:5px solid #8a6500}}
+tr.accepted td:first-child,tr.manual-override td:first-child,tr.official-candidate-salvage td:first-child,tr.secondary-assisted-official-correction td:first-child{{border-left:5px solid #16833c}}
+tr.reviewed-vicinity-anchor td:first-child,tr.reviewed-multi-locality-vicinity-anchor td:first-child{{border-left:5px solid #286c9d}}
+tr.failed td:first-child{{border-left:5px solid #a22}} tr.ambiguous td:first-child{{border-left:5px solid #8a6500}}
 small{{color:#aab8c4}}
 </style></head><body>
 <header><h1>Blackwood CFS Directions Book — Live Hydrants Geocoding Review</h1><small>Official Location SA SAGAF_PLUS, outSR=4326 · collector generated {generated}</small></header>
 <div class="summary">
-<span class="pill">Entries: {summary['entries']}</span><span class="pill">Accepted: {summary['accepted']}</span><span class="pill">Manual overrides: {summary['manual']}</span><span class="pill">Failed: {summary['failed']}</span><span class="pill">Ambiguous: {summary['ambiguous']}</span><span class="pill">Grey fallback: {summary['failed'] + summary['ambiguous']}</span>
+<span class="pill">Entries: {summary['entries']}</span><span class="pill">Original accepted: {summary['accepted']}</span><span class="pill">Reviewed exact: {summary['reviewedExact']}</span><span class="pill">Reviewed vicinity: {summary['reviewedVicinity']}</span><span class="pill">Manual: {summary['manual']}</span><span class="pill">Grey fallback: {summary['failed'] + summary['ambiguous']}</span>
 </div><div class="wrap"><table><thead><tr>{''.join(f'<th>{html_lib.escape(h)}</th>' for h in headers)}</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>
 </body></html>"""
     path.write_text(doc, encoding="utf-8")
@@ -313,39 +356,51 @@ def write_reports(hydrants_dir: Path, rows: list[dict], counts: Counter, geocode
     summary = {
         "entries": len(rows),
         "accepted": counts["accepted"],
+        "reviewedExact": counts["reviewed_exact"],
+        "reviewedVicinity": counts["reviewed_vicinity"],
         "manual": counts["manual"],
         "failed": counts["failed"],
         "ambiguous": counts["ambiguous"],
     }
+    summary["active"] = summary["accepted"] + summary["reviewedExact"] + summary["reviewedVicinity"] + summary["manual"]
+    summary["unresolved"] = summary["failed"] + summary["ambiguous"]
     fieldnames = list(rows[0].keys()) if rows else []
     write_csv(hydrants_dir / "GEOCODING_REVIEW_FULL.csv", rows, fieldnames)
     write_csv(hydrants_dir / "GEOCODING_REVIEW_CURRENT.csv", rows, fieldnames)
+    write_csv(hydrants_dir / "ACTIVE_ENTRIES.csv", [r for r in rows if r["Hydrants pill"] == "Active"], fieldnames)
     write_csv(hydrants_dir / "ACCEPTED_ENTRIES.csv", [r for r in rows if r["Review category"] == "Accepted"], fieldnames)
-    write_csv(hydrants_dir / "FAILED_ENTRIES.csv", [r for r in rows if r["Review category"] == "Failed"], fieldnames)
-    write_csv(hydrants_dir / "AMBIGUOUS_ENTRIES.csv", [r for r in rows if r["Review category"] == "Ambiguous"], fieldnames)
+    write_csv(hydrants_dir / "REVIEWED_RESOLUTIONS.csv", [r for r in rows if r["Reviewed resolution"] == "Yes"], fieldnames)
+    write_csv(hydrants_dir / "REVIEWED_EXACT_OFFICIAL_ENTRIES.csv", [r for r in rows if r["Reviewed resolution"] == "Yes" and r["Approximate vicinity anchor"] == "No"], fieldnames)
+    write_csv(hydrants_dir / "REVIEWED_VICINITY_ANCHOR_ENTRIES.csv", [r for r in rows if r["Approximate vicinity anchor"] == "Yes"], fieldnames)
+    write_csv(hydrants_dir / "FAILED_ENTRIES.csv", [r for r in rows if r["Hydrants pill"] == "Grey fallback" and r["Original collector category"] == "Failed"], fieldnames)
+    write_csv(hydrants_dir / "AMBIGUOUS_ENTRIES.csv", [r for r in rows if r["Hydrants pill"] == "Grey fallback" and r["Original collector category"] == "Ambiguous"], fieldnames)
     write_csv(hydrants_dir / "MANUALLY_OVERRIDDEN_ENTRIES.csv", [r for r in rows if r["Review category"] == "Manual override"], fieldnames)
     write_csv(hydrants_dir / "UNRESOLVED_ENTRIES.csv", [r for r in rows if r["Hydrants pill"] == "Grey fallback"], fieldnames)
     write_html_report(hydrants_dir / "GEOCODING_REVIEW_FULL.html", rows, summary, geocodes)
 
-    markdown = f"""# Full Directions Book Live Hydrants geocoding review
+    markdown = f"""# Full Directions Book Live Hydrants geocoding review — reviewed second pass
 
 - Directions entries: **{summary['entries']}**
-- Accepted active Hydrants links: **{summary['accepted']}**
+- Original accepted official links retained: **{summary['accepted']}**
+- Reviewed exact official candidate selections/corrections: **{summary['reviewedExact']}**
+- Reviewed Directions-route vicinity anchors: **{summary['reviewedVicinity']}**
 - Manual coordinate overrides used: **{summary['manual']}**
-- Failed entries using the grey Blackwood CFS fallback: **{summary['failed']}**
-- Ambiguous entries using the grey Blackwood CFS fallback: **{summary['ambiguous']}**
-- Total unresolved entries retained for later review: **{summary['failed'] + summary['ambiguous']}**
+- Total active Hydrants links: **{summary['active']}**
+- Failed entries still using the grey Blackwood CFS fallback: **{summary['failed']}**
+- Ambiguous entries still using the grey Blackwood CFS fallback: **{summary['ambiguous']}**
+- Total unresolved entries retained for later review: **{summary['unresolved']}**
 
-Official source: Government of South Australia Location SA `SAGAF_PLUS` geocoder with `outSR=4326`.
+Official coordinate source remains Government of South Australia Location SA `SAGAF_PLUS` with `outSR=4326`.
 
-The complete entry-by-entry review is in `GEOCODING_REVIEW_FULL.csv` and `GEOCODING_REVIEW_FULL.html`. The permanent unresolved list is `UNRESOLVED_ENTRIES.csv`.
+Reviewed exact resolutions select the lowest valid numbered official candidate or an official candidate after a reviewed spelling, street-type or adjoining-locality correction. Reviewed vicinity anchors deliberately use an official coordinate on the confirmed Directions approach route when the target road is historical, internal, unnumbered or absent from the official address geocoder.
 
-Normal rebuilds reapply stored coordinates only. They do not contact the geocoder and the installed app never geocodes at runtime. Future coordinate overrides in `manual-overrides.json` take priority over official collected results.
+The complete entry-by-entry review is in `GEOCODING_REVIEW_FULL.csv` and `GEOCODING_REVIEW_FULL.html`. The remaining permanent unresolved list is `UNRESOLVED_ENTRIES.csv`. Reviewed resolutions are stored in `reviewed-resolutions.json`.
+
+Normal rebuilds use stored coordinates only. They do not contact the geocoder and the installed app never geocodes at runtime. Future coordinate overrides in `manual-overrides.json` retain highest priority.
 """
     (hydrants_dir / "GEOCODING_REVIEW_SUMMARY.md").write_text(markdown, encoding="utf-8")
     save_json(hydrants_dir / "GEOCODING_REVIEW_SUMMARY.json", summary)
     return summary
-
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Apply stored official Location SA coordinates to all Directions Hydrants links without runtime or rebuild-time geocoding.")
@@ -359,6 +414,7 @@ def main(argv=None):
     hydrants_dir = repo_root / "directions" / "hydrants"
     geocodes_path = hydrants_dir / "geocodes.json"
     overrides_path = hydrants_dir / "manual-overrides.json"
+    reviewed_path = hydrants_dir / "reviewed-resolutions.json"
 
     if args.import_collector:
         geocodes = import_collector(Path(args.import_collector).resolve(), hydrants_dir)
@@ -368,22 +424,22 @@ def main(argv=None):
         raise RuntimeError("Stored full-rollout geocodes are incomplete. Import the completed official collector JSON first.")
 
     overrides = load_json(overrides_path, {"schemaVersion": 2, "records": {}, "entries": {}})
+    reviewed = load_json(reviewed_path, {"schemaVersion": 1, "records": {}, "entries": {}})
     html, match, entries = parse_directions_html(directions_path)
     if len(entries) != 678:
         raise RuntimeError(f"Expected 678 Directions entries, found {len(entries)}.")
 
-    rows, counts = apply_hydrants(entries, geocodes, overrides)
+    rows, counts = apply_hydrants(entries, geocodes, overrides, reviewed)
     summary = write_reports(hydrants_dir, rows, counts, geocodes)
     if not args.validate_only:
         write_directions_html(directions_path, html, match, entries)
 
-    if summary != {"entries": 678, "accepted": 461, "manual": 0, "failed": 77, "ambiguous": 140} and not overrides.get("records") and not overrides.get("entries"):
-        raise RuntimeError(f"Unexpected collector rollout counts: {summary}")
+    if summary["entries"] != 678 or summary["active"] + summary["unresolved"] != 678:
+        raise RuntimeError(f"Unexpected reviewed rollout counts: {summary}")
 
     print(f"Directions hydrants rebuild OK — {summary['entries']} entries processed")
-    print(f"- Active accepted links: {summary['accepted']}")
-    print(f"- Manual overrides used: {summary['manual']}")
-    print(f"- Grey fallback links: {summary['failed'] + summary['ambiguous']} ({summary['failed']} failed, {summary['ambiguous']} ambiguous)")
+    print(f"- Active links: {summary['active']} ({summary['accepted']} original accepted, {summary['reviewedExact']} reviewed exact, {summary['reviewedVicinity']} reviewed vicinity, {summary['manual']} manual)")
+    print(f"- Grey fallback links: {summary['unresolved']} ({summary['failed']} failed, {summary['ambiguous']} ambiguous)")
     print("- Network geocoding: disabled; stored coordinates only")
     return 0
 

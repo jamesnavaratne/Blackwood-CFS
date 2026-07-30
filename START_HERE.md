@@ -2,6 +2,24 @@
 
 This folder contains the Blackwood CFS appliance inventory app and Directions Book.
 
+## Current test build
+
+This package is `v2.9.3 Personal UBD Hydrants Second-Pass Test RC1`.
+
+Hydrants rebuild priority is:
+
+```text
+manual coordinate override
+↓
+reviewed second-pass resolution
+↓
+original accepted official result
+↓
+grey Blackwood CFS fallback
+```
+
+The permanent reviewed exact, reviewed vicinity and unresolved lists are in `directions\hydrants\`.
+
 ## Most common job: edit the inventory
 
 1. Open `Blackwood_CFS_Master_Inventory.xlsx`.

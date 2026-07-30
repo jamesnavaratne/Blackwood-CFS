@@ -1,8 +1,8 @@
 {
-  "version": "Blackwood CFS v2.0 Stable Baseline before Directions fidelity checks",
-  "release_type": "stable_baseline",
-  "date": "2026-07-11",
-  "based_on": "Blackwood_CFS_v2.0_RC1_SYSTEMATIC_UI_4_FIXES.zip",
+  "version": "Blackwood CFS v2.9.3 Personal UBD Hydrants Second-Pass Test RC1",
+  "release_type": "test_rc",
+  "date": "2026-07-31",
+  "based_on": "Blackwood_CFS_v2.9.2_PERSONAL_UBD_FULL_LIVE_HYDRANTS_TEST_RC1_NO_GIT.zip",
   "active_inventory_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "directions_source_folder": "directions/source/",
   "ubd_maps_folder": "directions/maps/ubd/",
@@ -10,23 +10,18 @@
   "app_entry_point": "index.html",
   "directions_entry_point": "directions/index.html",
   "features_confirmed": [
-    "Combined Inventory + Directions Book app",
-    "Blackwood Rescue inventory",
-    "Blackwood 34P inventory",
-    "CAFS 24 inventory",
-    "CAFS 24 P4 data and tab order fixed",
-    "System home appliance switching",
-    "Hamburger menu with separate Appliances, Search, Directions, Theme Palette, and Training sections",
-    "Global Search across appliances",
-    "Item Location Quiz",
-    "Directions Book integrated into combined app",
-    "Directions Book sticky search bar",
-    "Directions Book UBD Maps header pill",
-    "Street-modal UBD pill",
-    "Street-modal UBD split-panel map list and map viewer",
-    "UBD maps stored as replaceable JPG files",
-    "Directions Word source documents included for future content/fidelity work",
-    "Dark-only inventory theme with selectable Rescue Blue, Safe Green, CFS Yellow, Brick Red palettes"
+    "Personal UBD baseline with Super UBD and Blackwood CFS Response Zone",
+    "Directions Read Aloud",
+    "678 Directions entries",
+    "677 stored-coordinate Live Hydrants links",
+    "1 grey Blackwood CFS fallback link",
+    "Manual hydrant coordinate overrides have highest priority",
+    "Hydrants never geocode at app runtime",
+    "UBD viewer maximum zoom 8x",
+    "Refresh now pressed/loading feedback",
+    "Blackwood Rescue, 34P and CAFS 24 inventories",
+    "Offline preparation excludes hydrant data, maps and tiles",
+    "Windows and GitHub rebuild workflow"
   ],
   "directions_source_documents": [
     "BLACKWOOD CORO EDEN HILLS ETC STREETS 122016.docx",
@@ -45,13 +40,13 @@
     "UBD 167.jpg",
     "UBD 168.jpg"
   ],
-  "housekeeping_changes_only": true,
-  "app_logic_changed_in_this_release": false,
+  "housekeeping_changes_only": false,
+  "app_logic_changed_in_this_release": true,
   "notes": [
-    "This package is intended as the stable baseline before Directions Book fidelity checks.",
-    "Directions Word files are included publicly because the project owner confirmed they do not contain sensitive information.",
-    "Do not regenerate inventory unless the Excel workbook changes.",
-    "Do not modernise Directions wording during fidelity checks unless explicitly requested."
+    "Test ZIP first; not yet designated stable.",
+    "Reviewed exact and reviewed vicinity hydrant results are reported separately.",
+    "GOVERNMENT ROAD SPRINGFIELD remains grey for manual review.",
+    "Do not regenerate Directions wording from secondary sources."
   ],
   "legacy_archive": "Archive/"
 }

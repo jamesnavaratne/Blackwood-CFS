@@ -1,7 +1,11 @@
 {
   "entries": 678,
   "accepted": 461,
+  "reviewedExact": 154,
+  "reviewedVicinity": 62,
   "manual": 0,
-  "failed": 77,
-  "ambiguous": 140
+  "failed": 1,
+  "ambiguous": 0,
+  "active": 677,
+  "unresolved": 1
 }

@@ -1,3 +1,16 @@
+## v2.9.3 PERSONAL UBD - Hydrants reviewed second-pass test RC1
+- Built from the user-validated v2.9.2 Personal UBD full Live Hydrants test baseline.
+- Re-reviewed all 217 previously unresolved Directions entries while preserving the official stored-coordinate and no-runtime-geocoding model.
+- Added 154 reviewed exact official resolutions and 62 deliberately labelled reviewed vicinity/approach anchors.
+- Reduced grey Blackwood CFS fallback links from 217 to 1; GOVERNMENT ROAD SPRINGFIELD remains unresolved because the evidence was still too uncertain.
+- Preserved the original 461 official accepted links and the five user-validated coordinates exactly.
+- Kept future manual coordinate overrides at highest priority, followed by reviewed resolutions and original collector results.
+- Added permanent exact-resolution, vicinity-anchor and remaining-unresolved reports for later review.
+- Doubled the Directions UBD viewer maximum zoom from 4× to 8×.
+- Added immediate pressed/loading feedback to the Update available popup's Refresh now button before the service-worker refresh/reload proceeds.
+- Preserved Read Aloud, Super UBD, Blackwood CFS Response Zone, all UBD/reference maps, Directions data, inventory, favourites, search, photos, offline assets and Windows/GitHub rebuild workflow.
+- Hydrant data, maps and tiles remain excluded from Prepare for Offline Use.
+
 ## v2.9.2 PERSONAL UBD - Full Live Hydrants rollout test RC1
 - Built from the confirmed v2.9.1 Personal UBD + Read Aloud + five-street Live Hydrants working baseline.
 - Processed all 678 Directions entries with the official Government of South Australia Location SA SAGAF_PLUS collector using outSR=4326.
