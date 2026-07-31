@@ -36,8 +36,8 @@ window.UBD_MAPS = [
     "file": "UBD 168.jpg"
   },
   {
-    "title": "SUPER UBD",
-    "file": "SUPER UBD.png"
+    "title": "SUPER UBD Large",
+    "file": "SUPER UBD Large.png"
   },
   {
     "title": "Blackwood CFS Response Zone",
