@@ -6232,6 +6232,98 @@ html.inventory-light-preload body .offline-banner-copy small {
   .offline-banner-copy small { font-size: .7rem; }
 }
 
+
+
+/* v2.9.3 Training module test RC2 refinements */
+.quiz-main-btn {
+  padding: 12px 14px;
+  border-width: 1.5px;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 15%, transparent),
+    0 6px 18px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.quiz-main-btn strong {
+  color: var(--accent);
+  font-size: 1.65rem;
+}
+.quiz-main-btn span {
+  color: var(--text);
+  font-size: 0.78rem;
+  letter-spacing: 0.075em;
+}
+.quiz-main-btn:hover,
+.quiz-main-btn:focus-visible {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 25%, var(--surface));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 8px 22px color-mix(in srgb, var(--accent) 24%, transparent);
+  outline: none;
+}
+body.dark .quiz-main-btn {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+body.palette-light .quiz-main-btn,
+html.inventory-light-preload body .quiz-main-btn {
+  background: color-mix(in srgb, var(--accent) 15%, #ffffff) !important;
+  border-color: var(--accent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 6px 18px color-mix(in srgb, var(--accent) 14%, transparent) !important;
+}
+.quiz-section > .theme-option + .theme-option {
+  margin-top: 8px;
+}
+
+/* v2.9.3 Training module test RC1 */
+.quiz-count-field { margin-top: 10px; }
+.quiz-count-select {
+  width: 100%; margin-top: 7px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--text); padding: 10px 36px 10px 13px;
+  font: inherit; font-weight: 700; outline: none;
+}
+.quiz-count-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.quiz-hint-pill.quiz-hint-static { cursor: default; gap: 4px; white-space: nowrap; }
+.quiz-hint-pill.quiz-hint-static .quiz-hint-value {
+  display: inline; min-height: 0; margin: 0; color: inherit; font-size: inherit; text-align: inherit;
+}
+.quiz-card, .quiz-card-inner { min-height: 370px; }
+.quiz-card-face { overflow: auto; }
+.quiz-locker-answer-photo { display: none; width: 100%; margin-top: 14px; }
+.quiz-locker-answer-photo.has-photo { display: block; }
+.quiz-locker-answer-photo img {
+  display: block; width: 100%; max-height: 175px; object-fit: contain; border-radius: 16px;
+  border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, #000 12%);
+}
+.quiz-locker-answer-caption { margin-top: 6px; color: var(--muted); font-size: 0.72rem; line-height: 1.25; }
+.learner-guide-modal { width: min(94vw, 560px); }
+.learner-guide-note { color: var(--muted); font-size: 0.82rem; line-height: 1.4; margin: 2px 0 12px; }
+.learner-guide-list { display: grid; gap: 9px; }
+.learner-guide-link {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title arrow" "sub arrow";
+  align-items: center; gap: 2px 10px; width: 100%; border: 1px solid var(--line); border-radius: 18px;
+  background: var(--surface); color: var(--text); padding: 12px 13px; text-decoration: none; box-shadow: none;
+}
+.learner-guide-link strong { grid-area: title; font-size: 0.94rem; line-height: 1.2; }
+.learner-guide-link small { grid-area: sub; color: var(--muted); font-size: 0.74rem; line-height: 1.25; }
+.learner-guide-link .learner-guide-arrow { grid-area: arrow; color: var(--accent); font-size: 1.05rem; font-weight: 800; }
+.learner-guide-link:hover, .learner-guide-link:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface)); outline: none;
+}
+body.dark .learner-guide-link { box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 7%, transparent); }
+@media (max-width: 430px) {
+  .quiz-card, .quiz-card-inner { min-height: 350px; }
+  .quiz-locker-answer-photo img { max-height: 155px; }
+}
+
 </style>
 
 
@@ -6356,13 +6448,28 @@ v2.2 Android cold-start smoothing test:
         <label class="quiz-check"><input type="checkbox" class="quiz-truck" value="34P"> 34P</label>
         <label class="quiz-check"><input type="checkbox" class="quiz-truck" value="CAFS 24"> CAFS 24</label>
       </div>
+      <div class="modal-field full quiz-count-field">
+        <div class="modal-field-label">Number of questions</div>
+        <select id="quizQuestionCount" class="quiz-count-select" aria-label="Number of quiz questions">
+          <option value="5">5 questions</option>
+          <option value="10" selected>10 questions</option>
+          <option value="15">15 questions</option>
+          <option value="20">20 questions</option>
+          <option value="25">25 questions</option>
+          <option value="50">50 questions</option>
+          <option value="all">All available</option>
+        </select>
+      </div>
       <button id="generateQuizBtn" class="stat stat-button quiz-main-btn" type="button">
-        <strong>10</strong><span>Generate Quiz</span>
+        <strong id="generateQuizCount">10</strong><span>Generate Quiz</span>
       </button>
     </div>
 
     <div id="quizRun" class="quiz-panel" style="display:none;">
-      <div class="quiz-progress-row"><div class="quiz-progress" id="quizProgress"></div><button id="quizHintBtn" class="quiz-hint-pill" type="button">Hint</button></div><div id="quizHintValue" class="quiz-hint-value"></div>
+      <div class="quiz-progress-row">
+        <div class="quiz-progress" id="quizProgress"></div>
+        <div class="quiz-hint-pill active quiz-hint-static" aria-label="Quiz hint">Hint: <span id="quizHintValue" class="quiz-hint-value"></span></div>
+      </div>
       <button id="quizCard" class="quiz-card" type="button">
         <div class="quiz-card-inner">
           <div class="quiz-card-face quiz-front">
@@ -6373,6 +6480,7 @@ v2.2 Android cold-start smoothing test:
           <div class="quiz-card-face quiz-back">
             <div class="quiz-label">Location</div>
             <div id="quizLocation" class="quiz-big-text"></div>
+            <div id="quizLockerPhoto" class="quiz-locker-answer-photo"></div>
             <div class="quiz-hint">Self mark below</div>
           </div>
         </div>
@@ -6393,6 +6501,29 @@ v2.2 Android cold-start smoothing test:
         <button id="quizStartOverBtn" class="service-toggle" type="button">Start over</button>
         <button id="quizRegenerateBtn" class="service-toggle service-active" type="button">Regenerate quiz</button>
       </div>
+    </div>
+  </div>
+</section>
+
+
+<div id="learnerGuideBackdrop" class="modal-backdrop"></div>
+<section id="learnerGuideModal" class="item-modal learner-guide-modal" aria-modal="true" role="dialog" aria-label="Learner guide links">
+  <div class="modal-body">
+    <div class="modal-top">
+      <h2 class="modal-title">Learner Guide Links</h2>
+      <button id="learnerGuideCloseBtn" class="modal-close" type="button" aria-label="Close learner guide links">×</button>
+    </div>
+    <div class="learner-guide-note">Opens link to the current SA CFS Volunteer learner guide/course online. Internet access and your volunteer account login required.</div>
+    <div class="learner-guide-list">
+      <a class="learner-guide-link" href="https://www.sacfsvolunteer.org.au/training/courses/basic-firefighting/learner-guide/" target="_blank" rel="noopener noreferrer">
+        <strong>Basic Firefighting</strong><small>Open learner guide</small><span class="learner-guide-arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="learner-guide-link" href="https://www.sacfsvolunteer.org.au/training/courses/breathing-apparatus-operator/" target="_blank" rel="noopener noreferrer">
+        <strong>Breathing Apparatus</strong><small>Open learner guide</small><span class="learner-guide-arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="learner-guide-link" href="https://www.sacfsvolunteer.org.au/training/courses/defensive-fire-suppression/" target="_blank" rel="noopener noreferrer">
+        <strong>Defensive Fire Suppression</strong><small>Open learner guide</small><span class="learner-guide-arrow" aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 </section>
@@ -6453,6 +6584,10 @@ v2.2 Android cold-start smoothing test:
       <span class="theme-dot blue"></span>
       Item Location Quiz
     </button>
+    <button id="openLearnerGuideBtn" class="theme-option" type="button">
+      <span class="theme-dot blue"></span>
+      Learner Guide Links
+    </button>
   </div>
 
   <div class="theme-section options-section">
@@ -6505,7 +6640,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD Hydrants Second-Pass Test RC1</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD + Training Module Test RC1</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -7742,12 +7877,14 @@ function initialiseQuizFeature() {
   const quizRun = document.getElementById("quizRun");
   const quizResults = document.getElementById("quizResults");
   const generateQuizBtn = document.getElementById("generateQuizBtn");
+  const generateQuizCount = document.getElementById("generateQuizCount");
+  const quizQuestionCount = document.getElementById("quizQuestionCount");
   const quizCard = document.getElementById("quizCard");
   const quizProgress = document.getElementById("quizProgress");
   const quizItemName = document.getElementById("quizItemName");
   const quizLocation = document.getElementById("quizLocation");
-const quizHintBtn = document.getElementById("quizHintBtn");
-const quizHintValue = document.getElementById("quizHintValue");
+  const quizHintValue = document.getElementById("quizHintValue");
+  const quizLockerPhoto = document.getElementById("quizLockerPhoto");
   const quizMarking = document.getElementById("quizMarking");
   const quizCorrectBtn = document.getElementById("quizCorrectBtn");
   const quizIncorrectBtn = document.getElementById("quizIncorrectBtn");
@@ -7783,8 +7920,18 @@ const quizHintValue = document.getElementById("quizHintValue");
   }
 
   function selectedQuizTrucks() {
-    // Quiz is global: selected checkboxes determine the appliance pool, independent of current inventory view.
     return [...document.querySelectorAll(".quiz-truck:checked")].map(x => x.value);
+  }
+
+  function selectedQuestionCount(poolSize) {
+    if (!quizQuestionCount || quizQuestionCount.value === "all") return poolSize;
+    const requested = Math.max(1, Number.parseInt(quizQuestionCount.value, 10) || 10);
+    return Math.min(requested, poolSize);
+  }
+
+  function updateGenerateQuizCount() {
+    if (!generateQuizCount || !quizQuestionCount) return;
+    generateQuizCount.textContent = quizQuestionCount.value === "all" ? "ALL" : quizQuestionCount.value;
   }
 
   function shuffleArray(arr) {
@@ -7796,17 +7943,58 @@ const quizHintValue = document.getElementById("quizHintValue");
     return copy;
   }
 
+  function getQuizLockerPhoto(item) {
+    if (!item) return null;
+    const applianceName = item.appliance || DATA.appliance;
+    const app = APPLIANCES[applianceName] || Object.values(APPLIANCES).find(candidate => candidate && candidate.appliance === applianceName);
+    const location = item.location || item.locker || "";
+    const lockerPhotos = app && app.lockerPhotos ? app.lockerPhotos : {};
+    const lp = lockerPhotos[location] || lockerPhotos[item.locker] || null;
+    if (!lp) return null;
+
+    let photoName = lp.photo || "";
+    if (String(location).toLowerCase() === "cabin" && (lp.frontPhoto || lp.rearPhoto)) {
+      const detail = `${item.section || ""} ${item.subsection || ""}`.toLowerCase();
+      photoName = detail.includes("rear") && lp.rearPhoto ? lp.rearPhoto : (lp.frontPhoto || lp.rearPhoto || photoName);
+    }
+    if (!photoName) return null;
+
+    return { src: lockerPhotoPath(photoName, applianceName), title: lp.title || location || "Locker", appliance: applianceName };
+  }
+
+  function renderQuizLockerPhoto(item) {
+    if (!quizLockerPhoto) return;
+    quizLockerPhoto.classList.remove("has-photo");
+    quizLockerPhoto.innerHTML = "";
+    const photo = getQuizLockerPhoto(item);
+    if (!photo) return;
+
+    const img = document.createElement("img");
+    img.src = photo.src;
+    img.alt = `${photo.appliance} ${photo.title} photo`;
+    img.loading = "eager";
+    img.decoding = "async";
+    img.addEventListener("load", () => quizLockerPhoto.classList.add("has-photo"), { once: true });
+    img.addEventListener("error", () => {
+      quizLockerPhoto.classList.remove("has-photo");
+      quizLockerPhoto.innerHTML = "";
+    }, { once: true });
+
+    const caption = document.createElement("div");
+    caption.className = "quiz-locker-answer-caption";
+    caption.textContent = `${photo.appliance} • ${photo.title}`;
+    quizLockerPhoto.append(img, caption);
+  }
+
   function generateQuiz() {
     const trucks = selectedQuizTrucks();
     const pool = trucks.flatMap(truck => {
       const app = APPLIANCES[truck] || Object.values(APPLIANCES).find(candidate => candidate && candidate.appliance === truck);
       return app && Array.isArray(app.records) ? app.records : [];
-    }).filter(r =>
-      r.item &&
-      r.location
-    );
+    }).filter(r => r.item && r.location);
 
-    quizItems = shuffleArray(pool).slice(0, 10);
+    const count = selectedQuestionCount(pool.length);
+    quizItems = shuffleArray(pool).slice(0, count);
     quizIndex = 0;
     quizCorrect = 0;
 
@@ -7833,8 +8021,8 @@ const quizHintValue = document.getElementById("quizHintValue");
     quizProgress.textContent = `Question ${quizIndex + 1} of ${quizItems.length}`;
     quizItemName.textContent = item.item;
     quizLocation.textContent = item.location;
-  if (quizHintValue) quizHintValue.textContent = "";
-  if (quizHintBtn) quizHintBtn.classList.remove("active");
+    if (quizHintValue) quizHintValue.textContent = item.appliance || DATA.appliance || "Blackwood CFS";
+    renderQuizLockerPhoto(item);
   }
 
   function flipQuizCard() {
@@ -7847,12 +8035,8 @@ const quizHintValue = document.getElementById("quizHintValue");
   function markQuiz(correct) {
     if (correct) quizCorrect += 1;
     quizIndex += 1;
-
-    if (quizIndex >= quizItems.length) {
-      showQuizResults();
-    } else {
-      showQuizCard();
-    }
+    if (quizIndex >= quizItems.length) showQuizResults();
+    else showQuizCard();
   }
 
   function showQuizResults() {
@@ -7866,28 +8050,41 @@ const quizHintValue = document.getElementById("quizHintValue");
   if (quizCloseBtn) quizCloseBtn.addEventListener("click", closeQuizModal);
   if (quizBackdrop) quizBackdrop.addEventListener("click", closeQuizModal);
   if (generateQuizBtn) generateQuizBtn.addEventListener("click", generateQuiz);
-  if (quizHintBtn) quizHintBtn.addEventListener("click", (event) => {
-  event.stopPropagation();
-  const item = quizItems[quizIndex];
-  if (!item) return;
-  const truck = item.appliance || DATA.appliance || "Blackwood CFS";
-  const showing = quizHintValue && quizHintValue.textContent;
-  if (showing) {
-    quizHintValue.textContent = "";
-    quizHintBtn.classList.remove("active");
-  } else {
-    quizHintValue.textContent = truck;
-    quizHintBtn.classList.add("active");
-  }
-});
-if (quizCard) quizCard.addEventListener("click", flipQuizCard);
+  if (quizQuestionCount) quizQuestionCount.addEventListener("change", updateGenerateQuizCount);
+  if (quizCard) quizCard.addEventListener("click", flipQuizCard);
   if (quizCorrectBtn) quizCorrectBtn.addEventListener("click", () => markQuiz(true));
   if (quizIncorrectBtn) quizIncorrectBtn.addEventListener("click", () => markQuiz(false));
   if (quizStartOverBtn) quizStartOverBtn.addEventListener("click", showQuizSetup);
   if (quizRegenerateBtn) quizRegenerateBtn.addEventListener("click", generateQuiz);
+  updateGenerateQuizCount();
 }
 
 initialiseQuizFeature();
+
+function initialiseLearnerGuideLinks() {
+  const openBtn = document.getElementById("openLearnerGuideBtn");
+  const backdrop = document.getElementById("learnerGuideBackdrop");
+  const modal = document.getElementById("learnerGuideModal");
+  const closeBtn = document.getElementById("learnerGuideCloseBtn");
+  if (!openBtn || !backdrop || !modal) return;
+
+  function openLearnerGuides() {
+    if (typeof closeDrawer === "function") closeDrawer();
+    backdrop.classList.add("open");
+    modal.classList.add("open");
+  }
+
+  function closeLearnerGuides() {
+    backdrop.classList.remove("open");
+    modal.classList.remove("open");
+  }
+
+  openBtn.addEventListener("click", openLearnerGuides);
+  backdrop.addEventListener("click", closeLearnerGuides);
+  if (closeBtn) closeBtn.addEventListener("click", closeLearnerGuides);
+}
+
+initialiseLearnerGuideLinks();
 
 
 function initialisePhotoModalFeature() {

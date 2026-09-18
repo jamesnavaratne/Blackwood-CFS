@@ -1,3 +1,19 @@
+# v2.9.3 Training Module Test RC2 — 2026-09-18
+
+### Refined
+- Generate Quiz control made more prominent while remaining theme-aware.
+- Learner Guide description simplified.
+- All Learner Guide link sub-descriptions standardised to “Open learner guide”.
+- TRAINING hamburger pills spaced consistently with appliance pills.
+
+## v2.9.3 PERSONAL UBD + Training module test RC1
+- Built directly from the user-supplied running/stable v2.9.3 package; inventory workbook, generated inventory data, Directions Book, hydrants, UBD/reference maps and photos were not rebuilt or replaced.
+- Item Location Quiz now shows the appliance hint continuously on every question.
+- Added selectable quiz lengths: 5, 10, 15, 20, 25, 50 or all available questions.
+- Added the matching existing locker/cabin photo to the revealed answer side of each quiz card when a mapped photo is available.
+- Added a Training > Learner Guide Links pill with Basic Firefighting, Breathing Apparatus and Defensive Fire Suppression links to the SA CFS Volunteer site.
+- Preserved existing inventory themes and reused the established modal/pill styling.
+
 ## v2.9.3 PERSONAL UBD - Hydrants reviewed second-pass test RC1
 - Built from the user-validated v2.9.2 Personal UBD full Live Hydrants test baseline.
 - Re-reviewed all 217 previously unresolved Directions entries while preserving the official stored-coordinate and no-runtime-geocoding model.
