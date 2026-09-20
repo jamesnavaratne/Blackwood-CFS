@@ -1,3 +1,11 @@
+# v2.9.3 Training Module Test RC5 — 2026-09-20
+
+### Enlarged item-photo layout correction
+- Corrected the RC4 positioning regression that left the enlarged item-photo viewer anchored from the middle of the viewport and extending below the browser window.
+- The enlarged viewer now occupies a stable, safe-area-aware viewport frame with the header, image and caption contained on screen.
+- Kept the no-animation/no-transformed-compositing anti-flash treatment and the storage-first loading of prepared item photos.
+- Preserved UBD/locker-photo speed, inventory data, Training, Directions and Hydrants unchanged.
+
 # v2.9.3 Training Module Test RC4 — 2026-09-20
 
 ### Stable inventory item-image viewer

@@ -6324,7 +6324,7 @@ body.dark .learner-guide-link { box-shadow: 0 0 14px color-mix(in srgb, var(--ac
   .quiz-locker-answer-photo img { max-height: 155px; }
 }
 
-/* v2.9.3 Training module test RC4 - stable inventory item-image viewer */
+/* v2.9.3 Training module test RC5 - stable, viewport-contained item-image viewer */
 #modalPhoto img,
 #photoModalImg,
 #photoModal.open .photo-modal-image-wrap #photoModalImg {
@@ -6335,16 +6335,44 @@ body.dark .learner-guide-link { box-shadow: 0 0 14px color-mix(in srgb, var(--ac
 }
 
 #photoModal {
-  left: 0 !important;
-  right: 0 !important;
-  margin-inline: auto !important;
+  top: calc(12px + env(safe-area-inset-top)) !important;
+  bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  left: max(12px, calc((100vw - 820px) / 2)) !important;
+  right: max(12px, calc((100vw - 820px) / 2)) !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
   transform: none !important;
   transition: none !important;
   will-change: auto !important;
+  overflow: hidden !important;
+  flex-direction: column;
 }
 
 #photoModal.open {
+  display: flex;
   transform: none !important;
+}
+
+#photoModal .modal-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#photoModal .modal-top,
+#photoModal .photo-modal-caption {
+  flex: 0 0 auto;
+}
+
+#photoModal .photo-modal-image-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none !important;
+  overflow: auto !important;
 }
 
 </style>
@@ -6663,7 +6691,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD + Training Module Test RC4</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD + Training Module Test RC5</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
