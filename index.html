@@ -6324,6 +6324,29 @@ body.dark .learner-guide-link { box-shadow: 0 0 14px color-mix(in srgb, var(--ac
   .quiz-locker-answer-photo img { max-height: 155px; }
 }
 
+/* v2.9.3 Training module test RC4 - stable inventory item-image viewer */
+#modalPhoto img,
+#photoModalImg,
+#photoModal.open .photo-modal-image-wrap #photoModalImg {
+  opacity: 1 !important;
+  animation: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+#photoModal {
+  left: 0 !important;
+  right: 0 !important;
+  margin-inline: auto !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+#photoModal.open {
+  transform: none !important;
+}
+
 </style>
 
 
@@ -6426,7 +6449,7 @@ v2.2 Android cold-start smoothing test:
       <button id="photoModalClose" class="modal-close" type="button" aria-label="Close photo">×</button>
     </div>
     <div class="photo-modal-image-wrap">
-      <img id="photoModalImg" src="" alt="">
+      <img id="photoModalImg" class="photo-ready" alt="">
     </div>
     <div id="photoModalCaption" class="photo-modal-caption"></div>
   </div>
@@ -6640,7 +6663,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD + Training Module Test RC3</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.3 Personal UBD + Training Module Test RC4</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -8094,9 +8117,17 @@ function initialisePhotoModalFeature() {
   const photoModalImg = document.getElementById("photoModalImg");
   const photoModalTitle = document.getElementById("photoModalTitle");
   const photoModalCaption = document.getElementById("photoModalCaption");
+  let photoOpenToken = 0;
+  let photoClearTimer = null;
 
   function openPhotoModal(src, title, caption) {
     if (!src) return;
+
+    const openToken = ++photoOpenToken;
+    if (photoClearTimer) {
+      clearTimeout(photoClearTimer);
+      photoClearTimer = null;
+    }
 
     const loader = document.getElementById("photoLoadingOverlay");
     const minimumSpinnerMs = 220;
@@ -8105,13 +8136,17 @@ function initialisePhotoModalFeature() {
     if (loader) loader.classList.add("open");
 
     function finishOpen() {
+      if (openToken !== photoOpenToken) return;
       const elapsed = Date.now() - startedAt;
       const wait = Math.max(0, minimumSpinnerMs - elapsed);
 
       setTimeout(() => {
+        if (openToken !== photoOpenToken) return;
         resetPhotoZoom();
 
-        photoModalImg.src = src;
+        const resolvedSrc = new URL(src, document.baseURI).href;
+        if (photoModalImg.src !== resolvedSrc) photoModalImg.src = src;
+        photoModalImg.classList.add("photo-ready");
         photoModalImg.alt = title || "Expanded photo";
         photoModalTitle.textContent = title || "Photo";
         photoModalCaption.textContent = caption || "";
@@ -8126,16 +8161,24 @@ function initialisePhotoModalFeature() {
     }
 
     const preloader = new Image();
-    preloader.onload = finishOpen;
+    preloader.onload = () => {
+      if (preloader.decode) preloader.decode().then(finishOpen).catch(finishOpen);
+      else finishOpen();
+    };
     preloader.onerror = finishOpen;
     preloader.src = src;
   }
 
   function closePhotoModal() {
+    photoOpenToken += 1;
     photoModalBackdrop.classList.remove("open");
     photoModal.classList.remove("open");
     resetPhotoZoom();
-    setTimeout(() => { photoModalImg.src = ""; }, 150);
+    if (photoClearTimer) clearTimeout(photoClearTimer);
+    photoClearTimer = setTimeout(() => {
+      if (!photoModal.classList.contains("open")) photoModalImg.removeAttribute("src");
+      photoClearTimer = null;
+    }, 150);
   }
 
   window.openPhotoModal = openPhotoModal;
@@ -9180,6 +9223,10 @@ installNativeLockerSwipe();
   function bind(img){
     if (!img || img.dataset.v2SafePhotoFadeBound === "1") return;
     img.dataset.v2SafePhotoFadeBound = "1";
+    if (img.id === "photoModalImg" || img.closest("#modalPhoto")) {
+      img.classList.add("photo-ready");
+      return;
+    }
     img.classList.remove("photo-ready");
     function ready(){ img.classList.add("photo-ready"); }
     if (img.complete && img.naturalWidth > 0) ready();

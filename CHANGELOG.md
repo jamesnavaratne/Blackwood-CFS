@@ -1,3 +1,11 @@
+# v2.9.3 Training Module Test RC4 — 2026-09-20
+
+### Stable inventory item-image viewer
+- Extended prepared-media storage-first loading to item-specific inventory photos, including Blackwood Rescue's Block Tray Layout image.
+- Removed stacked legacy opacity, fade and transformed-modal compositing from item-photo previews and the enlarged photo viewer.
+- Decode the enlarged image before display and guard against stale preload/close timers changing the displayed source after reopening.
+- Preserved the RC3 storage-first UBD/locker-photo behaviour, inventory data, Training module, Directions Book and hydrant links unchanged.
+
 # v2.9.3 Training Module Test RC3 — 2026-09-20
 
 ### Faster prepared media

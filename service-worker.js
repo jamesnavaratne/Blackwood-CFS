@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-3-personal-ubd-training-module-test-rc3-20260920';
+const CACHE_NAME = 'blackwood-cfs-v2-9-3-personal-ubd-training-module-test-rc4-20260920';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -83,7 +83,7 @@ function isPreparedMediaRequest(request) {
   if (!isMediaFile) return false;
 
   return relativePath.startsWith('directions/maps/ubd/') ||
-    /^photos\/[^/]+\/lockers\//i.test(relativePath);
+    /^photos\/[^/]+\/(?:lockers|items)\//i.test(relativePath);
 }
 
 async function cachedFallback(request) {
