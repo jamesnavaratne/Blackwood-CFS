@@ -65,7 +65,7 @@ h1 { margin:2px 0 0; font-size:22px; line-height:1.05; letter-spacing:-.03em; }
 .home-btn:active { transform:scale(.98); }
 .maps-pill { border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); padding:8px 12px; font-weight:900; font-size:12px; white-space:nowrap; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 22%, transparent); }
 .maps-pill:active { transform:scale(.98); }
-.street-ubd-btn { border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); min-width:52px; height:42px; padding:0 11px; font-size:12px; font-weight:900; white-space:nowrap; box-shadow:0 0 12px color-mix(in srgb, var(--accent) 16%, transparent); }
+.street-ubd-btn { border:1px solid var(--accent); border-radius:999px; background:var(--panel); color:var(--accent); min-width:52px; height:42px; padding:0 11px; font-size:12px; font-weight:900; white-space:nowrap; box-shadow:0 0 12px color-mix(in srgb, var(--accent) 16%, transparent); display:inline-flex; align-items:center; justify-content:center; text-decoration:none; cursor:pointer; }
 .street-ubd-btn:active { transform:scale(.98); }
 .street-ubd-btn[hidden] { display:none !important; }
 .map-list-card { width:min(100%, 560px); }
@@ -704,7 +704,7 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   <article class="card" role="dialog" aria-modal="true" aria-labelledby="cardName">
     <div class="card-head">
       <div class="card-title"><h2 id="cardName"></h2><div class="sub" id="cardSub"></div></div>
-      <button class="street-ubd-btn" id="streetHydrantsBtn" type="button" title="Open live Location SA hydrant map" hidden>Hydrants</button>
+      <a class="street-ubd-btn" id="streetHydrantsBtn" href="" target="_blank" rel="external noopener noreferrer" title="Open live Location SA hydrant map in browser" hidden>Hydrants</a>
       <button class="street-ubd-btn" id="streetUbdBtn" type="button" title="Open UBD maps">UBD</button>
       <button class="iconbtn" id="starBtn" title="Favourite">☆</button>
       <button class="iconbtn" id="closeBtn" title="Close">×</button>
@@ -900,37 +900,26 @@ function selectedHydrantsTarget(){
 function updateHydrantsButton(){
   if(!els.streetHydrantsBtn) return;
   const target = selectedHydrantsTarget();
-  const available = !!target;
+  const url = target ? buildLocationSaHydrantsUrl(target.hydrant) : '';
+  const available = !!url;
   const fallback = !!(target && target.fallback);
   const approximate = !!(target && !fallback && target.hydrant && target.hydrant.approximate);
   els.streetHydrantsBtn.hidden = !available;
-  els.streetHydrantsBtn.disabled = !available;
+  if(available) els.streetHydrantsBtn.href = url;
+  else els.streetHydrantsBtn.removeAttribute('href');
+  els.streetHydrantsBtn.setAttribute('aria-disabled', String(!available));
   els.streetHydrantsBtn.classList.toggle('is-fallback', fallback);
   els.streetHydrantsBtn.classList.toggle('is-reviewed-vicinity', approximate);
   els.streetHydrantsBtn.title = fallback
-    ? 'Hydrant location unresolved — open live Location SA map at Blackwood CFS'
+    ? 'Hydrant location unresolved — open live Location SA map at Blackwood CFS in browser'
     : approximate
-      ? 'Open live Location SA hydrant map at the reviewed approach point for this street'
-      : 'Open live Location SA hydrant map for this street';
+      ? 'Open live Location SA hydrant map at the reviewed approach point for this street in browser'
+      : 'Open live Location SA hydrant map for this street in browser';
   els.streetHydrantsBtn.setAttribute('aria-label', fallback
-    ? 'Hydrant location unresolved. Open live Location SA hydrant map at Blackwood CFS.'
+    ? 'Hydrant location unresolved. Open live Location SA hydrant map at Blackwood CFS in browser.'
     : approximate
-      ? 'Open live Location SA hydrant map at the reviewed approach point for this street.'
-      : 'Open live Location SA hydrant map for this street.');
-}
-
-function openSelectedHydrants(){
-  const target = selectedHydrantsTarget();
-  if(!target) return;
-  const url = buildLocationSaHydrantsUrl(target.hydrant);
-  if(!url) return;
-  const link = document.createElement('a');
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+      ? 'Open live Location SA hydrant map at the reviewed approach point for this street in browser.'
+      : 'Open live Location SA hydrant map for this street in browser.');
 }
 
 const mapEls = {
@@ -1021,7 +1010,6 @@ function closeMapViewer(){
   mapEls.image.removeAttribute('src'); mapEls.image.alt = ''; setMapZoom(1, false);
 }
 mapEls.open.onclick = () => openMapList('global');
-if(els.streetHydrantsBtn) els.streetHydrantsBtn.onclick = openSelectedHydrants;
 els.streetUbdBtn.onclick = () => openMapList('street');
 mapEls.listClose.onclick = closeMapList;
 mapEls.listScrim.onclick = closeMapList;

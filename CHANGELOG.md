@@ -1,3 +1,11 @@
+# v2.9.3 Training Module Test RC6 — 2026-09-20
+
+### Native-browser Hydrants handoff
+- Changed the Directions Hydrants pill from a script-created popup to a direct cross-origin browser link.
+- The live Location SA hydrant page now opens outside the installed app/browser page where supported, leaving the selected Directions entry ready when the user returns.
+- Preserved every hydrant coordinate, reviewed vicinity anchor, zoom 18, Roads basemap, layer UID 334 and the Government Road Springfield grey fallback unchanged.
+- Preserved RC5 photo stability, storage-first media, inventory, UBD, Training and all other Directions behaviour unchanged.
+
 # v2.9.3 Training Module Test RC5 — 2026-09-20
 
 ### Enlarged item-photo layout correction
