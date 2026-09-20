@@ -1,3 +1,12 @@
+# v2.9.3 Training Module Test RC9 — 2026-09-20
+
+### Cross-platform HTTPS Hydrants link
+- Restored the Hydrants pill to a genuine Location SA HTTPS link on every platform and browser.
+- Restored Android's standard long-press link menu, including **Open in new tab** where offered by the installed browser.
+- Removed the RC7/RC8 Android intent and browser-package handoff experiments, which could be retained inside an installed PWA and hid the normal web-link context menu.
+- Kept `target="_blank"` plus external/no-opener protection as the standards-based new-tab request; final tab/window handling remains controlled by the user's browser and operating system.
+- Preserved all hydrant coordinates, fallback behaviour, Roads basemap, zoom 18, layer UID 334, Directions state, photo stability, inventory, UBD and Training unchanged.
+
 # v2.9.3 Training Module Test RC8 — 2026-09-20
 
 ### Broad external-browser Hydrants handoff

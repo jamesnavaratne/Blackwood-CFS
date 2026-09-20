@@ -886,50 +886,6 @@ function buildLocationSaHydrantsUrl(hydrant){
   return `https://location.sa.gov.au/viewer/?${params.toString()}`;
 }
 
-function isAndroidHydrantsHandoff(){
-  const uaDataPlatform = navigator.userAgentData && navigator.userAgentData.platform
-    ? navigator.userAgentData.platform
-    : '';
-  return /Android/i.test(uaDataPlatform) || /Android/i.test(navigator.userAgent || '');
-}
-
-function detectAndroidBrowserPackage(){
-  const ua = navigator.userAgent || '';
-  const brands = navigator.userAgentData && Array.isArray(navigator.userAgentData.brands)
-    ? navigator.userAgentData.brands.map(entry => entry && entry.brand ? entry.brand : '').join(' ')
-    : '';
-  const signature = `${ua} ${brands}`;
-
-  // Test distinctive browsers before generic Chromium/Chrome signatures.
-  if(navigator.brave && typeof navigator.brave.isBrave === 'function') return 'com.brave.browser';
-  if(/SamsungBrowser/i.test(signature)) return 'com.sec.android.app.sbrowser';
-  if(/EdgA|Microsoft Edge/i.test(signature)) return 'com.microsoft.emmx';
-  if(/OPR\//i.test(signature)) return 'com.opera.browser';
-  if(/Opera Mini/i.test(signature)) return 'com.opera.mini.native';
-  if(/Firefox Focus|Focus\//i.test(signature)) return 'org.mozilla.focus';
-  if(/Firefox|Fennec/i.test(signature)) return 'org.mozilla.firefox';
-  if(/DuckDuckGo/i.test(signature)) return 'com.duckduckgo.mobile.android';
-  if(/Vivaldi/i.test(signature)) return 'com.vivaldi.browser';
-  if(/Kiwi/i.test(signature)) return 'com.kiwibrowser.browser';
-  if(/Chrome\//i.test(signature) || /Google Chrome/i.test(signature)) return 'com.android.chrome';
-  return '';
-}
-
-function buildAndroidBrowserIntentUrl(httpsUrl, browserPackage){
-  if(!httpsUrl) return '';
-  try {
-    const parsed = new URL(httpsUrl);
-    if(parsed.protocol !== 'https:') return httpsUrl;
-    const browserTarget = `${parsed.host}${parsed.pathname}${parsed.search}`;
-    const fallback = encodeURIComponent(httpsUrl);
-    const safePackage = /^[a-zA-Z0-9._]+$/.test(browserPackage || '') ? browserPackage : '';
-    const packageClause = safePackage ? `package=${safePackage};` : '';
-    return `intent://${browserTarget}#Intent;scheme=https;${packageClause}action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${fallback};end`;
-  } catch(e) {
-    return httpsUrl;
-  }
-}
-
 function selectedHydrantsTarget(){
   if(!selected) return null;
   if(selected.hydrant && buildLocationSaHydrantsUrl(selected.hydrant)){
@@ -948,14 +904,11 @@ function updateHydrantsButton(){
   const available = !!url;
   const fallback = !!(target && target.fallback);
   const approximate = !!(target && !fallback && target.hydrant && target.hydrant.approximate);
-  const androidHandoff = isAndroidHydrantsHandoff();
-  const androidPackage = androidHandoff ? detectAndroidBrowserPackage() : '';
-  const targetedAndroidHandoff = !!androidPackage;
   els.streetHydrantsBtn.hidden = !available;
   if(available) {
-    els.streetHydrantsBtn.href = targetedAndroidHandoff ? buildAndroidBrowserIntentUrl(url, androidPackage) : url;
-    if(targetedAndroidHandoff) els.streetHydrantsBtn.removeAttribute('target');
-    else els.streetHydrantsBtn.target = '_blank';
+    els.streetHydrantsBtn.href = url;
+    els.streetHydrantsBtn.target = '_blank';
+    els.streetHydrantsBtn.rel = 'external noopener noreferrer';
   } else {
     els.streetHydrantsBtn.removeAttribute('href');
   }
