@@ -1,3 +1,19 @@
+# v2.9.3 Training Module Test RC8 — 2026-09-20
+
+### Broad external-browser Hydrants handoff
+- Added browser-aware Android handoff for standard Chrome, Samsung Internet, Edge, Brave, Firefox, Firefox Focus, Opera, Opera Mini, DuckDuckGo, Vivaldi and Kiwi.
+- Each recognised Android browser is addressed by its own package so the installed CFS WebAPK cannot recapture the Hydrants link.
+- Apple, Windows and unrecognised browsers retain a normal external HTTPS link rather than being forced into any named browser.
+- Preserved all hydrant coordinates, fallback behaviour, Roads basemap, zoom 18, layer UID 334, Directions state, photo stability, inventory, UBD and Training unchanged.
+
+# v2.9.3 Training Module Test RC7 — 2026-09-20
+
+### Android native-browser Hydrants handoff
+- Added an Android-only, user-tap-initiated BROWSABLE intent for the live Location SA Hydrants link so installed Chrome PWAs hand the page to Android's browser/default URL handler instead of retaining it inside the app window.
+- Kept the RC6 direct external link for desktop and non-Android devices.
+- Included the unchanged HTTPS Location SA URL as the Android browser fallback.
+- Preserved all hydrant coordinates, fallback behaviour, Roads basemap, zoom 18, layer UID 334, Directions state, RC5 photo stability, inventory, UBD and Training unchanged.
+
 # v2.9.3 Training Module Test RC6 — 2026-09-20
 
 ### Native-browser Hydrants handoff
