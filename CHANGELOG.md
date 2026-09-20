@@ -1,3 +1,10 @@
+# v2.9.3 Training Module Test RC3 — 2026-09-20
+
+### Faster prepared media
+- After a complete, current Prepare for Offline Use download, locker photos and UBD/reference-map images now load directly from device storage for a faster response.
+- Before offline preparation, or whenever the stored package is incomplete or stale, those images remain live-first so updated media is not hidden by an older saved copy.
+- Preserved the durable offline content/status caches across app-shell updates and bumped the app-shell cache for GitHub/PWA update detection.
+
 # v2.9.3 Training Module Test RC2 — 2026-09-18
 
 ### Refined

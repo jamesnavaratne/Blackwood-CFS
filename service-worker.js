@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-3-personal-ubd-training-module-test-rc2-20260918';
+const CACHE_NAME = 'blackwood-cfs-v2-9-3-personal-ubd-training-module-test-rc3-20260920';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -71,6 +71,21 @@ function updatePreferred(request) {
     /\.(html|json|js|css|jpg|jpeg|png|webp|gif|svg|xlsx)$/i.test(url.pathname);
 }
 
+function isPreparedMediaRequest(request) {
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return false;
+
+  const scope = new URL(self.registration.scope);
+  if (!url.pathname.startsWith(scope.pathname)) return false;
+
+  const relativePath = url.pathname.slice(scope.pathname.length);
+  const isMediaFile = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(relativePath);
+  if (!isMediaFile) return false;
+
+  return relativePath.startsWith('directions/maps/ubd/') ||
+    /^photos\/[^/]+\/lockers\//i.test(relativePath);
+}
+
 async function cachedFallback(request) {
   const appCache = await caches.open(CACHE_NAME);
   const appMatch = await appCache.match(request);
@@ -103,6 +118,37 @@ async function cacheFirst(request) {
   return response;
 }
 
+async function currentOfflineContentVersion() {
+  const cache = await caches.open(CACHE_NAME);
+  const manifestUrl = new URL('./offline-assets.json', self.registration.scope).href;
+  const response = await cache.match(manifestUrl, { ignoreSearch: true });
+  if (!response) return '';
+  try {
+    const manifest = await response.json();
+    return String(manifest && manifest.version ? manifest.version : '');
+  } catch (e) {
+    return '';
+  }
+}
+
+async function preparedMediaFirst(request) {
+  const [status, currentVersion] = await Promise.all([
+    readOfflineStatus(),
+    currentOfflineContentVersion()
+  ]);
+
+  // Only prefer device storage after the complete, current offline package has
+  // been prepared. A stale or incomplete package stays live-first so updated
+  // photos/maps are not hidden by an older saved copy.
+  if (status && status.complete && status.version && status.version === currentVersion) {
+    const offlineCache = await caches.open(OFFLINE_CACHE_NAME);
+    const saved = await offlineCache.match(request, { ignoreSearch: true });
+    if (saved) return saved;
+  }
+
+  return networkFirst(request);
+}
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
@@ -111,6 +157,11 @@ self.addEventListener('fetch', event => {
   // response would incorrectly report current connectivity/content.
   if (url.origin === self.location.origin && url.searchParams.get('connectivity') === '1') {
     event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
+
+  if (isPreparedMediaRequest(event.request)) {
+    event.respondWith(preparedMediaFirst(event.request));
     return;
   }
 
