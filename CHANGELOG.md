@@ -1,3 +1,12 @@
+# v2.9.4 Operational Workspace Test RC6 — 2026-09-27
+
+### Directions closed-state and UBD backdrop consistency
+- Corrected Directions restoration so a deliberately closed street modal stays closed after switching tabs and returning.
+- Preserved the main Directions list search and page position when its street modal is closed.
+- Kept the existing selected-street, street-modal and UBD restoration when those layers were actually left open.
+- Added outside-tap closing for the enlarged UBD viewer, consuming only the top modal layer so the underlying street/map-list modal remains open.
+- Preserved RC5 Inventory item/photo continuity and RC4 Hydrants map continuity.
+
 # v2.9.4 Operational Workspace Test RC5 — 2026-09-27
 
 ### Inventory item continuity

@@ -1,8 +1,8 @@
 {
-  "version": "Blackwood CFS v2.9.4 Personal UBD + Operational Workspace Test RC5",
+  "version": "Blackwood CFS v2.9.4 Personal UBD + Operational Workspace Test RC6",
   "release_type": "test_rc",
   "date": "2026-09-27",
-  "based_on": "Blackwood_CFS_v2.9.4_OPERATIONAL_WORKSPACE_TEST_RC4_GITHUB.zip",
+  "based_on": "Blackwood_CFS_v2.9.4_OPERATIONAL_WORKSPACE_TEST_RC5_GITHUB.zip",
   "active_inventory_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "directions_source_folder": "directions/source/",
   "ubd_maps_folder": "directions/maps/ubd/",
@@ -20,6 +20,9 @@
     "Taskbar remains visible on System Home",
     "Directions street and UBD viewer workspace restores after a Hydrants round trip",
     "Selected UBD map, zoom and pan position are preserved within the current app session",
+    "Closed Directions street modals remain closed after taskbar switching",
+    "Directions list search and page position are preserved when no street modal is open",
+    "Outside taps close only the enlarged UBD viewer layer",
     "Inventory appliance, locker or filter, search and page position are preserved within the current app session",
     "Open Inventory item details and modal scroll position are preserved within the current app session",
     "Open Inventory item photo, zoom and pan position are preserved within the current app session",
@@ -60,7 +63,7 @@
   "app_logic_changed_in_this_release": true,
   "notes": [
     "Test ZIP first; not yet designated stable.",
-    "Built directly from the v2.9.4 Operational Workspace Test RC4 baseline.",
+    "Built directly from the v2.9.4 Operational Workspace Test RC5 baseline.",
     "Reviewed exact and reviewed vicinity hydrant results remain reported separately.",
     "GOVERNMENT ROAD SPRINGFIELD remains grey for manual review.",
     "Do not regenerate Directions wording from secondary sources."

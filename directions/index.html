@@ -1021,6 +1021,7 @@ function persistDirectionsWorkspace(){
     mapScrollXRatio: maxScrollX > 0 ? mapEls.stage.scrollLeft / maxScrollX : 0,
     mapScrollYRatio: maxScrollY > 0 ? mapEls.stage.scrollTop / maxScrollY : 0,
     search: els.search.value,
+    directoryScrollY: Math.max(0, window.scrollY || 0),
     savedAt: Date.now()
   };
   try { sessionStorage.setItem(workspaceKey, JSON.stringify(state)); } catch(error) {}
@@ -1063,13 +1064,29 @@ function restoreDirectionsWorkspace(entryId){
     els.search.value = matchingState.search;
     render();
   }
-  openEntry(entryId);
-  if(!matchingState) return;
+  if(!matchingState) {
+    openEntry(entryId);
+    return;
+  }
+
+  const entry = DIRECTIONS.find(item => item.id === entryId);
+  if(!entry) return;
+  selected = entry;
+  const restoreStreetModal = matchingState.streetOpen === true;
+  const restoreMapWorkspace = matchingState.mapListOpen === true || matchingState.mapViewerOpen === true;
+  if(restoreStreetModal) openEntry(entryId);
+
   requestAnimationFrame(() => {
-    const streetCard = els.modal.querySelector('.card');
-    if(streetCard) streetCard.scrollTop = Math.max(0, Number(matchingState.streetScrollTop) || 0);
-    if(matchingState.mapListOpen || matchingState.mapViewerOpen) {
-      openMapList('street');
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: Math.max(0, Number(matchingState.directoryScrollY) || 0), behavior:'auto' });
+    });
+    if(restoreStreetModal) {
+      const streetCard = els.modal.querySelector('.card');
+      if(streetCard) streetCard.scrollTop = Math.max(0, Number(matchingState.streetScrollTop) || 0);
+    }
+    if(restoreMapWorkspace) {
+      const context = restoreStreetModal && matchingState.mapLaunchContext === 'street' ? 'street' : 'global';
+      openMapList(context);
       const mapListCard = mapEls.listModal.querySelector('.card');
       if(mapListCard) mapListCard.scrollTop = Math.max(0, Number(matchingState.mapListScrollTop) || 0);
       const mapIndex = Number(matchingState.mapIndex);
@@ -1170,6 +1187,14 @@ els.streetUbdBtn.onclick = () => openMapList('street');
 mapEls.listClose.onclick = closeMapList;
 mapEls.listScrim.onclick = closeMapList;
 mapEls.viewerClose.onclick = closeMapViewer;
+document.addEventListener('click', event => {
+  if(!mapEls.viewerModal.classList.contains('open')) return;
+  if(event.target.closest('.map-viewer-card')) return;
+  if(event.target.closest('.primary-bottom-nav')) return;
+  closeMapViewer();
+  event.preventDefault();
+  event.stopPropagation();
+}, true);
 mapEls.zoomOut.onclick = () => setMapZoom(mapZoom - .25);
 mapEls.zoomIn.onclick = () => setMapZoom(mapZoom + .25);
 mapEls.zoomReset.onclick = () => setMapZoom(1);
