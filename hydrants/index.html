@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071426">
+  <title>Blackwood CFS — Live Hydrants</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --navy: #071426;
+      --panel: #0d1b31;
+      --panel-2: #13233d;
+      --line: #244262;
+      --cyan: #36d6ff;
+      --cyan-soft: rgba(54, 214, 255, .14);
+      --text: #f5f8ff;
+      --muted: #a8b9cf;
+      --warning: #ffd76b;
+      --danger: #ff7d7d;
+      --bottom-h: 74px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--navy);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, a { font: inherit; }
+
+    .app-shell {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100dvh;
+      min-height: 100%;
+      background: var(--navy);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 900;
+      padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 20, 38, .97);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 5vw, 26px);
+      line-height: 1.05;
+      letter-spacing: -.025em;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid rgba(54, 214, 255, .45);
+      border-radius: 999px;
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4cff97;
+      box-shadow: 0 0 10px rgba(76, 255, 151, .85);
+    }
+
+    .live-badge.offline {
+      border-color: rgba(255, 125, 125, .55);
+      background: rgba(255, 125, 125, .12);
+      color: var(--danger);
+    }
+
+    .live-badge.offline .live-dot {
+      background: var(--danger);
+      box-shadow: none;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .street-picker {
+      position: relative;
+      min-width: 0;
+    }
+
+    .street-picker-button,
+    .official-link {
+      min-height: 52px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .street-picker-button {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 7px 11px 7px 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .selected-street {
+      overflow: hidden;
+    }
+
+    .selected-street-name,
+    .selected-suburb {
+      display: block;
+    }
+
+    .selected-street-name {
+      color: #fff;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.12;
+      white-space: normal;
+    }
+
+    .selected-suburb {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 450;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .picker-chevron {
+      color: var(--cyan);
+      font-size: 15px;
+      transition: transform .15s ease;
+    }
+
+    .street-picker.open .picker-chevron { transform: rotate(180deg); }
+
+    .street-menu {
+      position: absolute;
+      z-index: 1200;
+      top: calc(100% + 7px);
+      left: 0;
+      width: min(430px, calc(100vw - 28px));
+      max-height: min(430px, calc(100dvh - 175px));
+      overflow-y: auto;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(13, 27, 49, .99);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .42);
+    }
+
+    .street-menu[hidden] { display: none; }
+
+    .street-section + .street-section {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(168, 185, 207, .16);
+    }
+
+    .street-section-title {
+      padding: 6px 8px 4px;
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .street-option {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 8px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .street-option:hover,
+    .street-option:focus-visible,
+    .street-option.active { background: var(--cyan-soft); }
+
+    .street-option-name {
+      display: block;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .street-option-suburb {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 450;
+    }
+
+    .street-option-icon { color: var(--warning); }
+
+    .official-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 13px;
+      color: var(--cyan);
+      font-weight: 750;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .street-picker-button:focus-visible,
+    .official-link:focus-visible,
+    .tab-btn:focus-visible {
+      outline: 3px solid rgba(54, 214, 255, .45);
+      outline-offset: 2px;
+    }
+
+    .map-wrap {
+      position: relative;
+      min-height: 0;
+      background: #d8e1e8;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      background: #d8e1e8;
+    }
+
+    .map-message {
+      position: absolute;
+      z-index: 850;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: calc(100% - 28px);
+      padding: 9px 12px;
+      border: 1px solid rgba(7, 20, 38, .18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .94);
+      color: #12243a;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .2);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      pointer-events: none;
+      transition: opacity .15s ease;
+    }
+
+    .map-message.hidden { opacity: 0; }
+    .map-message.error { color: #8b1420; }
+
+    .locate-control {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid rgba(7, 20, 38, .22);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .96);
+      color: #0d3258;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .25);
+      cursor: pointer;
+    }
+
+    .leaflet-bottom.leaflet-right .locate-control {
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .locate-control:focus-visible {
+      outline: 3px solid rgba(54, 214, 255, .65);
+      outline-offset: 2px;
+    }
+
+    .locate-control.tracking {
+      background: #e9f8ff;
+      color: #0077c8;
+    }
+
+    .locate-icon {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .spinner {
+      width: 13px;
+      height: 13px;
+      flex: 0 0 auto;
+      border: 2px solid rgba(18, 36, 58, .25);
+      border-top-color: #12243a;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .map-credit {
+      position: absolute;
+      z-index: 800;
+      right: auto;
+      left: 7px;
+      bottom: 7px;
+      max-width: calc(100% - 82px);
+      padding: 4px 7px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .9);
+      color: #26394d;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: left;
+    }
+
+    .bottom-nav {
+      position: relative;
+      z-index: 950;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      min-height: calc(var(--bottom-h) + env(safe-area-inset-bottom));
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(7, 20, 38, .98);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, .25);
+    }
+
+    .tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 0;
+      min-height: 58px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .01em;
+      text-decoration: none;
+    }
+
+    .tab-btn.active {
+      background: var(--cyan-soft);
+      color: var(--cyan);
+    }
+
+    .tab-icon {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: calc(var(--bottom-h) + env(safe-area-inset-bottom) + 16px);
+      transform: translate(-50%, 14px);
+      width: max-content;
+      max-width: calc(100% - 32px);
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      font-size: 12px;
+      font-weight: 750;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+
+    .leaflet-control-zoom {
+      width: 44px;
+      border: 0 !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .28) !important;
+    }
+
+    .leaflet-control-zoom a {
+      width: 44px !important;
+      height: 38px !important;
+      line-height: 38px !important;
+      background: #fff !important;
+      color: #13233d !important;
+      text-align: center;
+    }
+
+    .leaflet-control-attribution { display: none; }
+
+    .user-location-dot {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: #1689e8;
+      box-shadow: 0 2px 10px rgba(0, 62, 125, .55);
+    }
+
+    @media (min-width: 760px) {
+      .topbar { padding-left: 20px; padding-right: 20px; }
+      .controls { grid-template-columns: minmax(280px, 480px) auto; justify-content: space-between; }
+      .bottom-nav { width: min(620px, 100%); margin: 0 auto; border: 1px solid var(--line); border-bottom: 0; border-radius: 18px 18px 0 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="title-row">
+        <div>
+          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC1</p>
+          <h1>Live Hydrants</h1>
+        </div>
+        <div class="live-badge" id="networkBadge" role="status" aria-live="polite">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="networkText">Online</span>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="street-picker" id="streetPicker">
+          <button class="street-picker-button" id="streetPickerButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="streetMenu">
+            <span class="selected-street">
+              <span class="selected-street-name" id="selectedStreetName">Gorse Avenue</span>
+              <span class="selected-suburb" id="selectedSuburb">Hawthorndene</span>
+            </span>
+            <span class="picker-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="street-menu" id="streetMenu" role="listbox" aria-label="Street locations" hidden></div>
+        </div>
+        <a class="official-link" id="officialLink" href="#" target="_blank" rel="external noopener noreferrer">🔗 Location SA</a>
+      </div>
+    </header>
+
+    <section class="map-wrap" aria-label="Live Location SA hydrant map">
+      <div id="map"></div>
+      <button class="leaflet-control locate-control" id="locateButton" type="button" aria-label="Locate me" title="Locate me">
+        <svg class="locate-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle></svg>
+      </button>
+      <div class="map-message" id="mapMessage" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="mapMessageText">Loading official hydrant layer…</span>
+      </div>
+      <div class="map-credit">Road map: Location SA · Hydrant data © SA Water Corporation via Location SA · Live online layer 334</div>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <a class="tab-btn" href="../index.html" aria-label="Open Inventory">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 5V3h8v2M8 10h8M8 14h5"></path></svg>
+        <span>Inventory</span>
+      </a>
+      <a class="tab-btn" id="directionsNavLink" href="../directions/index.html" aria-label="Open Directions Book">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>
+        <span>Directions Book</span>
+      </a>
+      <button class="tab-btn active" type="button" aria-current="page" aria-label="Hydrants active tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg>
+        <span>Hydrants</span>
+      </button>
+    </nav>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="locations.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      const BUILD = 'Blackwood CFS v2.9.4 In-App Live Hydrants Test RC1 — 2026-09-26';
+      const MAP_SERVICE = 'https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer';
+      const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
+      const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
+      const HYDRANT_LAYER_ID = 334;
+
+      const STATION = Object.freeze({ id: 'station', label: 'Blackwood CFS', suburb: 'Hawthorndene', lat: -35.02315147312423, lon: 138.62864279398076, fallback: true });
+      const catalogue = Array.isArray(window.BLACKWOOD_HYDRANT_LOCATIONS) ? window.BLACKWOOD_HYDRANT_LOCATIONS : [];
+      const catalogueById = new Map(catalogue.map(location => [location.id, location]));
+      const requestParams = new URLSearchParams(window.location.search);
+      const requestedId = requestParams.get('id') || '';
+      const requestedFromCatalogue = catalogueById.get(requestedId);
+      const requestedLat = Number(requestParams.get('lat'));
+      const requestedLon = Number(requestParams.get('lon'));
+      const requestedCustom = !requestedFromCatalogue && Number.isFinite(requestedLat) && Number.isFinite(requestedLon)
+        ? {
+            id: requestedId || 'selected',
+            label: requestParams.get('street') || 'Selected street',
+            suburb: requestParams.get('suburb') || '',
+            lat: requestedLat,
+            lon: requestedLon,
+            fallback: requestParams.get('fallback') === '1'
+          }
+        : null;
+      const requestedLocation = requestedFromCatalogue || requestedCustom || STATION;
+
+      function storedArray(key) {
+        try {
+          const value = JSON.parse(localStorage.getItem(key) || '[]');
+          return Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      let recentKeys = storedArray('blackwoodHydrantRecent.v1').filter(id => catalogueById.has(id));
+      const favourites = Object.freeze(storedArray('blackwoodDirectionsFavourites.v1').filter(id => catalogueById.has(id)));
+      const locations = { station: STATION };
+
+      function registerLocation(location) {
+        if (!location || !location.id) return;
+        locations[location.id] = {
+          label: location.label || location.name || 'Selected street',
+          suburb: location.suburb || '',
+          lat: Number(location.lat),
+          lon: Number(location.lon),
+          fallback: !!location.fallback,
+          approximate: !!location.approximate
+        };
+      }
+
+      registerLocation(requestedLocation);
+      [...recentKeys, ...favourites].forEach(id => registerLocation(catalogueById.get(id)));
+      let selectedKey = requestedLocation.id || 'station';
+      if (selectedKey !== 'station' && !recentKeys.includes(selectedKey)) {
+        recentKeys = [selectedKey, ...recentKeys].slice(0, 6);
+        try { localStorage.setItem('blackwoodHydrantRecent.v1', JSON.stringify(recentKeys)); } catch (error) {}
+      }
+
+      const els = {
+        badge: document.getElementById('networkBadge'),
+        networkText: document.getElementById('networkText'),
+        picker: document.getElementById('streetPicker'),
+        pickerButton: document.getElementById('streetPickerButton'),
+        menu: document.getElementById('streetMenu'),
+        selectedName: document.getElementById('selectedStreetName'),
+        selectedSuburb: document.getElementById('selectedSuburb'),
+        officialLink: document.getElementById('officialLink'),
+        locateButton: document.getElementById('locateButton'),
+        directionsNavLink: document.getElementById('directionsNavLink'),
+        message: document.getElementById('mapMessage'),
+        messageText: document.getElementById('mapMessageText'),
+        toast: document.getElementById('toast')
+      };
+
+      let map;
+      let activeHydrantOverlay = null;
+      let pendingHydrantOverlay = null;
+      let userLocationMarker = null;
+      let userAccuracyCircle = null;
+      let latestUserLocation = null;
+      let locationWatchId = null;
+      let centreOnNextLocation = false;
+      let overlayRequest = 0;
+      let overlayTimer = 0;
+      let toastTimer = 0;
+
+      function setMessage(text, mode = 'loading') {
+        els.message.classList.remove('hidden', 'error');
+        els.message.classList.toggle('error', mode === 'error');
+        els.messageText.textContent = text;
+        const spinner = els.message.querySelector('.spinner');
+        spinner.style.display = mode === 'loading' ? '' : 'none';
+        if (mode === 'success') {
+          window.setTimeout(() => els.message.classList.add('hidden'), 900);
+        }
+      }
+
+      function updateNetworkState() {
+        const online = navigator.onLine;
+        els.badge.classList.toggle('offline', !online);
+        els.networkText.textContent = online ? 'Online' : 'Offline';
+        if (!online) setMessage('Live hydrant map requires an internet connection.', 'error');
+        else if (map) scheduleHydrantRefresh(0);
+      }
+
+      function showToast(text) {
+        window.clearTimeout(toastTimer);
+        els.toast.textContent = text;
+        els.toast.classList.add('show');
+        toastTimer = window.setTimeout(() => els.toast.classList.remove('show'), 2200);
+      }
+
+      function officialViewerUrl() {
+        const centre = map ? map.getCenter() : locations[selectedKey];
+        const zoom = map ? Math.max(1, Math.min(20, Math.round(map.getZoom()))) : 18;
+        const params = new URLSearchParams({
+          map: 'roads',
+          x: String(centre.lng ?? centre.lon),
+          y: String(centre.lat),
+          z: String(zoom),
+          uids: String(HYDRANT_LAYER_ID),
+          pinx: '',
+          piny: '',
+          pinTitle: '',
+          pinText: ''
+        });
+        return `${LOCATION_SA_VIEWER}?${params.toString()}`;
+      }
+
+      function updateOfficialLink() {
+        els.officialLink.href = officialViewerUrl();
+      }
+
+      function updateDirectionsLink() {
+        const suffix = selectedKey && selectedKey !== 'station' ? `?open=${encodeURIComponent(selectedKey)}` : '';
+        els.directionsNavLink.href = `../directions/index.html${suffix}`;
+      }
+
+      function setPickerOpen(open) {
+        els.picker.classList.toggle('open', open);
+        els.pickerButton.setAttribute('aria-expanded', String(open));
+        els.menu.hidden = !open;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, character => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        })[character]);
+      }
+
+      function optionMarkup(key, icon = '') {
+        const location = locations[key];
+        if (!location) return '';
+        const active = key === selectedKey;
+        return `<button class="street-option${active ? ' active' : ''}" type="button" role="option" aria-selected="${active}" data-location-key="${escapeHtml(key)}">
+          <span><span class="street-option-name">${escapeHtml(location.label)}</span><span class="street-option-suburb">${escapeHtml(location.suburb)}</span></span>
+          ${icon ? `<span class="street-option-icon" aria-hidden="true">${icon}</span>` : ''}
+        </button>`;
+      }
+
+      function sectionMarkup(title, keys, icon = '') {
+        if (!keys.length) return '';
+        return `<section class="street-section"><div class="street-section-title">${title}</div>${keys.map(key => optionMarkup(key, icon)).join('')}</section>`;
+      }
+
+      function renderStreetMenu() {
+        const recent = recentKeys.filter(key => key !== selectedKey && !favourites.includes(key));
+        const favouriteOptions = favourites.filter(key => key !== selectedKey);
+        els.menu.innerHTML = [
+          sectionMarkup('Selected street', [selectedKey]),
+          sectionMarkup('Recently searched', recent),
+          sectionMarkup('Favourites', favouriteOptions, '★')
+        ].join('');
+      }
+
+      function focusLocation(key, addToRecent = true) {
+        selectedKey = locations[key] ? key : 'station';
+        const location = locations[selectedKey];
+        els.selectedName.textContent = location.label;
+        els.selectedSuburb.textContent = location.suburb;
+        if (addToRecent && !favourites.includes(selectedKey)) {
+          recentKeys = [selectedKey, ...recentKeys.filter(item => item !== selectedKey)].slice(0, 6);
+          try { localStorage.setItem('blackwoodHydrantRecent.v1', JSON.stringify(recentKeys)); } catch (error) {}
+        }
+        renderStreetMenu();
+        map.setView([location.lat, location.lon], 18, { animate: false });
+        updateOfficialLink();
+        updateDirectionsLink();
+        if (location.fallback && selectedKey !== 'station') {
+          showToast('Hydrant location unresolved — centred on Blackwood CFS.');
+        }
+      }
+
+      function updateUserLocation(position) {
+        if (!map) return;
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const accuracy = Math.max(0, position.coords.accuracy || 0);
+        latestUserLocation = L.latLng(lat, lon);
+
+        if (!userLocationMarker) {
+          userLocationMarker = L.marker(latestUserLocation, {
+            icon: L.divIcon({ className: '', html: '<span class="user-location-dot" aria-hidden="true"></span>', iconSize: [18, 18], iconAnchor: [9, 9] }),
+            keyboard: false,
+            interactive: false,
+            zIndexOffset: 900
+          }).addTo(map);
+          userAccuracyCircle = L.circle(latestUserLocation, {
+            radius: accuracy,
+            color: '#1689e8',
+            weight: 1,
+            opacity: .7,
+            fillColor: '#1689e8',
+            fillOpacity: .12,
+            interactive: false
+          }).addTo(map);
+        } else {
+          userLocationMarker.setLatLng(latestUserLocation);
+          userAccuracyCircle.setLatLng(latestUserLocation).setRadius(accuracy);
+        }
+
+        els.locateButton.classList.add('tracking');
+        els.locateButton.title = 'Centre map on my location';
+        if (centreOnNextLocation) {
+          map.setView(latestUserLocation, Math.max(map.getZoom(), 18), { animate: false });
+          centreOnNextLocation = false;
+          showToast(`Live location found · accuracy about ${Math.round(accuracy)} m`);
+        }
+      }
+
+      function handleLocationError(error) {
+        centreOnNextLocation = false;
+        const messages = {
+          1: 'Location permission was denied. Enable it in browser settings to show your live position.',
+          2: 'Your location is currently unavailable.',
+          3: 'Finding your location timed out. Tap the locate button to try again.'
+        };
+        showToast(messages[error.code] || 'Your location could not be found.');
+        if (error.code === 1 && locationWatchId !== null) {
+          navigator.geolocation.clearWatch(locationWatchId);
+          locationWatchId = null;
+          els.locateButton.classList.remove('tracking');
+        }
+      }
+
+      function locateUser() {
+        if (!('geolocation' in navigator)) {
+          showToast('This browser does not support live location.');
+          return;
+        }
+        if (!window.isSecureContext) {
+          showToast('Live location needs HTTPS. Open the deployed app from its secure web address.');
+          return;
+        }
+        if (latestUserLocation) {
+          map.setView(latestUserLocation, Math.max(map.getZoom(), 18), { animate: false });
+          showToast('Centred on your live location.');
+          return;
+        }
+        centreOnNextLocation = true;
+        showToast('Finding your live location…');
+        if (locationWatchId === null) {
+          locationWatchId = navigator.geolocation.watchPosition(updateUserLocation, handleLocationError, {
+            enableHighAccuracy: true,
+            maximumAge: 5000,
+            timeout: 15000
+          });
+        }
+      }
+
+      function hydrantExportUrl(bounds, size) {
+        const southWest = map.options.crs.project(bounds.getSouthWest());
+        const northEast = map.options.crs.project(bounds.getNorthEast());
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(256, Math.round(size.x * pixelRatio));
+        const height = Math.max(256, Math.round(size.y * pixelRatio));
+        const params = new URLSearchParams({
+          dpi: String(Math.round(96 * pixelRatio)),
+          transparent: 'true',
+          format: 'png32',
+          layers: `show:${HYDRANT_LAYER_ID}`,
+          bbox: `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`,
+          bboxSR: '3857',
+          imageSR: '3857',
+          size: `${width},${height}`,
+          f: 'image'
+        });
+        return `${MAP_SERVICE}/export?${params.toString()}`;
+      }
+
+      function refreshHydrantLayer() {
+        if (!map || !navigator.onLine) return;
+
+        const bounds = map.getBounds();
+        const size = map.getSize();
+        if (!bounds.isValid() || size.x < 1 || size.y < 1) return;
+
+        const requestId = ++overlayRequest;
+        const url = hydrantExportUrl(bounds, size);
+        setMessage('Loading official hydrant layer…', 'loading');
+
+        if (pendingHydrantOverlay) {
+          pendingHydrantOverlay.remove();
+          pendingHydrantOverlay = null;
+        }
+
+        const nextOverlay = L.imageOverlay(url, bounds, {
+          opacity: 0,
+          interactive: false,
+          zIndex: 360,
+          alt: 'Live Location SA hydrant layer'
+        });
+        pendingHydrantOverlay = nextOverlay;
+
+        nextOverlay.once('load', () => {
+          if (requestId !== overlayRequest) {
+            nextOverlay.remove();
+            return;
+          }
+          if (activeHydrantOverlay) activeHydrantOverlay.remove();
+          nextOverlay.setOpacity(1);
+          activeHydrantOverlay = nextOverlay;
+          pendingHydrantOverlay = null;
+          setMessage('Official hydrant layer updated.', 'success');
+        });
+
+        nextOverlay.once('error', () => {
+          if (requestId !== overlayRequest) return;
+          nextOverlay.remove();
+          pendingHydrantOverlay = null;
+          setMessage('The official hydrant layer could not be loaded. Try Location SA.', 'error');
+        });
+
+        nextOverlay.addTo(map);
+      }
+
+      function scheduleHydrantRefresh(delay = 140) {
+        window.clearTimeout(overlayTimer);
+        overlayTimer = window.setTimeout(refreshHydrantLayer, delay);
+      }
+
+      function initialiseMap() {
+        if (!window.L) {
+          setMessage('The map library could not be loaded. Check the internet connection and reload.', 'error');
+          return;
+        }
+
+        map = L.map('map', {
+          center: [locations[selectedKey].lat, locations[selectedKey].lon],
+          zoom: 18,
+          minZoom: 10,
+          maxZoom: 20,
+          zoomControl: false,
+          attributionControl: false,
+          preferCanvas: true
+        });
+
+        const baseLayer = L.tileLayer(BASEMAP_TILES, {
+          minZoom: 10,
+          maxZoom: 20,
+          maxNativeZoom: 20,
+          tileSize: 256,
+          crossOrigin: false,
+          keepBuffer: 3,
+          updateWhenIdle: true
+        });
+
+        baseLayer.on('tileerror', () => setMessage('The official roads map could not be loaded.', 'error'));
+        baseLayer.addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        const LocateControl = L.Control.extend({
+          options: { position: 'bottomright' },
+          onAdd() {
+            L.DomEvent.disableClickPropagation(els.locateButton);
+            L.DomEvent.disableScrollPropagation(els.locateButton);
+            return els.locateButton;
+          }
+        });
+        new LocateControl().addTo(map);
+
+        map.on('moveend zoomend resize', () => {
+          updateOfficialLink();
+          scheduleHydrantRefresh();
+        });
+
+        focusLocation(selectedKey, false);
+        scheduleHydrantRefresh(0);
+      }
+
+      els.pickerButton.addEventListener('click', () => setPickerOpen(els.menu.hidden));
+      els.menu.addEventListener('click', event => {
+        const option = event.target.closest('[data-location-key]');
+        if (!option) return;
+        focusLocation(option.dataset.locationKey, true);
+        setPickerOpen(false);
+        els.pickerButton.focus();
+      });
+      document.addEventListener('click', event => {
+        if (!els.picker.contains(event.target)) setPickerOpen(false);
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !els.menu.hidden) {
+          setPickerOpen(false);
+          els.pickerButton.focus();
+        }
+      });
+      els.locateButton.addEventListener('click', locateUser);
+      els.officialLink.addEventListener('click', updateOfficialLink);
+      window.addEventListener('online', updateNetworkState);
+      window.addEventListener('offline', updateNetworkState);
+      window.addEventListener('resize', () => map && window.setTimeout(() => map.invalidateSize(), 80));
+
+      document.documentElement.dataset.build = BUILD;
+      updateNetworkState();
+      initialiseMap();
+    })();
+  </script>
+</body>
+</html>

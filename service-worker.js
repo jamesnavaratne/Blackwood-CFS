@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-3-personal-ubd-training-module-test-rc9-20260920';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-in-app-live-hydrants-test-rc1-20260926';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -13,7 +13,9 @@ const APP_SHELL = [
   './offline-assets.json',
   './data/inventory.json',
   './directions/index.html',
-  './directions/maps/ubd/maps.js'
+  './directions/maps/ubd/maps.js',
+  './hydrants/index.html',
+  './hydrants/locations.js'
 ];
 
 const OFFLINE_STATUS_URL = new URL('./__offline_status__', self.registration.scope).href;

@@ -256,6 +256,8 @@ def operational_asset_files(repo_root: Path):
         repo_root / "icon.png",
         repo_root / "directions" / "index.html",
         repo_root / "directions" / "maps" / "ubd" / "maps.js",
+        repo_root / "hydrants" / "index.html",
+        repo_root / "hydrants" / "locations.js",
     ]
     files.extend(path for path in fixed if path.is_file())
     for folder in [repo_root / "icons", repo_root / "photos", repo_root / "directions" / "maps" / "ubd"]:
@@ -292,6 +294,8 @@ def offline_asset_urls(repo_root: Path):
         "./data/inventory.json",
         "./directions/index.html",
         "./directions/maps/ubd/maps.js",
+        "./hydrants/index.html",
+        "./hydrants/locations.js",
     ]
     rels = []
     for path in operational_asset_files(repo_root):

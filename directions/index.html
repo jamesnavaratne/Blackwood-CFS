@@ -648,6 +648,29 @@ body[data-theme="light"] .offline-banner-copy small { color:#203747; }
   .offline-banner-copy small { font-size:.7rem; }
 }
 
+/* v2.9.4 persistent primary navigation */
+.primary-bottom-nav {
+  position:fixed; z-index:45; left:50%; bottom:0; transform:translateX(-50%);
+  display:grid; grid-template-columns:repeat(3,1fr); width:min(620px,100%);
+  min-height:calc(70px + env(safe-area-inset-bottom));
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+  border:1px solid var(--line); border-bottom:0; border-radius:18px 18px 0 0;
+  background:color-mix(in srgb,var(--panel) 97%,transparent);
+  box-shadow:0 -8px 24px rgba(0,0,0,.25);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+}
+.primary-bottom-link {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  min-width:0; min-height:56px; border-radius:13px; color:var(--muted);
+  font-size:11px; font-weight:850; text-decoration:none;
+}
+.primary-bottom-link.active { color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,transparent); }
+.primary-bottom-icon { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+.content { padding-bottom:calc(164px + env(safe-area-inset-bottom)); }
+.letter-jump { bottom:calc(80px + env(safe-area-inset-bottom)); }
+.offline-banner, .app-update-banner { bottom:calc(82px + env(safe-area-inset-bottom)); }
+body.offline-banner-visible .content, body.app-update-banner-visible .content { padding-bottom:calc(232px + env(safe-area-inset-bottom)); }
+
 </style>
 
 <!--
@@ -688,6 +711,18 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   <main class="content" id="directory"></main>
 </div>
 
+<nav class="primary-bottom-nav" aria-label="Primary">
+  <a class="primary-bottom-link" href="../index.html" aria-label="Open Inventory">
+    <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 5V3h8v2M8 10h8M8 14h5"></path></svg><span>Inventory</span>
+  </a>
+  <a class="primary-bottom-link active" href="index.html" aria-current="page" aria-label="Directions Book active tab">
+    <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span>Directions Book</span>
+  </a>
+  <a class="primary-bottom-link" href="../hydrants/index.html" aria-label="Open Hydrants">
+    <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg><span>Hydrants</span>
+  </a>
+</nav>
+
 <div id="appUpdateBanner" class="app-update-banner" role="status" aria-live="polite" aria-label="App update available">
   <span class="app-update-icon" aria-hidden="true">↻</span>
   <span class="app-update-copy"><strong>Update available</strong><small>Refresh to load the latest app and inventory. Re-prepare offline content if OPTIONS prompts you.</small></span>
@@ -704,7 +739,7 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   <article class="card" role="dialog" aria-modal="true" aria-labelledby="cardName">
     <div class="card-head">
       <div class="card-title"><h2 id="cardName"></h2><div class="sub" id="cardSub"></div></div>
-      <a class="street-ubd-btn" id="streetHydrantsBtn" href="" target="_blank" rel="external noopener noreferrer" title="Open live Location SA hydrant map in browser" hidden>Hydrants</a>
+      <a class="street-ubd-btn" id="streetHydrantsBtn" href="" title="Open the in-app live hydrant map" hidden>Hydrants</a>
       <button class="street-ubd-btn" id="streetUbdBtn" type="button" title="Open UBD maps">UBD</button>
       <button class="iconbtn" id="starBtn" title="Favourite">☆</button>
       <button class="iconbtn" id="closeBtn" title="Close">×</button>
@@ -870,28 +905,27 @@ function setTheme(t){ document.documentElement.dataset.theme=t; els.body.dataset
 setTheme(localStorage.getItem(themeKey) || 'dark');
 els.lightBtn.onclick=()=>setTheme('light'); els.darkBtn.onclick=()=>setTheme('dark');
 
-function buildLocationSaHydrantsUrl(hydrant){
-  if(!hydrant || !Number.isFinite(Number(hydrant.longitude)) || !Number.isFinite(Number(hydrant.latitude))) return '';
+function buildInAppHydrantsUrl(target){
+  const hydrant = target && target.hydrant;
+  if(!selected || !hydrant || !Number.isFinite(Number(hydrant.longitude)) || !Number.isFinite(Number(hydrant.latitude))) return '';
   const params = new URLSearchParams({
-    map: 'roads',
-    x: String(hydrant.longitude),
-    y: String(hydrant.latitude),
-    z: '18',
-    uids: '334',
-    pinx: '',
-    piny: '',
-    pinTitle: '',
-    pinText: ''
+    id: selected.id || '',
+    street: selected.name || 'Selected street',
+    suburb: selected.displaySuburb || (selected.areas || []).join(' · '),
+    lat: String(hydrant.latitude),
+    lon: String(hydrant.longitude),
+    fallback: target.fallback ? '1' : '0',
+    approximate: hydrant.approximate ? '1' : '0'
   });
-  return `https://location.sa.gov.au/viewer/?${params.toString()}`;
+  return `../hydrants/index.html?${params.toString()}`;
 }
 
 function selectedHydrantsTarget(){
   if(!selected) return null;
-  if(selected.hydrant && buildLocationSaHydrantsUrl(selected.hydrant)){
+  if(selected.hydrant && Number.isFinite(Number(selected.hydrant.longitude)) && Number.isFinite(Number(selected.hydrant.latitude))){
     return {hydrant:selected.hydrant, fallback:false};
   }
-  if(selected.hydrantFallback && buildLocationSaHydrantsUrl(selected.hydrantFallback)){
+  if(selected.hydrantFallback && Number.isFinite(Number(selected.hydrantFallback.longitude)) && Number.isFinite(Number(selected.hydrantFallback.latitude))){
     return {hydrant:selected.hydrantFallback, fallback:true};
   }
   return null;
@@ -900,15 +934,15 @@ function selectedHydrantsTarget(){
 function updateHydrantsButton(){
   if(!els.streetHydrantsBtn) return;
   const target = selectedHydrantsTarget();
-  const url = target ? buildLocationSaHydrantsUrl(target.hydrant) : '';
+  const url = target ? buildInAppHydrantsUrl(target) : '';
   const available = !!url;
   const fallback = !!(target && target.fallback);
   const approximate = !!(target && !fallback && target.hydrant && target.hydrant.approximate);
   els.streetHydrantsBtn.hidden = !available;
   if(available) {
     els.streetHydrantsBtn.href = url;
-    els.streetHydrantsBtn.target = '_blank';
-    els.streetHydrantsBtn.rel = 'external noopener noreferrer';
+    els.streetHydrantsBtn.removeAttribute('target');
+    els.streetHydrantsBtn.removeAttribute('rel');
   } else {
     els.streetHydrantsBtn.removeAttribute('href');
   }
@@ -916,15 +950,15 @@ function updateHydrantsButton(){
   els.streetHydrantsBtn.classList.toggle('is-fallback', fallback);
   els.streetHydrantsBtn.classList.toggle('is-reviewed-vicinity', approximate);
   els.streetHydrantsBtn.title = fallback
-    ? 'Hydrant location unresolved — open live Location SA map at Blackwood CFS in browser'
+    ? 'Hydrant location unresolved — open the in-app live map at Blackwood CFS'
     : approximate
-      ? 'Open live Location SA hydrant map at the reviewed approach point for this street in browser'
-      : 'Open live Location SA hydrant map for this street in browser';
+      ? 'Open the in-app live hydrant map at the reviewed approach point for this street'
+      : 'Open the in-app live hydrant map for this street';
   els.streetHydrantsBtn.setAttribute('aria-label', fallback
-    ? 'Hydrant location unresolved. Open live Location SA hydrant map at Blackwood CFS in browser.'
+    ? 'Hydrant location unresolved. Open the in-app live map at Blackwood CFS.'
     : approximate
-      ? 'Open live Location SA hydrant map at the reviewed approach point for this street in browser.'
-      : 'Open live Location SA hydrant map for this street in browser.');
+      ? 'Open the in-app live hydrant map at the reviewed approach point for this street.'
+      : 'Open the in-app live hydrant map for this street.');
 }
 
 const mapEls = {
@@ -1329,6 +1363,8 @@ function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&am
 window.addEventListener('pagehide', stopDirectionSpeech);
 updateDirectionSpeechButton();
 render();
+const restoreEntryId = new URLSearchParams(window.location.search).get('open');
+if(restoreEntryId && DIRECTIONS.some(entry => entry.id === restoreEntryId)) requestAnimationFrame(() => openEntry(restoreEntryId));
 </script>
 
 <script>

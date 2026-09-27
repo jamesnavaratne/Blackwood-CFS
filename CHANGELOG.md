@@ -1,3 +1,14 @@
+# v2.9.4 In-App Live Hydrants Test RC1 — 2026-09-26
+
+### Integrated live hydrant map and primary navigation
+- Added a dedicated in-app Hydrants screen using the official Location SA hydrant layer (UID 334) and basemap.
+- Added persistent Inventory / Directions Book / Hydrants navigation across all three primary screens.
+- Changed each Directions Hydrants pill to open the in-app map centred on that entry's existing stored coordinate; the one unresolved entry retains the Blackwood CFS fallback.
+- Added Selected street, Recently searched and Favourites sections, plus a direct Location SA link for the selected location.
+- Added permission-based live user location and aligned 44 px locate/zoom controls at the lower right.
+- Added generated `hydrants/locations.js` data to the normal rebuild, app shell, offline manifest and version fingerprint. Live hydrant markers and map tiles remain online-only.
+- Preserved all RC9 inventory, storage-first photos, UBD maps, Training module, 678 Directions entries and 677 active hydrant coordinates.
+
 # v2.9.3 Training Module Test RC9 — 2026-09-20
 
 ### Cross-platform HTTPS Hydrants link

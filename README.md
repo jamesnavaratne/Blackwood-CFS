@@ -19,6 +19,7 @@ Important folders:
 ```text
 data/          generated inventory JSON
 directions/    Directions Book, source documents and UBD maps
+hydrants/      In-app live hydrant map and generated street locations
 photos/        appliance locker and item photos
 icons/         PWA icons
 tools/         Excel rebuild tools
@@ -28,9 +29,9 @@ docs/          human instructions and release notes
 
 ## Current test baseline
 
-`v2.9.3 Personal UBD Hydrants Second-Pass Test RC1` keeps 677 stored-coordinate Hydrants links active and one deliberately unresolved grey fallback. Reviewed vicinity anchors are recorded separately from exact official address selections in `directions/hydrants/`.
+`v2.9.4 Personal UBD + In-App Live Hydrants Test RC1` adds a dedicated in-app Hydrants map and persistent Inventory / Directions Book / Hydrants navigation. Selecting Hydrants from a Directions entry centres the map on that street using the existing stored coordinate.
 
-The Directions UBD viewer now permits up to 8× zoom, and the in-app `Refresh now` update action shows an immediate pressed/loading state.
+The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry. Inventory, photo, UBD, training, 8× UBD zoom and refresh behaviour remain unchanged from RC9.
 
 ## Start here
 
@@ -59,6 +60,7 @@ Routine rebuild reapplies stored Directions Hydrants coordinates, regenerates th
 ```text
 directions/index.html
 directions/hydrants/GEOCODING_REVIEW_*
+hydrants/locations.js
 index.html
 data/inventory.json
 content-metadata.json

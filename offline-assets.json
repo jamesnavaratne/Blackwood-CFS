@@ -1,5 +1,5 @@
 {
-  "version": "content-980b4dc6b458727313fa",
+  "version": "content-6c488deaad77e7041976",
   "contentUpdatedUtc": "2026-07-28T14:28:14Z",
   "assets": [
     "./",
@@ -12,6 +12,8 @@
     "./data/inventory.json",
     "./directions/index.html",
     "./directions/maps/ubd/maps.js",
+    "./hydrants/index.html",
+    "./hydrants/locations.js",
     "./directions/maps/ubd/Belair National Park Map.jpg",
     "./directions/maps/ubd/Blackwood CFS Response Zone.jpg",
     "./directions/maps/ubd/SUPER UBD Large.png",

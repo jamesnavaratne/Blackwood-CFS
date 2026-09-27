@@ -20,6 +20,7 @@ Important folders:
 .github/
 data/
 directions/
+hydrants/
 docs/
 icons/
 photos/

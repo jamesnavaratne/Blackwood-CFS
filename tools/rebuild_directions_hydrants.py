@@ -62,6 +62,30 @@ def write_directions_html(path: Path, html: str, match, entries: list[dict]):
     path.write_text(updated, encoding="utf-8")
 
 
+def write_in_app_hydrant_locations(path: Path, entries: list[dict]):
+    locations = []
+    for entry in entries:
+        active = entry.get("hydrant") if valid_coordinates(entry.get("hydrant")) else None
+        fallback = entry.get("hydrantFallback") if valid_coordinates(entry.get("hydrantFallback")) else None
+        target = active or fallback
+        if not target:
+            continue
+        locations.append({
+            "id": entry.get("id", ""),
+            "label": entry.get("name", "Selected street"),
+            "suburb": entry.get("displaySuburb") or " · ".join(entry.get("areas") or []),
+            "lat": float(target["latitude"]),
+            "lon": float(target["longitude"]),
+            "fallback": active is None,
+            "approximate": bool((active or {}).get("approximate")),
+        })
+    if len(locations) != len(entries):
+        raise RuntimeError("In-app hydrant location count does not match Directions entry count.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(locations, ensure_ascii=False, separators=(",", ":"))
+    path.write_text("window.BLACKWOOD_HYDRANT_LOCATIONS = " + payload + ";\n", encoding="utf-8")
+
+
 def compact_record(record: dict) -> dict:
     fields = [
         "key", "street", "suburb", "longitude", "latitude", "matchedAddress",
@@ -433,6 +457,7 @@ def main(argv=None):
     summary = write_reports(hydrants_dir, rows, counts, geocodes)
     if not args.validate_only:
         write_directions_html(directions_path, html, match, entries)
+        write_in_app_hydrant_locations(repo_root / "hydrants" / "locations.js", entries)
 
     if summary["entries"] != 678 or summary["active"] + summary["unresolved"] != 678:
         raise RuntimeError(f"Unexpected reviewed rollout counts: {summary}")
