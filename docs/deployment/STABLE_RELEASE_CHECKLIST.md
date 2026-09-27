@@ -1,4 +1,4 @@
-# Blackwood CFS v2.0 Stable Release Checklist
+# Blackwood CFS v2.9.4 Stable Release Checklist
 
 Use this as a quick smoke-test before treating this package as the stable baseline.
 
@@ -16,6 +16,7 @@ Use this as a quick smoke-test before treating this package as the stable baseli
 - [ ] Out of Service view works.
 - [ ] Item detail modal opens and closes.
 - [ ] Appliance photos display where expected.
+- [ ] Open item details and an enlarged item photo survive a taskbar round trip.
 
 ## Hamburger menu
 
@@ -54,6 +55,24 @@ Use this as a quick smoke-test before treating this package as the stable baseli
 - [ ] Header UBD Maps pill still opens the full-screen map list.
 - [ ] Light/Dark toggle still works within Directions Book.
 - [ ] Home button returns from Directions Book to the main app.
+- [ ] A closed street modal stays closed after switching tabs and returning.
+- [ ] An open street/UBD workspace resumes at the same map, zoom and position.
+- [ ] Tapping outside the enlarged UBD closes only the top viewer layer.
+
+## Hydrants
+
+- [ ] Hydrants opens inside the app from the Directions street pill.
+- [ ] The selected street is centred without a job-location marker.
+- [ ] Live user location works after permission is granted.
+- [ ] Location SA opens as a protected external HTTPS link.
+- [ ] Selected street, map centre and zoom survive a taskbar round trip.
+- [ ] Offline state clearly reports that the live map requires a connection.
+
+## Primary taskbar
+
+- [ ] Inventory, Directions Book and Hydrants tabs stay visible on System Home and above all operational modals.
+- [ ] Each workspace resumes where it was left.
+- [ ] Tapping the active tab does not reload the current workspace.
 
 ## Source files
 
