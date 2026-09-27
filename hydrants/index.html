@@ -489,7 +489,7 @@
     <header class="topbar">
       <div class="title-row">
         <div>
-          <p class="eyebrow">Blackwood CFS · v2.9.4 Stable</p>
+          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC6</p>
           <h1>Live Hydrants</h1>
         </div>
         <div class="live-badge" id="networkBadge" role="status" aria-live="polite">
@@ -548,7 +548,7 @@
     (() => {
       'use strict';
 
-      const BUILD = 'Blackwood CFS v2.9.4 Stable — 2026-09-27';
+      const BUILD = 'Blackwood CFS v2.9.4 Operational Workspace Test RC6 — 2026-09-27';
       const MAP_SERVICE = 'https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer';
       const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
       const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
@@ -998,8 +998,7 @@
 
       els.pickerButton.addEventListener('click', () => setPickerOpen(els.menu.hidden));
       els.menu.addEventListener('click', event => {
-        const target = event.target && typeof event.target.closest === 'function' ? event.target : null;
-        const option = target ? target.closest('[data-location-key]') : null;
+        const option = event.target.closest('[data-location-key]');
         if (!option) return;
         focusLocation(option.dataset.locationKey, true);
         setPickerOpen(false);

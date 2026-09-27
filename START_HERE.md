@@ -2,9 +2,9 @@
 
 This folder contains the Blackwood CFS appliance inventory app and Directions Book.
 
-## Current stable build
+## Current test build
 
-This package is `v2.9.4 Stable`.
+This package is `v2.9.3 Personal UBD Hydrants Second-Pass Test RC1`.
 
 Hydrants rebuild priority is:
 

@@ -1,13 +1,3 @@
-# v2.9.4 Stable — 2026-09-27
-
-### Stable operational baseline
-- Promoted the field-checked Operational Workspace RC6 behaviour to the stable v2.9.4 baseline.
-- Revalidated all 403 inventory items, 678 Directions entries, 678 Hydrants catalogue entries, 12 UBD images and 67 offline assets.
-- Kept the persistent three-tab workspace, closed Directions modal behaviour, UBD outside-tap close and Inventory item/photo continuity unchanged.
-- Hardened delegated click handling so unexpected non-element event targets cannot interrupt photo, UBD, Hydrants picker or workspace persistence behaviour.
-- Removed obsolete generated Rescue photo references and made future inventory rebuilds reject explicitly configured photo files that are missing.
-- Updated visible version labels, release metadata and the service-worker app-shell cache for the stable release.
-
 # v2.9.4 Operational Workspace Test RC6 — 2026-09-27
 
 ### Directions closed-state and UBD backdrop consistency
