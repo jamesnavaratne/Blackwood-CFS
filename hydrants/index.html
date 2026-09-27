@@ -489,7 +489,7 @@
     <header class="topbar">
       <div class="title-row">
         <div>
-          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC3</p>
+          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC4</p>
           <h1>Live Hydrants</h1>
         </div>
         <div class="live-badge" id="networkBadge" role="status" aria-live="polite">
@@ -525,7 +525,7 @@
     </section>
 
     <nav class="bottom-nav" aria-label="Primary">
-      <a class="tab-btn" href="../index.html" aria-label="Open Inventory">
+      <a class="tab-btn" id="inventoryNavLink" href="../index.html" aria-label="Open Inventory">
         <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 5V3h8v2M8 10h8M8 14h5"></path></svg>
         <span>Inventory</span>
       </a>
@@ -533,7 +533,7 @@
         <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>
         <span>Directions Book</span>
       </a>
-      <button class="tab-btn active" type="button" aria-current="page" aria-label="Hydrants active tab">
+      <button class="tab-btn active" id="hydrantsNavButton" type="button" aria-current="page" aria-label="Hydrants active tab">
         <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg>
         <span>Hydrants</span>
       </button>
@@ -548,7 +548,7 @@
     (() => {
       'use strict';
 
-      const BUILD = 'Blackwood CFS v2.9.4 Operational Taskbar Test RC3 — 2026-09-27';
+      const BUILD = 'Blackwood CFS v2.9.4 Operational Workspace Test RC4 — 2026-09-27';
       const MAP_SERVICE = 'https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer';
       const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
       const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
@@ -574,7 +574,21 @@
             fallback: requestParams.get('fallback') === '1'
           }
         : null;
-      const requestedLocation = requestedFromCatalogue || requestedCustom || STATION;
+      const hasRequestedLocation = !!(requestedFromCatalogue || requestedCustom);
+      const workspaceKey = 'blackwoodHydrantsWorkspace.v1';
+
+      function readHydrantsWorkspace() {
+        try {
+          const value = JSON.parse(sessionStorage.getItem(workspaceKey) || 'null');
+          return value && typeof value === 'object' ? value : null;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      const savedWorkspace = hasRequestedLocation ? null : readHydrantsWorkspace();
+      const savedSelectedLocation = savedWorkspace && catalogueById.get(savedWorkspace.selectedKey);
+      const requestedLocation = requestedFromCatalogue || requestedCustom || savedSelectedLocation || STATION;
 
       function storedArray(key) {
         try {
@@ -619,7 +633,9 @@
         selectedSuburb: document.getElementById('selectedSuburb'),
         officialLink: document.getElementById('officialLink'),
         locateButton: document.getElementById('locateButton'),
+        inventoryNavLink: document.getElementById('inventoryNavLink'),
         directionsNavLink: document.getElementById('directionsNavLink'),
+        hydrantsNavButton: document.getElementById('hydrantsNavButton'),
         message: document.getElementById('mapMessage'),
         messageText: document.getElementById('mapMessageText'),
         toast: document.getElementById('toast')
@@ -636,6 +652,36 @@
       let overlayRequest = 0;
       let overlayTimer = 0;
       let toastTimer = 0;
+      let workspaceSaveTimer = 0;
+
+      function savedMapView() {
+        if (!savedWorkspace) return null;
+        const lat = Number(savedWorkspace.lat);
+        const lon = Number(savedWorkspace.lon);
+        const zoom = Number(savedWorkspace.zoom);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(zoom)) return null;
+        return { lat, lon, zoom: Math.max(10, Math.min(20, zoom)) };
+      }
+
+      function persistHydrantsWorkspace() {
+        window.clearTimeout(workspaceSaveTimer);
+        workspaceSaveTimer = 0;
+        const centre = map ? map.getCenter() : locations[selectedKey];
+        if (!centre) return;
+        const state = {
+          selectedKey,
+          lat: Number(centre.lat),
+          lon: Number(centre.lng ?? centre.lon),
+          zoom: map ? map.getZoom() : 18,
+          savedAt: Date.now()
+        };
+        try { sessionStorage.setItem(workspaceKey, JSON.stringify(state)); } catch (error) {}
+      }
+
+      function queueHydrantsWorkspacePersist() {
+        window.clearTimeout(workspaceSaveTimer);
+        workspaceSaveTimer = window.setTimeout(persistHydrantsWorkspace, 80);
+      }
 
       function setMessage(text, mode = 'loading') {
         els.message.classList.remove('hidden', 'error');
@@ -685,7 +731,13 @@
       }
 
       function updateDirectionsLink() {
-        const suffix = selectedKey && selectedKey !== 'station' ? `?open=${encodeURIComponent(selectedKey)}` : '';
+        let directionsEntryId = '';
+        try {
+          const savedDirections = JSON.parse(sessionStorage.getItem('blackwoodDirectionsWorkspace.v1') || 'null');
+          if (savedDirections && typeof savedDirections.entryId === 'string') directionsEntryId = savedDirections.entryId;
+        } catch (error) {}
+        if (!directionsEntryId && selectedKey && selectedKey !== 'station') directionsEntryId = selectedKey;
+        const suffix = directionsEntryId ? `?open=${encodeURIComponent(directionsEntryId)}` : '';
         els.directionsNavLink.href = `../directions/index.html${suffix}`;
       }
 
@@ -726,7 +778,7 @@
         ].join('');
       }
 
-      function focusLocation(key, addToRecent = true) {
+      function focusLocation(key, addToRecent = true, moveMap = true) {
         selectedKey = locations[key] ? key : 'station';
         const location = locations[selectedKey];
         els.selectedName.textContent = location.label;
@@ -736,12 +788,13 @@
           try { localStorage.setItem('blackwoodHydrantRecent.v1', JSON.stringify(recentKeys)); } catch (error) {}
         }
         renderStreetMenu();
-        map.setView([location.lat, location.lon], 18, { animate: false });
+        if (moveMap) map.setView([location.lat, location.lon], 18, { animate: false });
         updateOfficialLink();
         updateDirectionsLink();
         if (location.fallback && selectedKey !== 'station') {
           showToast('Hydrant location unresolved — centred on Blackwood CFS.');
         }
+        queueHydrantsWorkspacePersist();
       }
 
       function updateUserLocation(position) {
@@ -898,9 +951,10 @@
           return;
         }
 
+        const restoredView = savedMapView();
         map = L.map('map', {
-          center: [locations[selectedKey].lat, locations[selectedKey].lon],
-          zoom: 18,
+          center: restoredView ? [restoredView.lat, restoredView.lon] : [locations[selectedKey].lat, locations[selectedKey].lon],
+          zoom: restoredView ? restoredView.zoom : 18,
           minZoom: 10,
           maxZoom: 20,
           zoomControl: false,
@@ -935,9 +989,10 @@
         map.on('moveend zoomend resize', () => {
           updateOfficialLink();
           scheduleHydrantRefresh();
+          queueHydrantsWorkspacePersist();
         });
 
-        focusLocation(selectedKey, false);
+        focusLocation(selectedKey, false, !restoredView);
         scheduleHydrantRefresh(0);
       }
 
@@ -960,9 +1015,15 @@
       });
       els.locateButton.addEventListener('click', locateUser);
       els.officialLink.addEventListener('click', updateOfficialLink);
+      if (els.hydrantsNavButton) els.hydrantsNavButton.addEventListener('click', event => event.preventDefault());
+      [els.inventoryNavLink, els.directionsNavLink].filter(Boolean).forEach(link => {
+        link.addEventListener('click', persistHydrantsWorkspace, { capture: true });
+      });
       window.addEventListener('online', updateNetworkState);
       window.addEventListener('offline', updateNetworkState);
       window.addEventListener('resize', () => map && window.setTimeout(() => map.invalidateSize(), 80));
+      window.addEventListener('pagehide', persistHydrantsWorkspace);
+      document.addEventListener('visibilitychange', () => { if (document.hidden) persistHydrantsWorkspace(); });
 
       document.documentElement.dataset.build = BUILD;
       updateNetworkState();

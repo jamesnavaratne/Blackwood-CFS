@@ -1,3 +1,14 @@
+# v2.9.4 Operational Workspace Test RC4 — 2026-09-27
+
+### Stateful three-tab operational workspace
+- Kept the full-width Inventory / Directions Book / Hydrants taskbar visible on System Home.
+- Added session restoration for the selected Inventory appliance, locker/filter, search text, page position and System Home state.
+- Added session restoration for the Hydrants selected street, exact map centre and zoom.
+- Made the Inventory taskbar return to the existing Directions street and UBD workspace instead of reopening Directions at its default screen.
+- Separated taskbar switching from the Directions Hydrants pill: the pill still targets the selected street, while taskbar tabs resume their existing workspace.
+- Preserved the RC3 Directions/UBD modal state, selected map, zoom and pan behaviour.
+- Kept all three active taskbar tabs as no-op controls so tapping the current workspace cannot accidentally reload it.
+
 # v2.9.4 Operational Taskbar Test RC3 — 2026-09-27
 
 ### Instant Directions / UBD / Hydrants switching

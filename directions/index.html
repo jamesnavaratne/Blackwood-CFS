@@ -957,7 +957,9 @@ function updateHydrantsButton(){
   } else {
     els.streetHydrantsBtn.removeAttribute('href');
   }
-  if(els.primaryHydrantsLink) els.primaryHydrantsLink.href = available ? url : '../hydrants/index.html';
+  // The street-modal pill deliberately targets this street. The taskbar tab is
+  // a workspace switch, so it resumes the existing Hydrants map position.
+  if(els.primaryHydrantsLink) els.primaryHydrantsLink.href = '../hydrants/index.html';
   els.streetHydrantsBtn.setAttribute('aria-disabled', String(!available));
   els.streetHydrantsBtn.classList.toggle('is-fallback', fallback);
   els.streetHydrantsBtn.classList.toggle('is-reviewed-vicinity', approximate);

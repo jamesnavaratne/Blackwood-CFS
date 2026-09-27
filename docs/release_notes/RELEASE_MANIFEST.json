@@ -1,8 +1,8 @@
 {
-  "version": "Blackwood CFS v2.9.4 Personal UBD + Operational Taskbar Test RC3",
+  "version": "Blackwood CFS v2.9.4 Personal UBD + Operational Workspace Test RC4",
   "release_type": "test_rc",
   "date": "2026-09-27",
-  "based_on": "Blackwood_CFS_v2.9.4_IN_APP_LIVE_HYDRANTS_TEST_RC2_GITHUB.zip",
+  "based_on": "Blackwood_CFS_v2.9.4_OPERATIONAL_TASKBAR_TEST_RC3_GITHUB.zip",
   "active_inventory_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "directions_source_folder": "directions/source/",
   "ubd_maps_folder": "directions/maps/ubd/",
@@ -17,8 +17,12 @@
     "In-app live Hydrants map with official Location SA layer UID 334",
     "Fixed full-screen-width Inventory, Directions Book and Hydrants taskbar",
     "Taskbar remains above Directions, inventory and UBD modal layers",
+    "Taskbar remains visible on System Home",
     "Directions street and UBD viewer workspace restores after a Hydrants round trip",
     "Selected UBD map, zoom and pan position are preserved within the current app session",
+    "Inventory appliance, locker or filter, search and page position are preserved within the current app session",
+    "Hydrants selected street, map centre and zoom are preserved within the current app session",
+    "Taskbar tabs resume saved workspaces while the Directions Hydrants pill targets the selected street",
     "677 stored-coordinate Hydrants locations",
     "1 clearly identified Blackwood CFS fallback location",
     "Selected street, recently searched and favourites map picker sections",
@@ -54,7 +58,7 @@
   "app_logic_changed_in_this_release": true,
   "notes": [
     "Test ZIP first; not yet designated stable.",
-    "Built directly from the v2.9.4 In-App Live Hydrants Test RC2 baseline.",
+    "Built directly from the v2.9.4 Operational Taskbar Test RC3 baseline.",
     "Reviewed exact and reviewed vicinity hydrant results remain reported separately.",
     "GOVERNMENT ROAD SPRINGFIELD remains grey for manual review.",
     "Do not regenerate Directions wording from secondary sources."

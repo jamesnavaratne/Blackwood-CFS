@@ -6394,6 +6394,7 @@ body.dark .learner-guide-link { box-shadow: 0 0 14px color-mix(in srgb, var(--ac
 .primary-bottom-link.active { color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,transparent); }
 .primary-bottom-icon { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 body > main { padding-bottom:calc(104px + env(safe-area-inset-bottom)) !important; }
+.v2-appliance-home { padding-bottom:calc(90px + env(safe-area-inset-bottom)) !important; }
 .offline-banner, .app-update-banner { bottom:calc(82px + env(safe-area-inset-bottom)); }
 .app-toast { bottom:calc(90px + env(safe-area-inset-bottom)); }
 body.offline-banner-visible > main, body.app-update-banner-visible > main { padding-bottom:calc(178px + env(safe-area-inset-bottom)) !important; }
@@ -6715,7 +6716,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4 Personal UBD + Operational Taskbar Test RC3</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4 Personal UBD + Operational Workspace Test RC4</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -6776,13 +6777,13 @@ v2.2 Android cold-start smoothing test:
 </main>
 
 <nav class="primary-bottom-nav" aria-label="Primary">
-  <a class="primary-bottom-link active" href="index.html" aria-current="page" aria-label="Inventory active tab">
+  <a class="primary-bottom-link active" id="primaryInventoryLink" href="index.html" aria-current="page" aria-label="Inventory active tab">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 5V3h8v2M8 10h8M8 14h5"></path></svg><span>Inventory</span>
   </a>
-  <a class="primary-bottom-link" href="directions/index.html" aria-label="Open Directions Book">
+  <a class="primary-bottom-link" id="primaryDirectionsLink" href="directions/index.html" aria-label="Open Directions Book">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span>Directions Book</span>
   </a>
-  <a class="primary-bottom-link" href="hydrants/index.html" aria-label="Open Hydrants">
+  <a class="primary-bottom-link" id="primaryHydrantsLink" href="hydrants/index.html" aria-label="Open Hydrants">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg><span>Hydrants</span>
   </a>
 </nav>
@@ -8948,6 +8949,7 @@ installNativeLockerSwipe();
     if (!home || !home.classList.contains("open")) return;
     Array.from(document.body.children).forEach(child => {
       if (child === home) return;
+      if (child.classList && child.classList.contains("primary-bottom-nav")) return;
       if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
       child.classList.add("v2-app-hidden-for-home");
     });
@@ -9585,6 +9587,7 @@ installNativeLockerSwipe();
 
     Array.from(document.body.children).forEach(function(child){
       if (child === home) return;
+      if (child.classList && child.classList.contains("primary-bottom-nav")) return;
       if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
       child.classList.add("v2-app-hidden-for-home");
     });
@@ -10027,6 +10030,7 @@ installNativeLockerSwipe();
 
       Array.from(document.body.children).forEach(function(child){
         if (child === home) return;
+        if (child.classList && child.classList.contains("primary-bottom-nav")) return;
         if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
         child.classList.add("v2-app-hidden-for-home");
       });
@@ -10516,6 +10520,128 @@ installNativeLockerSwipe();
 
   queueCheck(350);
   setInterval(updateOfflineBanner, 30000);
+})();
+</script>
+
+<script>
+// v2.9.4 RC4 operational workspace: preserve Inventory independently while
+// the fixed taskbar switches between Inventory, Directions and Hydrants.
+(function(){
+  "use strict";
+
+  const workspaceKey = "blackwoodInventoryWorkspace.v1";
+  const directionsWorkspaceKey = "blackwoodDirectionsWorkspace.v1";
+  let restoringWorkspace = true;
+  let saveTimer = 0;
+
+  function readState(key){
+    try {
+      const value = JSON.parse(sessionStorage.getItem(key) || "null");
+      return value && typeof value === "object" ? value : null;
+    } catch(e) {
+      return null;
+    }
+  }
+
+  function systemHomeIsOpen(){
+    const home = document.querySelector(".v2-appliance-home");
+    return !!(home && home.classList.contains("open"));
+  }
+
+  function persistInventoryWorkspace(){
+    window.clearTimeout(saveTimer);
+    saveTimer = 0;
+    if (restoringWorkspace) return;
+    const state = {
+      appliance: DATA && DATA.appliance ? DATA.appliance : "Blackwood Rescue",
+      locker: typeof activeLocker === "string" ? activeLocker : "Home",
+      search: searchEl ? searchEl.value : "",
+      scrollY: Math.max(0, window.scrollY || 0),
+      systemHomeOpen: systemHomeIsOpen(),
+      savedAt: Date.now()
+    };
+    try { sessionStorage.setItem(workspaceKey, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function queueInventoryPersist(delay){
+    if (restoringWorkspace) return;
+    window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(persistInventoryWorkspace, Number.isFinite(delay) ? delay : 80);
+  }
+
+  function keepTaskbarVisible(){
+    const taskbar = document.querySelector(".primary-bottom-nav");
+    if (taskbar) taskbar.classList.remove("v2-app-hidden-for-home");
+  }
+
+  function closeSystemHomeForRestore(){
+    const home = document.querySelector(".v2-appliance-home");
+    if (home) home.classList.remove("open", "v2-static-startup", "v2-home-leaving");
+    Array.from(document.body.children).forEach(child => child.classList.remove("v2-app-hidden-for-home"));
+    keepTaskbarVisible();
+  }
+
+  function validLocker(locker){
+    if (["Home", "★", "Out of Service"].includes(locker)) return locker;
+    return DATA && Array.isArray(DATA.lockers) && DATA.lockers.includes(locker) ? locker : "Home";
+  }
+
+  function updateDirectionsTaskbarLink(){
+    const link = document.getElementById("primaryDirectionsLink");
+    if (!link) return;
+    const state = readState(directionsWorkspaceKey);
+    const entryId = state && typeof state.entryId === "string" ? state.entryId : "";
+    link.href = entryId ? `directions/index.html?open=${encodeURIComponent(entryId)}` : "directions/index.html";
+  }
+
+  function restoreInventoryWorkspace(){
+    const state = readState(workspaceKey);
+    keepTaskbarVisible();
+    updateDirectionsTaskbarLink();
+
+    if (!state || state.systemHomeOpen !== false) {
+      restoringWorkspace = false;
+      persistInventoryWorkspace();
+      return;
+    }
+
+    closeSystemHomeForRestore();
+    const appliance = state.appliance && APPLIANCES[state.appliance] ? state.appliance : "Blackwood Rescue";
+    setActiveAppliance(appliance);
+    activeLocker = validLocker(state.locker);
+    if (searchEl) searchEl.value = typeof state.search === "string" ? state.search : "";
+    makeTabs();
+    renderImmediate();
+    scrollActiveLockerTabIntoView();
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      window.scrollTo({ top: Math.max(0, Number(state.scrollY) || 0), behavior: "auto" });
+      restoringWorkspace = false;
+      persistInventoryWorkspace();
+    }));
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    const inventoryLink = document.getElementById("primaryInventoryLink");
+    const directionsLink = document.getElementById("primaryDirectionsLink");
+    const hydrantsLink = document.getElementById("primaryHydrantsLink");
+
+    if (inventoryLink) inventoryLink.addEventListener("click", event => event.preventDefault());
+    [directionsLink, hydrantsLink].filter(Boolean).forEach(link => {
+      link.addEventListener("click", persistInventoryWorkspace, { capture: true });
+    });
+    if (searchEl) searchEl.addEventListener("input", () => queueInventoryPersist(120));
+    document.addEventListener("click", event => {
+      if (event.target.closest("#tabs button, [data-truck], [data-v2-home-truck], #systemHomeHeaderBtn, .v2-main-appliance-heading-system-home")) {
+        queueInventoryPersist(320);
+      }
+    }, true);
+    window.addEventListener("scroll", () => queueInventoryPersist(120), { passive: true });
+    window.addEventListener("pagehide", persistInventoryWorkspace);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) persistInventoryWorkspace(); });
+
+    window.setTimeout(restoreInventoryWorkspace, 40);
+  });
 })();
 </script>
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-operational-taskbar-test-rc3-20260927';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-operational-workspace-test-rc4-20260927';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
