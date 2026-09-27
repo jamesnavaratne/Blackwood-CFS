@@ -1,3 +1,13 @@
+# v2.9.4 Operational Taskbar Test RC3 — 2026-09-27
+
+### Instant Directions / UBD / Hydrants switching
+- Raised the full-width taskbar above the Directions, UBD, inventory and photo modal layers so it remains visible and tappable throughout the app.
+- Made the Directions taskbar Hydrants tab follow the currently selected street coordinate, matching the street modal's Hydrants pill.
+- Added session workspace preservation for the selected Directions entry, street modal scroll position, UBD list/viewer state, selected UBD map, zoom and pan position.
+- Returning from Hydrants through the Directions Book taskbar restores the same street modal and UBD viewer exactly where they were left.
+- Reserved modal space above the taskbar so UBD content and controls are not hidden beneath it.
+- Preserved RC2's circular live-location marker, safe direct-open default, all hydrant coordinates and all existing inventory/photo/training behaviour.
+
 # v2.9.4 In-App Live Hydrants Test RC2 — 2026-09-27
 
 ### Android location marker and full-width taskbar

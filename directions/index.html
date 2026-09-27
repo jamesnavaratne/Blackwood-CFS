@@ -650,7 +650,7 @@ body[data-theme="light"] .offline-banner-copy small { color:#203747; }
 
 /* v2.9.4 RC2 full-width persistent primary navigation */
 .primary-bottom-nav {
-  position:fixed; z-index:45; right:0; left:0; bottom:0;
+  position:fixed; z-index:20000; right:0; left:0; bottom:0;
   display:grid; grid-template-columns:repeat(3,1fr); width:100%;
   min-height:calc(70px + env(safe-area-inset-bottom));
   padding:6px 8px calc(6px + env(safe-area-inset-bottom));
@@ -670,6 +670,15 @@ body[data-theme="light"] .offline-banner-copy small { color:#203747; }
 .letter-jump { bottom:calc(80px + env(safe-area-inset-bottom)); }
 .offline-banner, .app-update-banner { bottom:calc(82px + env(safe-area-inset-bottom)); }
 body.offline-banner-visible .content, body.app-update-banner-visible .content { padding-bottom:calc(232px + env(safe-area-inset-bottom)); }
+
+/* v2.9.4 RC3 operational taskbar: always above the Directions and UBD modal stack. */
+.modal { padding-bottom:calc(78px + env(safe-area-inset-bottom)); }
+.card { max-height:calc(100dvh - env(safe-area-inset-top, 0px) - 88px - env(safe-area-inset-bottom)); }
+.map-viewer-card { height:calc(100dvh - env(safe-area-inset-top, 0px) - 82px - env(safe-area-inset-bottom)); }
+.modal.street-map-context {
+  bottom:calc(70px + env(safe-area-inset-bottom));
+  padding-bottom:8px;
+}
 
 </style>
 
@@ -715,10 +724,10 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   <a class="primary-bottom-link" href="../index.html" aria-label="Open Inventory">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 5V3h8v2M8 10h8M8 14h5"></path></svg><span>Inventory</span>
   </a>
-  <a class="primary-bottom-link active" href="index.html" aria-current="page" aria-label="Directions Book active tab">
+  <a class="primary-bottom-link active" id="primaryDirectionsLink" href="index.html" aria-current="page" aria-label="Directions Book active tab">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span>Directions Book</span>
   </a>
-  <a class="primary-bottom-link" href="../hydrants/index.html" aria-label="Open Hydrants">
+  <a class="primary-bottom-link" id="primaryHydrantsLink" href="../hydrants/index.html" aria-label="Open Hydrants">
     <svg class="primary-bottom-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg><span>Hydrants</span>
   </a>
 </nav>
@@ -840,6 +849,8 @@ const els = {
   directionIssuePreview: document.getElementById('directionIssuePreview'),
   directionIssueSub: document.getElementById('directionIssueSub'),
   directionEmailIssueBtn: document.getElementById('directionEmailIssueBtn'),
+  primaryDirectionsLink: document.getElementById('primaryDirectionsLink'),
+  primaryHydrantsLink: document.getElementById('primaryHydrantsLink'),
   lightBtn: document.getElementById('lightBtn'), darkBtn: document.getElementById('darkBtn')
 };
 const DIRECTION_ISSUE_EMAIL = "james.navaratne@gmail.com";
@@ -946,6 +957,7 @@ function updateHydrantsButton(){
   } else {
     els.streetHydrantsBtn.removeAttribute('href');
   }
+  if(els.primaryHydrantsLink) els.primaryHydrantsLink.href = available ? url : '../hydrants/index.html';
   els.streetHydrantsBtn.setAttribute('aria-disabled', String(!available));
   els.streetHydrantsBtn.classList.toggle('is-fallback', fallback);
   els.streetHydrantsBtn.classList.toggle('is-reviewed-vicinity', approximate);
@@ -969,9 +981,102 @@ const mapEls = {
 };
 const UBD_MAPS = Array.isArray(window.UBD_MAPS) ? window.UBD_MAPS : [];
 let mapZoom = 1;
+let activeMapIndex = null;
+const workspaceKey = 'blackwoodDirectionsWorkspace.v1';
+let workspaceSaveTimer = 0;
 function mapUrlFor(map){
   if(window.UBD_MAP_DATA && window.UBD_MAP_DATA[map.file]) return window.UBD_MAP_DATA[map.file];
   return 'maps/ubd/' + encodeURIComponent(map.file).replace(/%2F/g, '/');
+}
+function readWorkspaceState(){
+  try {
+    const value = JSON.parse(sessionStorage.getItem(workspaceKey) || 'null');
+    return value && typeof value === 'object' ? value : null;
+  } catch(error) {
+    return null;
+  }
+}
+function persistDirectionsWorkspace(){
+  window.clearTimeout(workspaceSaveTimer);
+  workspaceSaveTimer = 0;
+  if(!selected) return;
+  const streetCard = els.modal.querySelector('.card');
+  const mapListCard = mapEls.listModal.querySelector('.card');
+  const maxScrollX = Math.max(0, mapEls.stage.scrollWidth - mapEls.stage.clientWidth);
+  const maxScrollY = Math.max(0, mapEls.stage.scrollHeight - mapEls.stage.clientHeight);
+  const state = {
+    entryId: selected.id,
+    streetOpen: els.modal.classList.contains('open'),
+    streetScrollTop: streetCard ? streetCard.scrollTop : 0,
+    mapListOpen: mapEls.listModal.classList.contains('open'),
+    mapListScrollTop: mapListCard ? mapListCard.scrollTop : 0,
+    mapViewerOpen: mapEls.viewerModal.classList.contains('open'),
+    mapLaunchContext,
+    mapIndex: Number.isInteger(activeMapIndex) ? activeMapIndex : null,
+    mapZoom,
+    mapScrollLeft: mapEls.stage.scrollLeft,
+    mapScrollTop: mapEls.stage.scrollTop,
+    mapScrollXRatio: maxScrollX > 0 ? mapEls.stage.scrollLeft / maxScrollX : 0,
+    mapScrollYRatio: maxScrollY > 0 ? mapEls.stage.scrollTop / maxScrollY : 0,
+    search: els.search.value,
+    savedAt: Date.now()
+  };
+  try { sessionStorage.setItem(workspaceKey, JSON.stringify(state)); } catch(error) {}
+}
+function queueWorkspacePersist(){
+  window.clearTimeout(workspaceSaveTimer);
+  workspaceSaveTimer = window.setTimeout(persistDirectionsWorkspace, 80);
+}
+function restoreMapViewport(state){
+  if(!state) return;
+  const apply = () => {
+    setMapZoom(Number.isFinite(Number(state.mapZoom)) ? Number(state.mapZoom) : 1, false);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const maxScrollX = Math.max(0, mapEls.stage.scrollWidth - mapEls.stage.clientWidth);
+      const maxScrollY = Math.max(0, mapEls.stage.scrollHeight - mapEls.stage.clientHeight);
+      const ratioX = Number(state.mapScrollXRatio);
+      const ratioY = Number(state.mapScrollYRatio);
+      mapEls.stage.scrollLeft = Number.isFinite(ratioX) && maxScrollX > 0
+        ? Math.max(0, Math.min(maxScrollX, ratioX * maxScrollX))
+        : Math.max(0, Number(state.mapScrollLeft) || 0);
+      mapEls.stage.scrollTop = Number.isFinite(ratioY) && maxScrollY > 0
+        ? Math.max(0, Math.min(maxScrollY, ratioY * maxScrollY))
+        : Math.max(0, Number(state.mapScrollTop) || 0);
+      queueWorkspacePersist();
+    }));
+  };
+  let restored = false;
+  const applyOnce = () => {
+    if(restored) return;
+    restored = true;
+    apply();
+  };
+  mapEls.image.addEventListener('load', applyOnce, { once:true });
+  if(mapEls.image.complete) requestAnimationFrame(applyOnce);
+}
+function restoreDirectionsWorkspace(entryId){
+  const state = readWorkspaceState();
+  const matchingState = state && state.entryId === entryId ? state : null;
+  if(matchingState && typeof matchingState.search === 'string') {
+    els.search.value = matchingState.search;
+    render();
+  }
+  openEntry(entryId);
+  if(!matchingState) return;
+  requestAnimationFrame(() => {
+    const streetCard = els.modal.querySelector('.card');
+    if(streetCard) streetCard.scrollTop = Math.max(0, Number(matchingState.streetScrollTop) || 0);
+    if(matchingState.mapListOpen || matchingState.mapViewerOpen) {
+      openMapList('street');
+      const mapListCard = mapEls.listModal.querySelector('.card');
+      if(mapListCard) mapListCard.scrollTop = Math.max(0, Number(matchingState.mapListScrollTop) || 0);
+      const mapIndex = Number(matchingState.mapIndex);
+      if(matchingState.mapViewerOpen && Number.isInteger(mapIndex) && UBD_MAPS[mapIndex]) {
+        openMap(mapIndex, matchingState);
+      }
+    }
+    queueWorkspacePersist();
+  });
 }
 function renderMapList(){
   if(!UBD_MAPS.length){ mapEls.list.innerHTML = '<div class="empty">No UBD maps are configured.</div>'; return; }
@@ -1006,6 +1111,7 @@ function openMapList(context='global'){
   mapEls.listModal.classList.add('open'); mapEls.listModal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
   const card = mapEls.listModal.querySelector('.card'); if(card) card.scrollTop = 0;
   if(useStreetContext) requestAnimationFrame(updateStreetMapLayout);
+  queueWorkspacePersist();
 }
 function closeMapList(){
   closeMapViewer();
@@ -1013,6 +1119,7 @@ function closeMapList(){
   setStreetMapMode(false);
   mapLaunchContext = 'global';
   if(!els.modal.classList.contains('open')) document.body.classList.remove('modal-open');
+  queueWorkspacePersist();
 }
 function setMapZoom(nextZoom, keepCentre=true, anchorX=null, anchorY=null){
   const oldWidth = mapEls.image.scrollWidth || mapEls.image.getBoundingClientRect().width || 1;
@@ -1031,22 +1138,30 @@ function setMapZoom(nextZoom, keepCentre=true, anchorX=null, anchorY=null){
     requestAnimationFrame(() => {
       mapEls.stage.scrollLeft = Math.max(0, centreX * (mapEls.image.scrollWidth || oldWidth) - anchorOffsetX);
       mapEls.stage.scrollTop = Math.max(0, centreY * (mapEls.image.scrollHeight || oldHeight) - anchorOffsetY);
+      queueWorkspacePersist();
     });
+  } else {
+    queueWorkspacePersist();
   }
 }
-function openMap(index){
+function openMap(index, restoreState=null){
   const map = UBD_MAPS[index]; if(!map) return;
+  activeMapIndex = index;
   mapEls.viewerTitle.textContent = map.title || map.file.replace(/\.[^.]+$/, '');
   mapEls.image.alt = mapEls.viewerTitle.textContent;
-  mapEls.image.src = mapUrlFor(map);
   mapEls.stage.scrollLeft = 0; mapEls.stage.scrollTop = 0;
   setMapZoom(1, false);
   mapEls.viewerModal.classList.add('open'); mapEls.viewerModal.setAttribute('aria-hidden','false');
+  mapEls.image.src = mapUrlFor(map);
+  if(restoreState) restoreMapViewport(restoreState);
   if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout);
+  queueWorkspacePersist();
 }
 function closeMapViewer(){
   mapEls.viewerModal.classList.remove('open'); mapEls.viewerModal.setAttribute('aria-hidden','true');
   mapEls.image.removeAttribute('src'); mapEls.image.alt = ''; setMapZoom(1, false);
+  activeMapIndex = null;
+  queueWorkspacePersist();
 }
 mapEls.open.onclick = () => openMapList('global');
 els.streetUbdBtn.onclick = () => openMapList('street');
@@ -1158,6 +1273,7 @@ mapEls.stage.addEventListener('wheel', e => {
   if(!(e.ctrlKey || e.metaKey)) return;
   e.preventDefault(); setMapZoom(mapZoom + (e.deltaY < 0 ? .25 : -.25), true, e.clientX, e.clientY);
 }, { passive:false });
+mapEls.stage.addEventListener('scroll', queueWorkspacePersist, { passive:true });
 window.addEventListener('resize', () => { if(mapLaunchContext === 'street') requestAnimationFrame(updateStreetMapLayout); });
 function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' '); }
 function searchable(e){
@@ -1250,6 +1366,7 @@ function openEntry(id){
   updateStar();
   updateDirectionIssuePreview();
   els.modal.classList.add('open'); els.modal.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); document.querySelector('.card').scrollTop = 0;
+  queueWorkspacePersist();
 }
 
 function setDirectionIssueType(type){
@@ -1339,6 +1456,7 @@ function closeModal(){
   } else {
     document.body.classList.remove('modal-open');
   }
+  queueWorkspacePersist();
 }
 els.close.onclick=closeModal; els.scrim.onclick=closeModal;
 if(els.speechBtn) els.speechBtn.onclick=speakSelectedDirection;
@@ -1358,13 +1476,16 @@ if(els.directionEmailIssueBtn) {
   });
 }
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(els.directionIssueModal.classList.contains('open')) closeDirectionIssueModal(); else if(mapEls.viewerModal.classList.contains('open')) closeMapViewer(); else if(mapEls.listModal.classList.contains('open')) closeMapList(); else closeModal(); });
-els.search.addEventListener('input', render); els.clear.onclick=()=>{ els.search.value=''; render(); els.search.focus(); };
+els.search.addEventListener('input', () => { render(); queueWorkspacePersist(); }); els.clear.onclick=()=>{ els.search.value=''; render(); els.search.focus(); queueWorkspacePersist(); };
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-window.addEventListener('pagehide', stopDirectionSpeech);
+if(els.primaryDirectionsLink) els.primaryDirectionsLink.addEventListener('click', event => event.preventDefault());
+[els.streetHydrantsBtn, els.primaryHydrantsLink].filter(Boolean).forEach(link => link.addEventListener('click', persistDirectionsWorkspace));
+window.addEventListener('pagehide', () => { persistDirectionsWorkspace(); stopDirectionSpeech(); });
+document.addEventListener('visibilitychange', () => { if(document.hidden) persistDirectionsWorkspace(); });
 updateDirectionSpeechButton();
 render();
 const restoreEntryId = new URLSearchParams(window.location.search).get('open');
-if(restoreEntryId && DIRECTIONS.some(entry => entry.id === restoreEntryId)) requestAnimationFrame(() => openEntry(restoreEntryId));
+if(restoreEntryId && DIRECTIONS.some(entry => entry.id === restoreEntryId)) requestAnimationFrame(() => restoreDirectionsWorkspace(restoreEntryId));
 </script>
 
 <script>
