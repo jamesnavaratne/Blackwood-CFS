@@ -1,3 +1,12 @@
+# v2.9.4.2 Stable — 2026-09-27
+
+### Reverse-order modal closing
+- Added one stack-aware backdrop close function for the Directions/UBD workspace.
+- Outside clicks now close the enlarged UBD viewer first, the UBD list second and the street Directions modal last.
+- Kept each modal's explicit X button scoped to that modal's intended action.
+- Preserved normal interaction with the street modal and Hydrants pill while UBD split panels are open.
+- Updated stable version labels, release metadata, offline fingerprint and service-worker cache identity.
+
 # v2.9.4.1 Stable — 2026-09-27
 
 ### UBD split-panel layering fix

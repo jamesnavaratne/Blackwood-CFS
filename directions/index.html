@@ -1182,12 +1182,23 @@ function closeMapViewer(){
   activeMapIndex = null;
   queueWorkspacePersist();
 }
+function closeTopWorkspaceLayer(){
+  if(mapEls.viewerModal.classList.contains('open')) {
+    closeMapViewer();
+    return;
+  }
+  if(mapEls.listModal.classList.contains('open')) {
+    closeMapList();
+    return;
+  }
+  if(els.modal.classList.contains('open')) closeModal();
+}
 mapEls.open.onclick = () => openMapList('global');
 els.streetUbdBtn.onclick = () => openMapList('street');
 mapEls.listClose.onclick = closeMapList;
-mapEls.listScrim.onclick = closeMapList;
+mapEls.listScrim.onclick = closeTopWorkspaceLayer;
 mapEls.viewerClose.onclick = closeMapViewer;
-mapEls.viewerScrim.onclick = closeMapViewer;
+mapEls.viewerScrim.onclick = closeTopWorkspaceLayer;
 mapEls.zoomOut.onclick = () => setMapZoom(mapZoom - .25);
 mapEls.zoomIn.onclick = () => setMapZoom(mapZoom + .25);
 mapEls.zoomReset.onclick = () => setMapZoom(1);
@@ -1478,7 +1489,7 @@ function closeModal(){
   }
   queueWorkspacePersist();
 }
-els.close.onclick=closeModal; els.scrim.onclick=closeModal;
+els.close.onclick=closeModal; els.scrim.onclick=closeTopWorkspaceLayer;
 if(els.speechBtn) els.speechBtn.onclick=speakSelectedDirection;
 if(els.reportBtn) els.reportBtn.onclick=openDirectionIssueModal;
 if(els.directionIssueClose) els.directionIssueClose.onclick=closeDirectionIssueModal;
