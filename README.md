@@ -29,9 +29,9 @@ docs/          human instructions and release notes
 
 ## Current test baseline
 
-`v2.9.4 Personal UBD + Operational Workspace Test RC4` turns the full-width Inventory / Directions Book / Hydrants taskbar into a stateful three-part operational workspace. The taskbar now remains available on System Home as well as throughout each working screen.
+`v2.9.4 Personal UBD + Operational Workspace Test RC5` turns the full-width Inventory / Directions Book / Hydrants taskbar into a stateful three-part operational workspace. The taskbar remains available on System Home as well as throughout each working screen.
 
-RC4 preserves each workspace independently for the current app session. Directions restores the selected street, both open modal layers, selected UBD map, zoom and pan. Hydrants restores its selected street, map centre and zoom. Inventory restores System Home or the selected appliance, locker/filter, search and page position. RC3's modal-safe taskbar, RC2's circular Android location dot, reserved taskbar space and safe Blackwood CFS direct-open default are retained. The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry.
+RC5 preserves each workspace independently for the current app session. Directions restores the selected street, both open modal layers, selected UBD map, zoom and pan. Hydrants restores its selected street, map centre and zoom. Inventory restores System Home or the selected appliance, locker/filter, search, page position and open item-details modal. If an item photo viewer was open, its image, zoom and pan are also restored. RC3's modal-safe taskbar, RC2's circular Android location dot, reserved taskbar space and safe Blackwood CFS direct-open default are retained. The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry.
 
 ## Start here
 

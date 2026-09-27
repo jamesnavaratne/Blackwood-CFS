@@ -6716,7 +6716,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4 Personal UBD + Operational Workspace Test RC4</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4 Personal UBD + Operational Workspace Test RC5</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -8317,6 +8317,56 @@ function initialisePhotoModalFeature() {
       wrap.scrollLeft = 0;
     }
   }
+
+  function inventoryPhotoWorkspaceState() {
+    const wrap = getPhotoWrap();
+    const maxScrollX = wrap ? Math.max(0, wrap.scrollWidth - wrap.clientWidth) : 0;
+    const maxScrollY = wrap ? Math.max(0, wrap.scrollHeight - wrap.clientHeight) : 0;
+    return {
+      open: !!(photoModal && photoModal.classList.contains("open")),
+      src: photoModalImg ? (photoModalImg.getAttribute("src") || "") : "",
+      title: photoModalTitle ? photoModalTitle.textContent : "",
+      caption: photoModalCaption ? photoModalCaption.textContent : "",
+      zoom: photoZoom,
+      scrollLeft: wrap ? wrap.scrollLeft : 0,
+      scrollTop: wrap ? wrap.scrollTop : 0,
+      scrollXRatio: wrap && maxScrollX > 0 ? wrap.scrollLeft / maxScrollX : 0,
+      scrollYRatio: wrap && maxScrollY > 0 ? wrap.scrollTop / maxScrollY : 0
+    };
+  }
+
+  function restoreInventoryPhotoWorkspace(state) {
+    if (!state || !state.open || !state.src) return;
+    openPhotoModal(state.src, state.title || "Photo", state.caption || "");
+
+    let attempts = 0;
+    const applyViewport = () => {
+      attempts += 1;
+      if (!photoModal.classList.contains("open") && attempts < 20) {
+        window.setTimeout(applyViewport, 40);
+        return;
+      }
+      const wrap = getPhotoWrap();
+      if (!wrap) return;
+      setPhotoZoom(Number.isFinite(Number(state.zoom)) ? Number(state.zoom) : 1, false);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const maxScrollX = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+        const maxScrollY = Math.max(0, wrap.scrollHeight - wrap.clientHeight);
+        const ratioX = Number(state.scrollXRatio);
+        const ratioY = Number(state.scrollYRatio);
+        wrap.scrollLeft = Number.isFinite(ratioX) && maxScrollX > 0
+          ? Math.max(0, Math.min(maxScrollX, ratioX * maxScrollX))
+          : Math.max(0, Number(state.scrollLeft) || 0);
+        wrap.scrollTop = Number.isFinite(ratioY) && maxScrollY > 0
+          ? Math.max(0, Math.min(maxScrollY, ratioY * maxScrollY))
+          : Math.max(0, Number(state.scrollTop) || 0);
+      }));
+    };
+    window.setTimeout(applyViewport, 40);
+  }
+
+  window.getInventoryPhotoWorkspace = inventoryPhotoWorkspaceState;
+  window.restoreInventoryPhotoWorkspace = restoreInventoryPhotoWorkspace;
 
   function togglePhotoZoomAt(clientX = null, clientY = null) {
     setPhotoZoom(photoZoom > 1 ? 1 : 2.25, true, clientX, clientY);
@@ -10524,7 +10574,7 @@ installNativeLockerSwipe();
 </script>
 
 <script>
-// v2.9.4 RC4 operational workspace: preserve Inventory independently while
+// v2.9.4 RC5 operational workspace: preserve Inventory independently while
 // the fixed taskbar switches between Inventory, Directions and Hydrants.
 (function(){
   "use strict";
@@ -10552,12 +10602,18 @@ installNativeLockerSwipe();
     window.clearTimeout(saveTimer);
     saveTimer = 0;
     if (restoringWorkspace) return;
+    const itemMaxScroll = itemModal ? Math.max(0, itemModal.scrollHeight - itemModal.clientHeight) : 0;
     const state = {
       appliance: DATA && DATA.appliance ? DATA.appliance : "Blackwood Rescue",
       locker: typeof activeLocker === "string" ? activeLocker : "Home",
       search: searchEl ? searchEl.value : "",
       scrollY: Math.max(0, window.scrollY || 0),
       systemHomeOpen: systemHomeIsOpen(),
+      itemOpen: !!(itemModal && itemModal.classList.contains("open") && modalCurrentItemKey),
+      itemKey: modalCurrentItemKey || "",
+      itemScrollTop: itemModal ? itemModal.scrollTop : 0,
+      itemScrollRatio: itemModal && itemMaxScroll > 0 ? itemModal.scrollTop / itemMaxScroll : 0,
+      photo: typeof window.getInventoryPhotoWorkspace === "function" ? window.getInventoryPhotoWorkspace() : null,
       savedAt: Date.now()
     };
     try { sessionStorage.setItem(workspaceKey, JSON.stringify(state)); } catch(e) {}
@@ -10614,6 +10670,23 @@ installNativeLockerSwipe();
     renderImmediate();
     scrollActiveLockerTabIntoView();
 
+    if (state.itemOpen && state.itemKey) {
+      const item = DATA.records.find(record => itemKey(record) === state.itemKey);
+      if (item) {
+        openItemModal(item);
+        requestAnimationFrame(() => {
+          const maxScroll = Math.max(0, itemModal.scrollHeight - itemModal.clientHeight);
+          const ratio = Number(state.itemScrollRatio);
+          itemModal.scrollTop = Number.isFinite(ratio) && maxScroll > 0
+            ? Math.max(0, Math.min(maxScroll, ratio * maxScroll))
+            : Math.max(0, Number(state.itemScrollTop) || 0);
+          if (state.photo && typeof window.restoreInventoryPhotoWorkspace === "function") {
+            window.restoreInventoryPhotoWorkspace(state.photo);
+          }
+        });
+      }
+    }
+
     requestAnimationFrame(() => requestAnimationFrame(() => {
       window.scrollTo({ top: Math.max(0, Number(state.scrollY) || 0), behavior: "auto" });
       restoringWorkspace = false;
@@ -10631,6 +10704,7 @@ installNativeLockerSwipe();
       link.addEventListener("click", persistInventoryWorkspace, { capture: true });
     });
     if (searchEl) searchEl.addEventListener("input", () => queueInventoryPersist(120));
+    if (itemModal) itemModal.addEventListener("scroll", () => queueInventoryPersist(120), { passive: true });
     document.addEventListener("click", event => {
       if (event.target.closest("#tabs button, [data-truck], [data-v2-home-truck], #systemHomeHeaderBtn, .v2-main-appliance-heading-system-home")) {
         queueInventoryPersist(320);

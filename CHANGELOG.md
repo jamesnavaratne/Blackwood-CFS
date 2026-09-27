@@ -1,3 +1,11 @@
+# v2.9.4 Operational Workspace Test RC5 — 2026-09-27
+
+### Inventory item continuity
+- Preserved the open Inventory item-details modal when switching to Directions Book or Hydrants and back.
+- Restored the same item and item-modal scroll position alongside the appliance, locker/filter, search and page position.
+- Preserved an open item photo viewer, including its image, zoom and relative pan position.
+- Retained RC4's independent Directions, Hydrants and Inventory workspace behaviour and persistent System Home taskbar.
+
 # v2.9.4 Operational Workspace Test RC4 — 2026-09-27
 
 ### Stateful three-tab operational workspace
