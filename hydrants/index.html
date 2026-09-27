@@ -38,9 +38,10 @@
 
     .app-shell {
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      height: 100dvh;
-      min-height: 100%;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: 100%;
+      height: 100%;
+      padding-bottom: calc(var(--bottom-h) + env(safe-area-inset-bottom));
       background: var(--navy);
     }
 
@@ -371,10 +372,14 @@
     }
 
     .bottom-nav {
-      position: relative;
-      z-index: 950;
+      position: fixed;
+      z-index: 1950;
+      right: 0;
+      bottom: 0;
+      left: 0;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      width: 100%;
       min-height: calc(var(--bottom-h) + env(safe-area-inset-bottom));
       padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--line);
@@ -460,6 +465,7 @@
     .leaflet-control-attribution { display: none; }
 
     .user-location-dot {
+      display: block;
       width: 18px;
       height: 18px;
       border: 3px solid #fff;
@@ -471,7 +477,6 @@
     @media (min-width: 760px) {
       .topbar { padding-left: 20px; padding-right: 20px; }
       .controls { grid-template-columns: minmax(280px, 480px) auto; justify-content: space-between; }
-      .bottom-nav { width: min(620px, 100%); margin: 0 auto; border: 1px solid var(--line); border-bottom: 0; border-radius: 18px 18px 0 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -484,7 +489,7 @@
     <header class="topbar">
       <div class="title-row">
         <div>
-          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC1</p>
+          <p class="eyebrow">Blackwood CFS · v2.9.4 Test RC2</p>
           <h1>Live Hydrants</h1>
         </div>
         <div class="live-badge" id="networkBadge" role="status" aria-live="polite">
@@ -543,7 +548,7 @@
     (() => {
       'use strict';
 
-      const BUILD = 'Blackwood CFS v2.9.4 In-App Live Hydrants Test RC1 — 2026-09-26';
+      const BUILD = 'Blackwood CFS v2.9.4 In-App Live Hydrants Test RC2 — 2026-09-27';
       const MAP_SERVICE = 'https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer';
       const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
       const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
@@ -555,8 +560,10 @@
       const requestParams = new URLSearchParams(window.location.search);
       const requestedId = requestParams.get('id') || '';
       const requestedFromCatalogue = catalogueById.get(requestedId);
-      const requestedLat = Number(requestParams.get('lat'));
-      const requestedLon = Number(requestParams.get('lon'));
+      const requestedLatValue = requestParams.get('lat');
+      const requestedLonValue = requestParams.get('lon');
+      const requestedLat = requestedLatValue === null || requestedLatValue.trim() === '' ? Number.NaN : Number(requestedLatValue);
+      const requestedLon = requestedLonValue === null || requestedLonValue.trim() === '' ? Number.NaN : Number(requestedLonValue);
       const requestedCustom = !requestedFromCatalogue && Number.isFinite(requestedLat) && Number.isFinite(requestedLon)
         ? {
             id: requestedId || 'selected',

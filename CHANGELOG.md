@@ -1,3 +1,12 @@
+# v2.9.4 In-App Live Hydrants Test RC2 — 2026-09-27
+
+### Android location marker and full-width taskbar
+- Corrected the live-location marker so its blue centre renders as a circular dot instead of a narrow white vertical shape.
+- Changed the Inventory / Directions Book / Hydrants navigation into a fixed, square-edged, full-screen-width taskbar on all three pages.
+- Reserved taskbar space within the Hydrants layout so the map, attribution and lower-right controls remain visible above it.
+- Corrected missing Hydrants URL coordinates so a direct visit centres on Blackwood CFS instead of treating absent values as `0,0`.
+- Preserved all RC1 hydrant coordinates, map behaviour, inventory, storage-first photos, UBD maps and Training module.
+
 # v2.9.4 In-App Live Hydrants Test RC1 — 2026-09-26
 
 ### Integrated live hydrant map and primary navigation

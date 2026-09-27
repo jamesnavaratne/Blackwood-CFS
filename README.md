@@ -29,9 +29,9 @@ docs/          human instructions and release notes
 
 ## Current test baseline
 
-`v2.9.4 Personal UBD + In-App Live Hydrants Test RC1` adds a dedicated in-app Hydrants map and persistent Inventory / Directions Book / Hydrants navigation. Selecting Hydrants from a Directions entry centres the map on that street using the existing stored coordinate.
+`v2.9.4 Personal UBD + In-App Live Hydrants Test RC2` adds a dedicated in-app Hydrants map and a fixed, full-screen-width Inventory / Directions Book / Hydrants taskbar. Selecting Hydrants from a Directions entry centres the map on that street using the existing stored coordinate.
 
-The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry. Inventory, photo, UBD, training, 8× UBD zoom and refresh behaviour remain unchanged from RC9.
+RC2 corrects the Android live-location dot, reserves visible space above the taskbar and makes a direct Hydrants visit default to Blackwood CFS. The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry. Inventory, photo, UBD, training, 8× UBD zoom and refresh behaviour remain unchanged from RC9.
 
 ## Start here
 
