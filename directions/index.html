@@ -15,7 +15,7 @@
   if (meta) meta.setAttribute('content', theme === 'light' ? '#ffffff' : '#05070a');
 })();
 </script>
-<title>Blackwood CFS Directions Book — Draft</title>
+<title>Blackwood CFS Directions Book</title>
 <!--
 Blackwood CFS Directions v2.1 new source update HTML test
 Generated from source manifest in directions/source/SOURCE_GENERATION_MANIFEST.md
@@ -1189,8 +1189,10 @@ mapEls.listScrim.onclick = closeMapList;
 mapEls.viewerClose.onclick = closeMapViewer;
 document.addEventListener('click', event => {
   if(!mapEls.viewerModal.classList.contains('open')) return;
-  if(event.target.closest('.map-viewer-card')) return;
-  if(event.target.closest('.primary-bottom-nav')) return;
+  const target = event.target && typeof event.target.closest === 'function' ? event.target : null;
+  if(!target) return;
+  if(target.closest('.map-viewer-card')) return;
+  if(target.closest('.primary-bottom-nav')) return;
   closeMapViewer();
   event.preventDefault();
   event.stopPropagation();

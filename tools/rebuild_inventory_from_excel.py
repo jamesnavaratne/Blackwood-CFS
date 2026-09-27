@@ -18,6 +18,12 @@ NS = {
 
 APPLIANCE_ORDER = ["Blackwood Rescue", "34P", "CAFS 24"]
 
+PHOTO_ROOT_NAMES = {
+    "Blackwood Rescue": "rescue",
+    "34P": "34p",
+    "CAFS 24": "cafs24",
+}
+
 # Keep this list deliberately small and operational.
 # Unknown statuses are warnings rather than hard errors.
 EXPECTED_STATUSES = {
@@ -525,6 +531,26 @@ def build_appliances(xlsx_path: Path, index_path: Path, repo_root: Path, build_d
     lockers_by_app, locker_config_errors = parse_appliance_config(xlsx_path, records_by_app)
     locker_photos = parse_locker_photos(xlsx_path, records_by_app, repo_root)
 
+    # Photo rows can outlive a locker in the workbook. Keep generated runtime data
+    # limited to configured tabs so stale rows cannot produce dead UI references.
+    for app, photos in locker_photos.items():
+        configured = {clean_key(locker) for locker in lockers_by_app.get(app, [])}
+        locker_photos[app] = {
+            locker: info
+            for locker, info in photos.items()
+            if clean_key(locker) in configured
+        }
+
+    # A paired cabin view supersedes the older single-photo fallback. Remove that
+    # fallback when its file no longer exists instead of shipping a dead path.
+    rescue_cabin = locker_photos.get("Blackwood Rescue", {}).get("Cabin", {})
+    rescue_main = clean_key(rescue_cabin.get("photo", ""))
+    has_cabin_pair = bool(rescue_cabin.get("frontPhoto") or rescue_cabin.get("rearPhoto"))
+    if rescue_main and has_cabin_pair:
+        rescue_main_path = repo_root / "photos" / "rescue" / "lockers" / rescue_main
+        if not rescue_main_path.exists():
+            rescue_cabin["photo"] = ""
+
     ordered_apps = [app for app in APPLIANCE_ORDER if app in records_by_app]
     ordered_apps.extend([app for app in records_by_app.keys() if app not in ordered_apps])
 
@@ -674,6 +700,23 @@ def validate(appliances, locker_config_errors=None, repo_root=None):
 
             if status not in EXPECTED_STATUSES:
                 warnings.append(f"{where}: unusual Status '{status}'. Check spelling if this was not deliberate.")
+
+            if repo_root and app in PHOTO_ROOT_NAMES:
+                item_photo_root = Path(repo_root) / "photos" / PHOTO_ROOT_NAMES[app] / "items"
+                for field in ("photo", "extraPhoto"):
+                    photo_name = clean_key(r.get(field, ""))
+                    if photo_name and not (item_photo_root / photo_name).is_file():
+                        errors.append(f"{where}: {field} file is missing: {photo_name}")
+
+        if repo_root and app in PHOTO_ROOT_NAMES:
+            locker_photo_root = Path(repo_root) / "photos" / PHOTO_ROOT_NAMES[app] / "lockers"
+            for locker, photo_info in obj.get("lockerPhotos", {}).items():
+                if clean_key(locker) not in allowed_lockers:
+                    errors.append(f"{app}: photo configuration uses unknown locker '{locker}'.")
+                for field in ("photo", "frontPhoto", "rearPhoto"):
+                    photo_name = clean_key(photo_info.get(field, ""))
+                    if photo_name and not (locker_photo_root / photo_name).is_file():
+                        errors.append(f"{app} {locker}: {field} file is missing: {photo_name}")
 
     return errors, warnings
 
