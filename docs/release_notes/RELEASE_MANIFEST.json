@@ -1,8 +1,8 @@
 {
-  "version": "Blackwood CFS v2.9.4 Stable",
+  "version": "Blackwood CFS v2.9.4.1 Stable",
   "release_type": "stable",
   "date": "2026-09-27",
-  "based_on": "Blackwood_CFS_v2.9.4_OPERATIONAL_WORKSPACE_TEST_RC6_GITHUB.zip",
+  "based_on": "Blackwood_CFS_v2.9.4_STABLE_GITHUB.zip",
   "active_inventory_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "directions_source_folder": "directions/source/",
   "ubd_maps_folder": "directions/maps/ubd/",
@@ -23,6 +23,7 @@
     "Closed Directions street modals remain closed after taskbar switching",
     "Directions list search and page position are preserved when no street modal is open",
     "Outside taps close only the enlarged UBD viewer layer",
+    "Directions street controls remain interactive while the split-panel UBD viewer is open",
     "Inventory appliance, locker or filter, search and page position are preserved within the current app session",
     "Open Inventory item details and modal scroll position are preserved within the current app session",
     "Open Inventory item photo, zoom and pan position are preserved within the current app session",
@@ -67,8 +68,8 @@
   "housekeeping_changes_only": false,
   "app_logic_changed_in_this_release": true,
   "notes": [
-    "Promoted after the v2.9.4 Operational Workspace Test RC6 field check and full static/data audit.",
-    "Built directly from the v2.9.4 Operational Workspace Test RC6 baseline.",
+    "Built directly from the audited v2.9.4 Stable baseline.",
+    "UBD outside-close is scoped to the viewer backdrop instead of the whole document.",
     "Reviewed exact and reviewed vicinity hydrant results remain reported separately.",
     "GOVERNMENT ROAD SPRINGFIELD remains grey for manual review.",
     "Do not regenerate Directions wording from secondary sources."

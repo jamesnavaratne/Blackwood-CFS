@@ -817,7 +817,7 @@ v2.1 Directions fidelity pass applied 2026-07-19T11:53:13Z
   </article>
 </div>
 <div class="modal map-viewer-modal" id="mapViewerModal" aria-hidden="true">
-  <div class="scrim"></div>
+  <div class="scrim" id="mapViewerScrim"></div>
   <section class="map-viewer-card" role="dialog" aria-modal="true" aria-labelledby="mapViewerTitle">
     <div class="map-viewer-head">
       <div class="map-viewer-title" id="mapViewerTitle">UBD Map</div>
@@ -978,7 +978,7 @@ function updateHydrantsButton(){
 const mapEls = {
   open: document.getElementById('ubdMapsBtn'), listModal: document.getElementById('mapListModal'), listScrim: document.getElementById('mapListScrim'),
   listClose: document.getElementById('mapListClose'), list: document.getElementById('mapList'), viewerModal: document.getElementById('mapViewerModal'),
-  viewerClose: document.getElementById('mapViewerClose'), viewerTitle: document.getElementById('mapViewerTitle'), stage: document.getElementById('mapStage'),
+  viewerScrim: document.getElementById('mapViewerScrim'), viewerClose: document.getElementById('mapViewerClose'), viewerTitle: document.getElementById('mapViewerTitle'), stage: document.getElementById('mapStage'),
   image: document.getElementById('mapImage'), zoomOut: document.getElementById('mapZoomOut'), zoomIn: document.getElementById('mapZoomIn'), zoomReset: document.getElementById('mapZoomReset')
 };
 const UBD_MAPS = Array.isArray(window.UBD_MAPS) ? window.UBD_MAPS : [];
@@ -1187,16 +1187,7 @@ els.streetUbdBtn.onclick = () => openMapList('street');
 mapEls.listClose.onclick = closeMapList;
 mapEls.listScrim.onclick = closeMapList;
 mapEls.viewerClose.onclick = closeMapViewer;
-document.addEventListener('click', event => {
-  if(!mapEls.viewerModal.classList.contains('open')) return;
-  const target = event.target && typeof event.target.closest === 'function' ? event.target : null;
-  if(!target) return;
-  if(target.closest('.map-viewer-card')) return;
-  if(target.closest('.primary-bottom-nav')) return;
-  closeMapViewer();
-  event.preventDefault();
-  event.stopPropagation();
-}, true);
+mapEls.viewerScrim.onclick = closeMapViewer;
 mapEls.zoomOut.onclick = () => setMapZoom(mapZoom - .25);
 mapEls.zoomIn.onclick = () => setMapZoom(mapZoom + .25);
 mapEls.zoomReset.onclick = () => setMapZoom(1);

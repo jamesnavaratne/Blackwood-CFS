@@ -4,7 +4,7 @@ This folder contains the Blackwood CFS appliance inventory app and Directions Bo
 
 ## Current stable build
 
-This package is `v2.9.4 Stable`.
+This package is `v2.9.4.1 Stable`.
 
 Hydrants rebuild priority is:
 

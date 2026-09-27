@@ -1,3 +1,12 @@
+# v2.9.4.1 Stable — 2026-09-27
+
+### UBD split-panel layering fix
+- Scoped enlarged UBD outside-close handling to the viewer's own backdrop instead of a document-wide capture listener.
+- Restored normal interaction with the open street Directions modal, including the Hydrants pill, while the split-panel UBD viewer is open.
+- Kept outside-click closing for the full-screen UBD viewer where its backdrop is visible.
+- Preserved the street modal, UBD list/viewer state, taskbar navigation and all three saved workspaces.
+- Updated stable version labels, release metadata, offline fingerprint and service-worker cache identity.
+
 # v2.9.4 Stable — 2026-09-27
 
 ### Stable operational baseline
