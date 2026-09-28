@@ -772,6 +772,14 @@ body.offline-banner-visible .content, body.app-update-banner-visible .content { 
 /* The three module heading stacks share fixed type metrics. */
 .brand .kicker{line-height:13px}.brand h1{font-size:22px;line-height:23.1px;margin:2px 0 0}
 @media(max-width:380px){.brand h1{font-size:20px;line-height:21px}}
+
+/* Identical title origin and type rhythm between the two reference modules. */
+.topbar{padding-top:calc(10px + env(safe-area-inset-top))!important;padding-left:13px!important;padding-right:13px!important}
+
+.brandrow{margin:0!important;align-items:center!important}
+.brand .kicker{display:block;margin:0!important;font-size:11px!important;font-weight:800!important;letter-spacing:.16em!important;line-height:13px!important;text-transform:uppercase}
+.brand h1{margin:2px 0 0!important;font-size:22px!important;font-weight:700!important;letter-spacing:-.03em!important;line-height:23.1px!important}
+@media(max-width:380px){.brand h1{font-size:20px!important;line-height:21px!important}}
 </style>
 
 <!--
