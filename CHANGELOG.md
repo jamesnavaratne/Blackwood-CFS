@@ -1,3 +1,12 @@
+# v2.9.4.3 Stable — 2026-09-27
+
+### Inventory collapse indicator consistency
+- Replaced the collapsed locker/group heading chevron with `+`.
+- Replaced the expanded locker/group heading down arrow with `−`.
+- Matched the Inventory Home Expand All / Collapse All indicator glyphs to the same convention.
+- Preserved all collapse state, keyboard access, inventory filtering and workspace restoration behaviour.
+- Updated stable version labels, release metadata, offline fingerprint and service-worker cache identity.
+
 # v2.9.4.2 Stable — 2026-09-27
 
 ### Reverse-order modal closing
@@ -363,3 +372,13 @@ Housekeeping-only stable release package.
 ### Notes
 - The active master workbook is `Blackwood_CFS_Master_Inventory.xlsx`.
 - Legacy Rescue-only workbook is retained in `Archive/` for historical reference only.
+# v2.9.4.4 Tablet Landscape Trial RC1 — 2026-09-27
+
+- Enabled landscape rotation for the installed PWA by changing the manifest orientation from `portrait` to `any`.
+- Added a tablet-landscape three-column Inventory layout.
+- Kept Inventory item, quiz, learner-guide, issue and photo modals above the persistent taskbar.
+- Added a side-by-side Directions and UBD workspace in tablet landscape without changing modal state or reverse close order.
+- Condensed the Hydrants header in tablet landscape to increase live map space.
+- Changed all three landscape taskbars to a compact horizontal icon-and-label layout.
+- Added left and right safe-area handling for supported landscape tablets.
+- Preserved `v2.9.4.3 Stable` as the stable baseline; this package is a trial only.

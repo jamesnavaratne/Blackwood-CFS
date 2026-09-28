@@ -2,9 +2,11 @@
 
 This folder contains the Blackwood CFS appliance inventory app and Directions Book.
 
-## Current stable build
+## Current trial build
 
-This package is `v2.9.4.2 Stable`.
+This package is `v2.9.4.4 Tablet Landscape Trial RC1`, based on `v2.9.4.3 Stable`.
+
+The installed PWA now permits landscape rotation. On tablets at least 900px wide and 540px high in landscape, the trial provides a three-column Inventory, side-by-side Directions/UBD panes, a condensed Hydrants header and a compact persistent taskbar. Portrait and smaller-screen layouts retain the stable presentation.
 
 Hydrants rebuild priority is:
 

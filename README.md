@@ -27,9 +27,11 @@ docs/          human instructions and release notes
 .github/       GitHub Actions workflow
 ```
 
-## Current stable baseline
+## Current trial baseline
 
-`v2.9.4.2 Stable` turns the full-width Inventory / Directions Book / Hydrants taskbar into a stateful three-part operational workspace. The taskbar remains available on System Home as well as throughout each working screen.
+`v2.9.4.4 Tablet Landscape Trial RC1` is a layout-only trial based on `v2.9.4.3 Stable`. It enables installed-PWA rotation and adds tablet-landscape layouts while preserving the full-width Inventory / Directions Book / Hydrants stateful workspace.
+
+At tablet landscape sizes, Inventory uses three columns and taskbar-cleared modals, Directions places the street card beside the UBD list/viewer, and Hydrants uses a condensed horizontal header. Smaller and portrait layouts retain the stable presentation.
 
 The stable build preserves each workspace independently for the current app session. Directions restores the selected street and UBD layers only when they were left open; if the street modal was deliberately closed, it returns to the main list at the saved position. Tapping outside an enlarged UBD closes that top layer consistently. Hydrants restores its selected street, map centre and zoom. Inventory restores System Home or the selected appliance, locker/filter, search, page position and open item-details/photo state. The official hydrant layer and Location SA basemap remain online-only. The generated street catalogue contains all 678 Directions entries: 677 stored-coordinate locations and the existing Blackwood CFS fallback for the deliberately unresolved entry.
 
