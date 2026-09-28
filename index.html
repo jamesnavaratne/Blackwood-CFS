@@ -6785,6 +6785,26 @@ body.palette-default-blue #results .group.collapsed .group-title::after{
 }
 body.palette-default-blue #results .group-title:focus-visible{outline:2px solid #6bdcff!important;outline-offset:2px!important}
 @media(max-width:380px){body.palette-default-blue #results .group-title{column-gap:8px!important;padding-left:11px!important}body.palette-default-blue #results .group-title small{font-size:11px!important}}
+
+/* The approved HTML uses one cover background on the outer locker card. */
+body #lockerPhoto .locker-fullbleed-card,body.dark #lockerPhoto .locker-fullbleed-card,
+body.palette-default-blue #lockerPhoto .locker-fullbleed-card{
+  box-sizing:border-box!important;position:relative!important;display:block!important;
+  width:100%!important;height:190px!important;min-height:190px!important;
+  padding:0!important;gap:0!important;overflow:hidden!important;
+  border:1px solid #27313d!important;border-radius:12px!important;
+  background-color:#0b0f14!important;background-position:center 45%!important;
+  background-size:cover!important;background-repeat:no-repeat!important;box-shadow:none!important;
+}
+body #lockerPhoto .locker-fullbleed-card > .locker-direct-photo,
+body #lockerPhoto .locker-fullbleed-card .cabin-photo-grid,
+body #lockerPhoto .locker-fullbleed-card .photo-text{visibility:hidden!important;pointer-events:none!important}
+body #lockerPhoto .locker-fullbleed-card .cabin-photo-switch,
+body.palette-default-blue #lockerPhoto .locker-fullbleed-card .cabin-photo-switch{
+  visibility:visible!important;pointer-events:auto!important;
+  display:flex!important;position:absolute!important;top:10px!important;right:10px!important;z-index:3!important;
+}
+@media(max-width:600px){body #lockerPhoto .locker-fullbleed-card,body.dark #lockerPhoto .locker-fullbleed-card{height:178px!important;min-height:178px!important}}
 </style>
 
 
@@ -7109,7 +7129,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.17 TEST Locker Heading Spacing</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.18 TEST Reference Photo Surface</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -7925,6 +7945,12 @@ function handleLockerPhotoError(img) {
   }
 }
 
+// Match the reference HTML: the outer card itself carries the cover photo.
+function setLockerPhotoSurface(card, src) {
+  if (!card || !src) return;
+  card.style.setProperty("background", `linear-gradient(90deg,rgba(11,15,20,.04),rgba(11,15,20,.02)),url("${cssUrlSafe(src)}") center 45% / cover no-repeat`, "important");
+}
+
 function renderPhoto() {
   photoEl.innerHTML = "";
   if (activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service") return;
@@ -7969,10 +7995,12 @@ function renderPhoto() {
         </div>
       </div>
     `;
+    setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), front || rear);
     photoEl.querySelectorAll(".cabin-view-btn").forEach(button => {
       button.addEventListener("click", event => {
         event.stopPropagation();
         const view = button.dataset.cabinView;
+        setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), view === "rear" ? rear : front);
         photoEl.querySelectorAll(".cabin-photo-figure").forEach(figure => figure.classList.toggle("active", figure.dataset.cabinView === view));
         photoEl.querySelectorAll(".cabin-view-btn").forEach(choice => {
           const selected = choice.dataset.cabinView === view;
@@ -7998,6 +8026,7 @@ function renderPhoto() {
       </div>
     </div>
   `;
+  setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), src);
 }
 
 function groupRecords(records) {
