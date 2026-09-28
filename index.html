@@ -6486,6 +6486,17 @@ body.offline-banner-visible > main, body.app-update-banner-visible > main { padd
   .drawer { bottom:calc(62px + env(safe-area-inset-bottom)); }
 }
 
+
+/* v2.9.4.6 System Home review: match the established Blue home surface. */
+.v2-appliance-home .home-redesign{width:min(600px,100%);padding:clamp(21px,5vw,35px)!important;border-radius:28px;text-align:center;background:linear-gradient(180deg,rgba(7,28,50,.94),rgba(4,17,31,.94))!important;border:1px solid rgba(0,174,239,.46)!important;box-shadow:0 0 0 1px rgba(115,228,255,.08) inset,0 0 34px rgba(0,174,239,.24),0 0 70px rgba(0,119,200,.12),0 28px 90px rgba(0,0,0,.52)!important}
+.v2-appliance-home .home-redesign h1{font-size:clamp(28px,7vw,40px);line-height:1.08;letter-spacing:-.035em;font-weight:500!important;color:#f3fbff!important;text-shadow:0 0 18px rgba(115,228,255,.3),0 0 40px rgba(0,174,239,.22)!important;margin:2px 0 8px!important}
+.home-tagline{margin:0 0 27px;color:#a9c7dd;font-size:clamp(12px,3.3vw,15px);font-weight:500;letter-spacing:.055em}.home-tagline span{color:#00aeef;margin:0 .45em;opacity:.8}
+.home-modules{display:grid;gap:13px;text-align:left}.home-module{border:1px solid rgba(0,174,239,.34);border-radius:15px;overflow:hidden;background:rgba(6,24,42,.42);box-shadow:0 0 18px rgba(0,174,239,.09)}
+.home-module-heading,.home-module-link{display:flex;align-items:center;gap:13px;width:100%;min-height:76px;padding:15px 19px;color:rgba(255,255,255,.94);font-size:17px;font-weight:650;letter-spacing:.012em;text-align:left;text-decoration:none}
+.home-module-heading{min-height:68px;padding-bottom:8px}.home-module-link{border:0;background:transparent;cursor:pointer}.home-module-link:hover{background:rgba(0,174,239,.11)}.home-module-icon{flex:none;width:31px;height:31px;color:#73e4ff;display:grid;place-items:center}.home-module-icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.home-module-label{flex:1}.home-module-arrow{font-size:27px;font-weight:300;line-height:1;color:#73e4ff}
+.home-appliances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:5px 17px 9px}.home-appliance,.home-search{border:1px solid rgba(0,174,239,.48);border-radius:9px;background:rgba(0,174,239,.085);color:#e8f7ff;cursor:pointer;font:inherit}.home-appliance{position:relative;display:grid;place-items:center;min-height:43px;padding:7px 21px;font-size:13px;font-weight:550}.home-appliance span:first-child{white-space:nowrap}.home-appliance-arrow{position:absolute;right:9px;top:50%;transform:translateY(-54%);color:#73e4ff;font-size:19px;font-weight:300;line-height:1}
+.home-search{display:flex;align-items:center;justify-content:center;gap:9px;width:calc(100% - 34px);min-height:46px;margin:0 17px 17px;padding:9px 14px;font-size:14px;font-weight:550}.home-search svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.home-appliance:hover,.home-search:hover{background:rgba(0,174,239,.15);border-color:rgba(115,228,255,.75)}.home-redesign button:focus-visible,.home-redesign a:focus-visible{outline:3px solid #73e4ff;outline-offset:2px}
+@media(max-width:370px){.v2-appliance-home .home-redesign{padding:18px!important}.home-appliances{gap:5px}.home-appliance{font-size:12px}.home-module-heading,.home-module-link{font-size:16px}}
 </style>
 
 
@@ -6525,17 +6536,22 @@ v2.2 Android cold-start smoothing test:
 <body>
 
 <section class="v2-appliance-home open v2-static-startup" aria-label="Blackwood CFS system home">
-  <div class="v2-appliance-home-card">
-    <div class="v2-appliance-home-kicker">Blackwood CFS</div>
-    <h1>Blackwood Appliance Inventory</h1>
-    <div class="v2-appliance-home-pills">
-      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="rescue">Blackwood Rescue</button>
-      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="34p">Blackwood 34P</button>
-      <button type="button" class="v2-appliance-home-pill" data-v2-home-truck="cafs24">CAFS 24</button>
+  <div class="v2-appliance-home-card home-redesign">
+    <h1>Blackwood CFS</h1>
+    <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
+    <div class="home-modules">
+      <section class="home-module" aria-label="Inventory">
+        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Inventory</span></div>
+        <div class="home-appliances" aria-label="Appliances">
+          <button type="button" class="home-appliance" data-v2-home-truck="rescue"><span>Rescue</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
+          <button type="button" class="home-appliance" data-v2-home-truck="34p"><span>34P</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
+          <button type="button" class="home-appliance" data-v2-home-truck="cafs24"><span>CAFS 24</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
+        </div>
+        <button type="button" class="home-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>Search all equipment</button>
+      </section>
+      <section class="home-module" aria-label="Directions Book"><button type="button" class="home-module-link home-directions"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></span><span class="home-module-label">Directions Book</span><span class="home-module-arrow" aria-hidden="true">›</span></button></section>
+      <section class="home-module" aria-label="Live Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Live Hydrants</span><span class="home-module-arrow" aria-hidden="true">›</span></a></section>
     </div>
-    <button type="button" class="v2-system-home-search">Global Search</button>
-    <button type="button" class="v2-system-home-search v2-system-home-directions v2-system-home-directions-priority"><strong>Directions Book</strong><small>Street directions</small></button>
-    <button type="button" class="v2-appliance-home-quiz">Quiz</button>
   </div>
 </section>
 
@@ -6803,7 +6819,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.5 Stable</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.6 TEST System Home Stable</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -9063,15 +9079,24 @@ installNativeLockerSwipe();
       home = document.createElement("section");
       home.className = "v2-appliance-home open";
       home.innerHTML = `
-        <div class="v2-appliance-home-card">
-          <div class="v2-appliance-home-kicker">Blackwood CFS</div>
-          <h1>Blackwood Appliance Inventory</h1>
-          <div class="v2-appliance-home-pills">
-            ${V2_HOME_APPS.map(app => `<button type="button" class="v2-appliance-home-pill" data-v2-home-truck="${app.key}">${app.label}</button>`).join("")}
-          </div>
-          <button type="button" class="v2-appliance-home-quiz">Quiz</button>
+<div class="v2-appliance-home-card home-redesign">
+    <h1>Blackwood CFS</h1>
+    <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
+    <div class="home-modules">
+      <section class="home-module" aria-label="Inventory">
+        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Inventory</span></div>
+        <div class="home-appliances" aria-label="Appliances">
+          <button type="button" class="home-appliance" data-v2-home-truck="rescue"><span>Rescue</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
+          <button type="button" class="home-appliance" data-v2-home-truck="34p"><span>34P</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
+          <button type="button" class="home-appliance" data-v2-home-truck="cafs24"><span>CAFS 24</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
         </div>
-      `;
+        <button type="button" class="home-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>Search all equipment</button>
+      </section>
+      <section class="home-module" aria-label="Directions Book"><button type="button" class="home-module-link home-directions"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></span><span class="home-module-label">Directions Book</span><span class="home-module-arrow" aria-hidden="true">›</span></button></section>
+      <section class="home-module" aria-label="Live Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Live Hydrants</span><span class="home-module-arrow" aria-hidden="true">›</span></a></section>
+    </div>
+  </div>
+        `;
       document.body.prepend(home);
     }
 
@@ -9620,52 +9645,22 @@ installNativeLockerSwipe();
   }
 
   function addToSystemHome(){
-    const card = document.querySelector(".v2-appliance-home-card");
-    if (!card) return;
-    let btn = card.querySelector(".v2-system-home-search:not(.v2-system-home-directions)");
-    if (btn) {
-      if (btn.dataset.v2Bound !== "1") {
-        btn.dataset.v2Bound = "1";
-        btn.addEventListener("click", openGlobalSearch);
-      }
-      return;
+    const btn = document.querySelector(".home-redesign .home-search");
+    if (btn && btn.dataset.v2Bound !== "1") {
+      btn.dataset.v2Bound = "1";
+      btn.addEventListener("click", openGlobalSearch);
     }
-    const quizBtn = card.querySelector(".v2-appliance-home-quiz");
-    btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "v2-system-home-search";
-    btn.textContent = "Global Search";
-    btn.dataset.v2Bound = "1";
-    btn.addEventListener("click", openGlobalSearch);
-    if (quizBtn) card.insertBefore(btn, quizBtn);
-    else card.appendChild(btn);
   }
 
   function addDirectionsToSystemHome(){
-    const card = document.querySelector(".v2-appliance-home-card");
-    if (!card) return;
-    let btn = card.querySelector(".v2-system-home-directions");
-    const goDirections = function(){
-      document.documentElement.classList.add("v2-route-leaving");
-      setTimeout(function(){ window.location.href = "directions/index.html"; }, 140);
-    };
-    if (btn) {
-      btn.classList.add("v2-system-home-directions-priority");
-      if (btn.dataset.v2Bound !== "1") {
-        btn.dataset.v2Bound = "1";
-        btn.addEventListener("click", goDirections);
-      }
-      return;
+    const btn = document.querySelector(".home-redesign .home-directions");
+    if (btn && btn.dataset.v2Bound !== "1") {
+      btn.dataset.v2Bound = "1";
+      btn.addEventListener("click", function(){
+        document.documentElement.classList.add("v2-route-leaving");
+        setTimeout(function(){ window.location.href = "directions/index.html"; }, 140);
+      });
     }
-    const quizBtn = card.querySelector(".v2-appliance-home-quiz");
-    btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "v2-system-home-search v2-system-home-directions v2-system-home-directions-priority";
-    btn.innerHTML = "<strong>Directions Book</strong><small>Street directions</small>";
-    btn.dataset.v2Bound = "1";
-    btn.addEventListener("click", goDirections);
-    if (quizBtn) card.insertBefore(btn, quizBtn);
-    else card.appendChild(btn);
   }
 
   function addToHamburgerMenu(){
