@@ -2,11 +2,11 @@
 
 This folder contains the Blackwood CFS appliance inventory app and Directions Book.
 
-## Current trial build
+## Current stable build
 
-This package is `v2.9.4.4 Tablet Landscape Trial RC3`, based on `v2.9.4.3 Stable`.
+This package is `v2.9.4.5 Stable`, consolidating the verified v2.9.4.4 tablet, UBD and mobile safe-area changes into one unambiguous release.
 
-The installed PWA now permits landscape rotation. On tablets at least 900px wide and 540px high in landscape, the trial provides a three-column Inventory, side-by-side Directions/UBD panes, a condensed Hydrants header and a compact persistent taskbar. The street Directions card keeps its normal 640px width when the UBD pane opens, preventing route text from reflowing. UBD maps can be dragged immediately at the opening 100% view. Portrait and smaller-screen layouts retain the stable presentation.
+The installed PWA permits landscape rotation. On tablets at least 900px wide and 540px high in landscape, it provides a three-column Inventory, side-by-side Directions/UBD panes, a condensed Hydrants header and a compact persistent taskbar. The street Directions card keeps its normal 640px width when the UBD pane opens, preventing route text from reflowing. UBD maps can be dragged immediately at the opening 100% view. Portrait and smaller-screen layouts retain the stable presentation.
 
 Hydrants rebuild priority is:
 

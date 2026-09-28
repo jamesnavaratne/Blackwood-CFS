@@ -756,6 +756,11 @@ body.offline-banner-visible .content, body.app-update-banner-visible .content { 
   .app-update-banner { bottom:calc(72px + env(safe-area-inset-bottom)); }
 }
 
+/* Stable mobile safe-area fix: keep the alphabet rail below the full sticky header. */
+.letter-jump {
+  top:var(--directions-header-bottom, 142px);
+}
+
 </style>
 
 <!--
@@ -1881,5 +1886,20 @@ if(restoreEntryId && DIRECTIONS.some(entry => entry.id === restoreEntryId)) requ
 })();
 </script>
 
+<script>
+/* Track the rendered mobile header height so it never covers the alphabet rail. */
+(function(){
+  const dock = document.querySelector('.search-dock');
+  if (!dock) return;
+  function updateAlphabetRailTop(){
+    const bottom = Math.max(0, Math.ceil(dock.getBoundingClientRect().bottom));
+    document.documentElement.style.setProperty('--directions-header-bottom', (bottom + 2) + 'px');
+  }
+  updateAlphabetRailTop();
+  window.addEventListener('resize', updateAlphabetRailTop, { passive:true });
+  window.addEventListener('orientationchange', updateAlphabetRailTop, { passive:true });
+  if ('ResizeObserver' in window) new ResizeObserver(updateAlphabetRailTop).observe(dock);
+})();
+</script>
 </body>
 </html>

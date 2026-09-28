@@ -1,3 +1,17 @@
+# v2.9.4.5 Stable — 2026-09-29
+
+- Consolidated every verified v2.9.4.4 tablet, UBD and mobile safe-area change into one unambiguous stable release.
+- Preserved the simplified Hydrants title, mobile Directions alphabet-rail clearance and taskbar-cleared Inventory drawer.
+- Advanced all user-facing version labels, release metadata and the service-worker cache identity to v2.9.4.5.
+- No inventory, Directions, UBD, Hydrants or workspace-persistence behaviour was removed.
+
+# v2.9.4.4 Stable — 2026-09-28
+
+- Promoted the verified Tablet Landscape Trial RC3 feature set to stable.
+- Simplified the Hydrants title by removing release-candidate build jargon.
+- Kept the Directions alphabet rail below the full sticky header on phones.
+- Kept the Inventory drawer and its version label above the persistent taskbar.
+
 # v2.9.4.4 Tablet Landscape Trial RC3 — 2026-09-28
 
 - Kept the landscape street Directions card at its normal 640px width when UBD opens.
