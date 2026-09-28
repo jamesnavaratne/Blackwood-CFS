@@ -6671,6 +6671,50 @@ body.palette-default-blue #lockerPhoto .photo-card .photo-preview-shell > img{po
 body.palette-default-blue #lockerPhoto .photo-card .photo-preview-bg,body.palette-default-blue #lockerPhoto .photo-card .photo-preview-shell::before,body.palette-default-blue #lockerPhoto .photo-card .photo-preview-shell::after,body.palette-default-blue #lockerPhoto .photo-card .photo-text{display:none!important}
 body.palette-default-blue #lockerPhoto .cabin-photo-card .cabin-photo-switch{display:flex!important;position:absolute!important;top:10px!important;right:10px!important;z-index:3!important}
 @media(max-width:600px){body.palette-default-blue #lockerPhoto .photo-card{height:178px!important;min-height:178px!important}}
+
+/* Locker previews use a single photo surface in every saved inventory theme. */
+body #lockerPhoto .photo-card,body.dark #lockerPhoto .photo-card,body #lockerPhoto .cabin-photo-card{
+  box-sizing:border-box!important;position:relative!important;display:block!important;
+  width:100%!important;height:190px!important;min-height:190px!important;
+  padding:0!important;gap:0!important;overflow:hidden!important;
+  border:1px solid #27313d!important;border-radius:12px!important;
+  background:#0b0f14!important;box-shadow:none!important;
+}
+body #lockerPhoto .photo-card::before,body #lockerPhoto .photo-card::after{display:none!important}
+body #lockerPhoto .photo-card .photo-text,body #lockerPhoto .photo-card .photo-path,
+body #lockerPhoto .photo-card .photo-preview-bg{display:none!important}
+body #lockerPhoto .cabin-photo-card .cabin-photo-grid{
+  position:absolute!important;inset:0!important;display:block!important;
+  width:100%!important;height:100%!important;padding:0!important;margin:0!important;
+  gap:0!important;grid-template-columns:none!important;align-items:stretch!important;
+}
+body #lockerPhoto .cabin-photo-card .cabin-photo-figure{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  padding:0!important;margin:0!important;border:0!important;
+}
+body #lockerPhoto .cabin-photo-card .cabin-photo-figure:not(.active){display:none!important}
+body #lockerPhoto .cabin-photo-card .cabin-photo-figure.active{display:block!important}
+body #lockerPhoto .photo-card .photo-preview-shell,
+body #lockerPhoto .photo-card .photo-preview-shell.photo-preview-shell--cabin{
+  box-sizing:border-box!important;position:absolute!important;inset:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;max-height:none!important;min-height:0!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+  overflow:hidden!important;background:transparent!important;box-shadow:none!important;
+}
+body #lockerPhoto .photo-card .photo-preview-shell::before,
+body #lockerPhoto .photo-card .photo-preview-shell::after{display:none!important}
+body #lockerPhoto .photo-card .photo-preview-shell > img,
+body.dark #lockerPhoto .photo-card .photo-preview-shell > img{
+  position:absolute!important;inset:0!important;display:block!important;
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  object-fit:cover!important;object-position:center!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+body #lockerPhoto .cabin-photo-card .cabin-photo-switch{
+  display:flex!important;position:absolute!important;top:10px!important;right:10px!important;z-index:3!important;
+}
+@media(max-width:600px){body #lockerPhoto .photo-card,body.dark #lockerPhoto .photo-card,body #lockerPhoto .cabin-photo-card{height:178px!important;min-height:178px!important}}
 </style>
 
 
@@ -6995,7 +7039,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.14 TEST Photo Ribbon Header Alignment</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.15 TEST Locker Photo Full Bleed</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
