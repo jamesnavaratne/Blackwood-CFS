@@ -1,3 +1,12 @@
+# v2.9.4.4 Tablet Landscape Trial RC3 — 2026-09-28
+
+- Kept the landscape street Directions card at its normal 640px width when UBD opens.
+- Moved the unchanged-size street card left instead of shrinking it.
+- Allowed the UBD list/viewer pane to fill all remaining landscape width.
+- Removed the RC1 narrow-pane header reflow rules because they are no longer needed.
+- Preserved RC2 immediate 100% UBD pan, saved workspace state and reverse modal close order.
+- Updated trial labels, documentation and service-worker cache identity.
+
 # v2.9.4.4 Tablet Landscape Trial RC2 — 2026-09-28
 
 - Enabled one-finger UBD drag/pan immediately at the opening 100% view.

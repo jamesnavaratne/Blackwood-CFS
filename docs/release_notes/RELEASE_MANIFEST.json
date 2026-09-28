@@ -1,8 +1,8 @@
 {
-  "version": "Blackwood CFS v2.9.4.4 Tablet Landscape Trial RC2",
+  "version": "Blackwood CFS v2.9.4.4 Tablet Landscape Trial RC3",
   "release_type": "trial",
   "date": "2026-09-28",
-  "based_on": "Blackwood_CFS_v2.9.4.4_TABLET_LANDSCAPE_TRIAL_RC1_GITHUB.zip",
+  "based_on": "Blackwood_CFS_v2.9.4.4_TABLET_LANDSCAPE_TRIAL_RC2_UBD_100_PERCENT_PAN_GITHUB.zip",
   "active_inventory_workbook": "Blackwood_CFS_Master_Inventory.xlsx",
   "directions_source_folder": "directions/source/",
   "ubd_maps_folder": "directions/maps/ubd/",
@@ -11,6 +11,8 @@
   "directions_entry_point": "directions/index.html",
   "hydrants_entry_point": "hydrants/index.html",
   "features_confirmed": [
+    "Landscape street Directions card retains its normal 640 pixel width when UBD opens",
+    "Opening the side-by-side UBD pane does not reflow the route directions text",
     "UBD maps support touch drag/pan immediately at the opening 100 percent view",
     "UBD maps support mouse drag/pan at the opening 100 percent view",
     "Installed PWA rotation is enabled instead of being locked to portrait",
@@ -79,7 +81,7 @@
   "housekeeping_changes_only": false,
   "app_logic_changed_in_this_release": true,
   "notes": [
-    "Built from the verified v2.9.4.4 Tablet Landscape Trial RC1 package, which is based on v2.9.4.3 Stable.",
+    "Built from the verified v2.9.4.4 Tablet Landscape Trial RC2 package, which is based on v2.9.4.3 Stable.",
     "This is a trial layout and UBD interaction build and does not replace v2.9.4.3 Stable.",
     "Tablet layout rules activate only in landscape at widths of at least 900px and heights of at least 540px.",
     "Inventory collapse state logic is unchanged; only its visual indicators were standardised.",

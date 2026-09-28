@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-4-tablet-landscape-trial-rc2-20260928';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-4-tablet-landscape-trial-rc3-20260928';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
