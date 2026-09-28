@@ -6596,6 +6596,36 @@ body.palette-default-blue .item .fav-btn{bottom:7px!important;right:8px!importan
 body.palette-default-blue .item .photo-indicator-btn{bottom:7px!important;left:8px!important;right:auto!important}
 body.palette-default-blue .primary-bottom-link.active{background:rgba(16,170,255,.14)!important;color:#10aaff!important}
 @media(max-width:350px){body.palette-default-blue .locker-toolbar-actions button{padding:5px 6px;font-size:10px}body.palette-default-blue .items-grid{grid-template-columns:1fr}}
+
+/* The module card owns its hover/focus highlight; suppress the legacy button shadow. */
+.home-redesign .home-module-link:hover{background:transparent!important;box-shadow:none!important;transform:none!important}
+.home-redesign .home-module:has(.home-module-link:focus-visible){outline:3px solid #6bdcff;outline-offset:2px}
+.home-redesign .home-module-link:focus-visible{outline:0!important;box-shadow:none!important}
+
+/* v2.9.4.11 — match the approved Inventory visual reference. */
+body.palette-default-blue #lockerPhoto .cabin-photo-card{position:relative!important;display:flex!important;align-items:flex-end!important;min-height:156px!important;height:156px!important;padding:0!important;overflow:hidden!important;margin-bottom:19px!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .cabin-photo-grid{position:absolute!important;inset:0!important;display:block!important;background:#0b0f14!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .cabin-photo-figure{position:absolute!important;inset:0!important;margin:0!important;display:none!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .cabin-photo-figure.active{display:block!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .photo-preview-shell--cabin{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .photo-preview-shell--cabin img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .photo-preview-shell--cabin::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,15,20,.95),rgba(11,15,20,.70) 56%,rgba(11,15,20,.12));pointer-events:none}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .photo-text{position:relative!important;z-index:1!important;padding:18px 22px!important;pointer-events:none!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card .photo-text h2{font-size:16px!important;font-weight:800!important;margin:0 0 4px!important}
+.cabin-photo-hint,.cabin-photo-switch{display:none}
+body.palette-default-blue .cabin-photo-hint{display:block;color:#aab3bd;font-size:12px}
+body.palette-default-blue .cabin-photo-label{display:none!important}
+body.palette-default-blue .cabin-photo-switch{position:absolute;right:12px;top:12px;z-index:3;display:flex;gap:5px}
+body.palette-default-blue .cabin-view-btn{min-height:32px;padding:5px 9px;border:1px solid rgba(255,255,255,.28);border-radius:7px;background:rgba(5,7,10,.78);color:#f6f7fb;font-size:11px;font-weight:750;cursor:pointer;box-shadow:none!important}
+body.palette-default-blue .cabin-view-btn.active{border-color:#10aaff;background:rgba(16,170,255,.24);color:#f6f7fb}
+body.palette-default-blue .cabin-view-btn:hover{border-color:#6bdcff;box-shadow:none!important}
+@media (orientation:landscape) and (min-width:900px) and (min-height:540px){body.palette-default-blue > main{max-width:1280px!important;padding-left:calc(18px + env(safe-area-inset-left))!important;padding-right:calc(18px + env(safe-area-inset-right))!important}body.palette-default-blue .items-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+
+/* Shared module title and Home control dimensions. */
+body.palette-default-blue .inventory-kicker{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+body.palette-default-blue #title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;font-weight:700!important}
+body.palette-default-blue .system-home-header-btn{width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;border:1px solid #27313d!important;border-radius:9px!important;background:#0b0f14!important;color:#f6f7fb!important;box-shadow:none!important}
+body.palette-default-blue .system-home-header-btn svg{width:21px!important;height:21px!important;stroke-width:1.8!important}
 </style>
 
 
@@ -6920,7 +6950,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.9 TEST Inventory Design</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.12 TEST Inventory Home Titles</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -6958,9 +6988,9 @@ v2.2 Android cold-start smoothing test:
     <div class="header-actions">
       <button id="systemHomeHeaderBtn" class="system-home-header-btn" type="button" aria-label="System Home" title="System Home">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M3.5 10.8L12 3.6l8.5 7.2"></path>
-          <path d="M5.8 9.8V20.4h12.4V9.8"></path>
-          <path d="M9.4 20.4v-5.7h5.2v5.7"></path>
+          <path d="M3 11.5 12 4l9 7.5"></path>
+          <path d="M5.5 10.5V20h13v-9.5"></path>
+          <path d="M9.5 20v-5.5h5V20"></path>
         </svg>
       </button>
     </div>
@@ -7050,6 +7080,8 @@ function setActiveAppliance(applianceName) {
   resetInventoryNavigationPosition();
   DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
   activeLocker = "Home";
+  homeCollapsed = false;
+  Object.keys(groupCollapsedState).forEach(key => { if (key.startsWith("Home::")) delete groupCollapsedState[key]; });
   if (searchEl) searchEl.value = "";
   if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + (document.body.classList.contains("palette-default-blue") ? "" : " Inventory");
   document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
@@ -7062,7 +7094,7 @@ function setActiveAppliance(applianceName) {
 
 let activeLocker = "Home";
 // Always start on Home when the app loads.
-let homeCollapsed = true;
+let homeCollapsed = false;
 let groupCollapsedState = {};
 let favourites = new Set();
 
@@ -7747,7 +7779,7 @@ function renderPhoto() {
     const rear = lp.rearPhoto ? lockerPhotoPath(lp.rearPhoto, DATA.appliance) : "";
 
     const frontBlock = front ? `
-      <figure class="cabin-photo-figure">
+      <figure class="cabin-photo-figure active" data-cabin-view="front">
         <div class="photo-preview-shell photo-preview-shell--cabin" data-photo-src="${esc(front)}">
           <div class="photo-preview-bg"></div>
           <img loading="eager" decoding="async" src="${esc(front)}" alt="${esc(activeLocker)} front photo" onload="handleLockerPhotoLoad(this)" onerror="handleLockerPhotoError(this)">
@@ -7758,7 +7790,7 @@ function renderPhoto() {
     ` : "";
 
     const rearBlock = rear ? `
-      <figure class="cabin-photo-figure">
+      <figure class="cabin-photo-figure" data-cabin-view="rear">
         <div class="photo-preview-shell photo-preview-shell--cabin" data-photo-src="${esc(rear)}">
           <div class="photo-preview-bg"></div>
           <img loading="eager" decoding="async" src="${esc(rear)}" alt="${esc(activeLocker)} rear photo" onload="handleLockerPhotoLoad(this)" onerror="handleLockerPhotoError(this)">
@@ -7772,13 +7804,30 @@ function renderPhoto() {
       <div class="photo-card cabin-photo-card">
         <div class="photo-text">
           <h2>${esc(lp.title || activeLocker)}</h2>
+          <small class="cabin-photo-hint">Tap photo to enlarge</small>
         </div>
         <div class="cabin-photo-grid">
           ${frontBlock}
           ${rearBlock}
         </div>
+        <div class="cabin-photo-switch" role="group" aria-label="Cabin photos">
+          ${front ? '<button type="button" class="cabin-view-btn active" data-cabin-view="front" aria-pressed="true">Front</button>' : ''}
+          ${rear ? '<button type="button" class="cabin-view-btn" data-cabin-view="rear" aria-pressed="false">Rear</button>' : ''}
+        </div>
       </div>
     `;
+    photoEl.querySelectorAll(".cabin-view-btn").forEach(button => {
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+        const view = button.dataset.cabinView;
+        photoEl.querySelectorAll(".cabin-photo-figure").forEach(figure => figure.classList.toggle("active", figure.dataset.cabinView === view));
+        photoEl.querySelectorAll(".cabin-view-btn").forEach(choice => {
+          const selected = choice.dataset.cabinView === view;
+          choice.classList.toggle("active", selected);
+          choice.setAttribute("aria-pressed", String(selected));
+        });
+      });
+    });
     return;
   }
 
@@ -8742,7 +8791,7 @@ function initialisePhotoModalFeature() {
     if (!card) return;
 
     const clickedImg = target.closest("img");
-    const img = clickedImg && card.contains(clickedImg) ? clickedImg : card.querySelector("img");
+    const img = clickedImg && card.contains(clickedImg) ? clickedImg : (card.querySelector(".cabin-photo-figure.active img") || card.querySelector("img"));
 
     if (!img || !img.src || img.style.display === "none") return;
 
