@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-8-test-cohesive-default-blue-20260929';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-9-test-inventory-design-20260929';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';

@@ -6553,6 +6553,49 @@ body.palette-default-blue .home-appliance:hover,body.palette-default-blue .home-
 @media(max-width:380px){body.palette-default-blue #title{font-size:20px!important}}
 
 body.palette-default-blue .v2-appliance-home{background:#05070a!important}
+
+/* v2.9.4.9 — Inventory structure from the approved Default Blue study. */
+.home-appliance{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;align-items:center!important;padding:7px 7px!important;text-align:center!important}
+.home-appliance span:first-child{grid-column:2!important;justify-self:center!important;text-align:center!important}
+.home-appliance-arrow{grid-column:3!important;position:static!important;transform:none!important;justify-self:end!important;margin:0 1px 0 0!important}
+body.palette-default-blue > header{padding-top:calc(11px + env(safe-area-inset-top))!important;padding-left:13px!important;padding-right:13px!important;padding-bottom:0!important}
+body.palette-default-blue .header-top{gap:11px!important;align-items:center!important}
+body.palette-default-blue .menu-btn,body.palette-default-blue .system-home-header-btn{width:39px!important;height:39px!important;min-width:39px!important;border-radius:9px!important}
+body.palette-default-blue .search{margin:11px 0 10px!important;min-height:47px!important;padding:0 11px!important}
+body.palette-default-blue .search input{font-size:14px!important}
+body.palette-default-blue .tabs{gap:7px!important;margin:0!important;padding:0 0 11px!important}
+body.palette-default-blue .tabs button{min-height:39px!important;min-width:54px!important;padding:7px 13px!important;font-size:13px!important;font-weight:750!important;white-space:nowrap}
+body.palette-default-blue > main{max-width:880px!important;margin:0 auto!important;padding:14px 13px calc(95px + env(safe-area-inset-bottom))!important}
+.locker-toolbar{display:none}
+body.palette-default-blue .locker-toolbar:not(:empty){display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 13px}
+body.palette-default-blue .locker-toolbar-copy{min-width:0}
+body.palette-default-blue .locker-toolbar-copy strong{display:block;color:#f6f7fb;font-size:19px;line-height:1.1;font-weight:800;letter-spacing:-.02em}
+body.palette-default-blue .locker-toolbar-copy small{display:block;margin-top:3px;color:#aab3bd;font-size:12px}
+body.palette-default-blue .locker-toolbar-actions{display:flex;gap:6px;flex:none}
+body.palette-default-blue .locker-toolbar-actions button{min-height:33px;padding:5px 9px;border:1px solid #27313d;border-radius:8px;background:#0b0f14;color:#aab3bd;font:700 11px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif;cursor:pointer}
+body.palette-default-blue .locker-toolbar-actions button:hover{border-color:#10aaff;color:#10aaff}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card){position:relative!important;display:flex!important;align-items:flex-end!important;min-height:125px!important;padding:0!important;overflow:hidden!important}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card) .photo-preview-shell{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important;height:100%!important;border:0!important;border-radius:0!important;z-index:0!important}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card) .photo-preview-shell img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card) .photo-preview-shell::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,15,20,.95),rgba(11,15,20,.70) 56%,rgba(11,15,20,.12));pointer-events:none}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card) .photo-text{position:relative!important;z-index:1!important;padding:18px!important;pointer-events:none!important}
+body.palette-default-blue #lockerPhoto .photo-card:not(.cabin-photo-card) .photo-text h2{font-size:16px!important;font-weight:800!important;margin:0!important}
+body.palette-default-blue #lockerPhoto .cabin-photo-card{margin-bottom:19px!important}
+body.palette-default-blue .group{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;margin-bottom:20px!important}
+body.palette-default-blue .group-title{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0 2px 9px!important;padding:7px 0 9px!important;border:0!important;border-bottom:1px solid #27313d!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body.palette-default-blue .group-title h3{font-size:14px!important;font-weight:800!important;text-transform:uppercase!important;letter-spacing:.07em!important}
+body.palette-default-blue .group-title small{color:#aab3bd!important;font-size:12px!important;margin-right:25px!important}
+body.palette-default-blue .items-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important;padding:0!important;background:transparent!important}
+body.palette-default-blue .item{position:relative!important;min-height:113px!important;padding:13px 34px 32px 13px!important;border:1px solid #27313d!important;border-radius:11px!important;background:#0b0f14!important;box-shadow:none!important}
+body.palette-default-blue .item:hover{border-color:#10aaff!important}
+body.palette-default-blue .item-main{display:block!important}
+body.palette-default-blue .item-name{width:100%!important;text-align:left!important;font-size:14px!important;font-weight:800!important;line-height:1.2!important;margin:0!important}
+body.palette-default-blue .item .meta,body.palette-default-blue .item .desc,body.palette-default-blue .item .notes{text-align:left!important;color:#aab3bd!important;font-size:12px!important;margin-top:9px!important}
+body.palette-default-blue .item .status-pill{top:10px!important;right:10px!important;bottom:auto!important;left:auto!important;background:transparent!important;border:0!important;box-shadow:none!important;font-weight:800!important;font-size:15px!important;padding:0!important}
+body.palette-default-blue .item .fav-btn{bottom:7px!important;right:8px!important;left:auto!important;color:#aab3bd!important}
+body.palette-default-blue .item .photo-indicator-btn{bottom:7px!important;left:8px!important;right:auto!important}
+body.palette-default-blue .primary-bottom-link.active{background:rgba(16,170,255,.14)!important;color:#10aaff!important}
+@media(max-width:350px){body.palette-default-blue .locker-toolbar-actions button{padding:5px 6px;font-size:10px}body.palette-default-blue .items-grid{grid-template-columns:1fr}}
 </style>
 
 
@@ -6836,6 +6879,10 @@ v2.2 Android cold-start smoothing test:
     <div id="optionsPanel" class="options-panel" hidden>
       <div class="options-subheading">Inventory theme</div>
       <div class="theme-list options-theme-list">
+        <button class="theme-option" type="button" data-palette="default-blue">
+          <span class="theme-dot default-blue"></span>
+          Default Blue
+        </button>
         <button class="theme-option" type="button" data-palette="blue">
           <span class="theme-dot blue"></span>
           Blue
@@ -6844,10 +6891,7 @@ v2.2 Android cold-start smoothing test:
           <span class="theme-dot green"></span>
           Green
         </button>
-        <button class="theme-option" type="button" data-palette="default-blue">
-          <span class="theme-dot default-blue"></span>
-          Default Blue
-        </button>
+
         <button class="theme-option" type="button" data-palette="red">
           <span class="theme-dot red"></span>
           Red
@@ -6876,7 +6920,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.8 TEST Cohesive Default Blue</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.9 TEST Inventory Design</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -6922,7 +6966,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
   <div class="search">
-    <input id="search" placeholder="Search item, locker, description, category, tags..." autocomplete="off">
+    <input id="search" placeholder="Search equipment or locker" autocomplete="off">
     <button id="clearBtn" type="button" aria-label="Clear search" title="Clear search">×</button>
   </div>
   <nav class="tabs" id="tabs"></nav>
@@ -6930,6 +6974,7 @@ v2.2 Android cold-start smoothing test:
 
 <main>
   <section class="summary" id="summary"></section>
+  <section id="lockerToolbar" class="locker-toolbar" aria-label="Locker shortcuts"></section>
   <section id="lockerPhoto"></section>
   <section id="results"></section>
   <div class="footer">
@@ -7280,9 +7325,38 @@ function preloadLockerAssets(locker) {
   ]);
 }
 
+function renderLockerToolbar() {
+  const bar = document.getElementById("lockerToolbar");
+  if (!bar) return;
+  if (activeLocker === "Home" || activeLocker === "★" || activeLocker === "Out of Service") {
+    bar.replaceChildren();
+    return;
+  }
+  const title = document.createElement("div");
+  title.className = "locker-toolbar-copy";
+  const name = document.createElement("strong");
+  name.textContent = activeLocker;
+  const context = document.createElement("small");
+  context.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " · Equipment list";
+  title.append(name, context);
+  const actions = document.createElement("div");
+  actions.className = "locker-toolbar-actions";
+  const starred = document.createElement("button");
+  starred.type = "button";
+  starred.textContent = "☆ Starred";
+  starred.addEventListener("click", () => setActiveLockerNative("★", { direction: 1, clearSearch: true, scrollTop: true }));
+  const oos = document.createElement("button");
+  oos.type = "button";
+  oos.textContent = "Out of service";
+  oos.addEventListener("click", () => setActiveLockerNative("Out of Service", { direction: 1, clearSearch: true, scrollTop: true }));
+  actions.append(starred, oos);
+  bar.replaceChildren(title, actions);
+}
+
 function renderImmediate() {
   const records = filteredRecords();
   renderSummary(records);
+  renderLockerToolbar();
   renderPhoto();
   renderResults(records);
   checkItemPhotoIndicators();
