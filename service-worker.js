@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-6-test-system-home-20260929';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-7-test-home-hydrants-20260929';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
