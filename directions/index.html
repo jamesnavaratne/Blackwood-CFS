@@ -1356,7 +1356,7 @@ mapEls.stage.addEventListener('touchmove', e => {
     setMapZoom(mapStartZoom * Math.exp(dy / 180), true, mapStartX, mapStartY);
     return;
   }
-  if(mapZoom > 1){
+  if(mapTouchMode === 'pan'){
     e.preventDefault();
     mapEls.stage.classList.add('gesture-panning');
     mapEls.stage.scrollLeft = mapStartScrollLeft - dx;
@@ -1387,6 +1387,33 @@ mapEls.stage.addEventListener('touchend', e => {
   if(e.touches.length === 0) mapTouchMode = null;
 }, { passive:false });
 mapEls.stage.addEventListener('touchcancel', () => { mapEls.stage.classList.remove('gesture-panning'); mapTouchMode = null; });
+let mapMousePanning = false;
+let mapMouseStartX = 0;
+let mapMouseStartY = 0;
+let mapMouseStartScrollLeft = 0;
+let mapMouseStartScrollTop = 0;
+function stopMapMousePan(){
+  mapMousePanning = false;
+  mapEls.stage.classList.remove('gesture-panning');
+}
+mapEls.stage.addEventListener('mousedown', e => {
+  if(e.button !== 0) return;
+  e.preventDefault();
+  mapMousePanning = true;
+  mapMouseStartX = e.clientX;
+  mapMouseStartY = e.clientY;
+  mapMouseStartScrollLeft = mapEls.stage.scrollLeft;
+  mapMouseStartScrollTop = mapEls.stage.scrollTop;
+  mapEls.stage.classList.add('gesture-panning');
+});
+window.addEventListener('mousemove', e => {
+  if(!mapMousePanning) return;
+  e.preventDefault();
+  mapEls.stage.scrollLeft = mapMouseStartScrollLeft - (e.clientX - mapMouseStartX);
+  mapEls.stage.scrollTop = mapMouseStartScrollTop - (e.clientY - mapMouseStartY);
+});
+window.addEventListener('mouseup', stopMapMousePan);
+window.addEventListener('blur', stopMapMousePan);
 mapEls.stage.addEventListener('wheel', e => {
   if(!(e.ctrlKey || e.metaKey)) return;
   e.preventDefault(); setMapZoom(mapZoom + (e.deltaY < 0 ? .25 : -.25), true, e.clientX, e.clientY);

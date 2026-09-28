@@ -29,7 +29,7 @@ docs/          human instructions and release notes
 
 ## Current trial baseline
 
-`v2.9.4.4 Tablet Landscape Trial RC1` is a layout-only trial based on `v2.9.4.3 Stable`. It enables installed-PWA rotation and adds tablet-landscape layouts while preserving the full-width Inventory / Directions Book / Hydrants stateful workspace.
+`v2.9.4.4 Tablet Landscape Trial RC2` is a layout and UBD-interaction trial based on `v2.9.4.3 Stable`. It enables installed-PWA rotation, adds tablet-landscape layouts and enables immediate UBD drag/pan at 100% while preserving the full-width Inventory / Directions Book / Hydrants stateful workspace.
 
 At tablet landscape sizes, Inventory uses three columns and taskbar-cleared modals, Directions places the street card beside the UBD list/viewer, and Hydrants uses a condensed horizontal header. Smaller and portrait layouts retain the stable presentation.
 
