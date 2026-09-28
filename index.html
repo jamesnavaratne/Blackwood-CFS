@@ -14,9 +14,16 @@ Every displayed file caption is intended to show the full path to use.
 <title>Blackwood CFS</title>
 <script>
 try {
-  if (localStorage.getItem("inventoryPalette") === "light") {
-    document.documentElement.classList.add("inventory-light-preload");
+  let initialPalette = localStorage.getItem("inventoryPalette") || "default-blue";
+  if (!localStorage.getItem("inventoryDefaultBlueMigration.v1")) {
+    if (initialPalette === "blue" || initialPalette === "yellow") {
+      initialPalette = "default-blue";
+      localStorage.setItem("inventoryPalette", initialPalette);
+    }
+    localStorage.setItem("inventoryDefaultBlueMigration.v1", "1");
   }
+  if (initialPalette === "light") document.documentElement.classList.add("inventory-light-preload");
+  if (initialPalette === "default-blue") document.documentElement.classList.add("inventory-default-blue-preload");
 } catch(e) {}
 </script>
 
@@ -6497,6 +6504,55 @@ body.offline-banner-visible > main, body.app-update-banner-visible > main { padd
 .home-appliances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:5px 17px 9px}.home-appliance,.home-search{border:1px solid rgba(0,174,239,.48);border-radius:9px;background:rgba(0,174,239,.085);color:#e8f7ff;cursor:pointer;font:inherit}.home-appliance{position:relative;display:grid;place-items:center;min-height:43px;padding:7px 21px;font-size:13px;font-weight:550}.home-appliance span:first-child{white-space:nowrap}.home-appliance-arrow{position:absolute;right:9px;top:50%;transform:translateY(-54%);color:#73e4ff;font-size:19px;font-weight:300;line-height:1}
 .home-search{display:flex;align-items:center;justify-content:center;gap:9px;width:calc(100% - 34px);min-height:46px;margin:0 17px 17px;padding:9px 14px;font-size:14px;font-weight:550}.home-search svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.home-appliance:hover,.home-search:hover{background:rgba(0,174,239,.15);border-color:rgba(115,228,255,.75)}.home-redesign button:focus-visible,.home-redesign a:focus-visible{outline:3px solid #73e4ff;outline-offset:2px}
 @media(max-width:370px){.v2-appliance-home .home-redesign{padding:18px!important}.home-appliances{gap:5px}.home-appliance{font-size:12px}.home-module-heading,.home-module-link{font-size:16px}}
+
+/* v2.9.4.8 — Default Blue: the shared Directions/Inventory/Hydrants palette. */
+body.dark.palette-default-blue{--bg:#05070a!important;--surface:#0b0f14!important;--surface-2:#101720!important;--panel:#0b0f14!important;--panel-2:#101720!important;--card:#0b0f14!important;--card-2:#101720!important;--text:#f6f7fb!important;--text-strong:#fff!important;--muted:#aab3bd!important;--muted-2:#8896a6!important;--line:#27313d!important;--border:#27313d!important;--accent:#10aaff!important;--accent-2:#6bdcff!important;--accent-3:#6bdcff!important;--accent-soft:rgba(16,170,255,.12)!important;--shadow:0 0 0 1px rgba(16,170,255,.12),0 8px 24px rgba(0,0,0,.22)!important;--glow:0 0 16px rgba(16,170,255,.10)!important;background:#05070a!important;color:#f6f7fb!important}
+.theme-dot.default-blue{background:linear-gradient(135deg,#05070a 10%,#10aaff 80%)!important;border:1px solid #6bdcff}
+body.palette-default-blue > header{background:#05070a!important;border-bottom:1px solid #27313d!important;box-shadow:none!important;backdrop-filter:none!important}
+body.palette-default-blue .inventory-kicker{display:block;color:#10aaff;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;line-height:1.2;text-shadow:0 0 12px rgba(16,170,255,.55)}
+.inventory-kicker{display:none}
+body.palette-default-blue #title{margin:2px 0 0!important;transform:none!important;color:#f6f7fb!important;font-size:22px!important;line-height:1.05!important;letter-spacing:-.03em!important;font-weight:700!important;text-shadow:none!important}
+body.palette-default-blue .built{display:none!important}
+body.palette-default-blue .menu-btn,body.palette-default-blue .system-home-header-btn{background:#0b0f14!important;border:1px solid #27313d!important;color:#f6f7fb!important;box-shadow:none!important;border-radius:9px!important}
+body.palette-default-blue .system-home-header-btn svg path{stroke:#f6f7fb!important}
+body.palette-default-blue .search,body.palette-default-blue .search input{background:#0b0f14!important;color:#f6f7fb!important}
+body.palette-default-blue .search{border:1px solid #27313d!important;border-radius:10px!important;box-shadow:none!important}
+body.palette-default-blue .search input::placeholder{color:#aab3bd!important}
+body.palette-default-blue .tabs button{background:#0b0f14!important;border:1px solid #27313d!important;color:#aab3bd!important;border-radius:9px!important;box-shadow:none!important}
+body.palette-default-blue .tabs button.active{background:#102331!important;border-color:#10aaff!important;color:#f6f7fb!important;box-shadow:0 0 13px rgba(16,170,255,.12)!important}
+body.palette-default-blue main,body.palette-default-blue .summary,body.palette-default-blue #lockerPhoto,body.palette-default-blue #results{background:transparent!important}
+body.palette-default-blue .stat,body.palette-default-blue .group-title,body.palette-default-blue .item,body.palette-default-blue .photo-card,body.palette-default-blue .v2-all-items-pill{background:#0b0f14!important;border-color:#27313d!important;color:#f6f7fb!important;box-shadow:none!important;text-shadow:none!important}
+body.palette-default-blue .group-title{border-radius:10px!important;background:#101720!important}
+body.palette-default-blue .group-title h3,body.palette-default-blue .item-name,body.palette-default-blue .item-title,body.palette-default-blue .photo-text h2{color:#f6f7fb!important;text-shadow:none!important}
+body.palette-default-blue .item{border-radius:11px!important}
+body.palette-default-blue .item.has-photo-bg{background:#0b0f14!important}
+body.palette-default-blue .item.has-photo-bg::before{opacity:.12!important}
+body.palette-default-blue .item .meta,body.palette-default-blue .item .desc,body.palette-default-blue .photo-text p{color:#aab3bd!important}
+body.palette-default-blue .photo-card{border-radius:12px!important}
+body.palette-default-blue .photo-preview-shell{border-color:#27313d!important;border-radius:10px!important;background:#101720!important;box-shadow:none!important}
+body.palette-default-blue .photo-preview-bg{background-color:#101720!important}
+body.palette-default-blue .drawer,body.palette-default-blue .options-modal,body.palette-default-blue .item-modal,body.palette-default-blue .modal,body.palette-default-blue .quiz-modal{background:#0b0f14!important;color:#f6f7fb!important;border-color:#27313d!important;box-shadow:0 10px 34px rgba(0,0,0,.38)!important}
+body.palette-default-blue .primary-bottom-nav{background:rgba(11,15,20,.98)!important;border-top:1px solid #27313d!important;box-shadow:0 -8px 24px rgba(0,0,0,.25)!important}
+body.palette-default-blue .primary-bottom-link{font-size:11px!important;font-weight:850!important;color:#aab3bd!important}
+body.palette-default-blue .primary-bottom-link.active{color:#10aaff!important;background:rgba(16,170,255,.10)!important}
+body.palette-default-blue .cabin-photo-card{padding:12px!important}
+body.palette-default-blue .cabin-photo-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;background:transparent!important}
+body.palette-default-blue .cabin-photo-figure{position:relative!important;min-width:0!important;margin:0!important}
+body.palette-default-blue .photo-preview-shell--cabin{height:clamp(142px,32vw,210px)!important;width:100%!important}
+body.palette-default-blue .photo-preview-shell--cabin img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+body.palette-default-blue .cabin-photo-label{position:absolute;left:8px;bottom:8px;z-index:2;padding:4px 7px;border:1px solid rgba(255,255,255,.24);border-radius:6px;background:rgba(5,7,10,.78);color:#f6f7fb;font-size:11px;font-weight:800;letter-spacing:.02em;pointer-events:none}
+.cabin-photo-label{display:none}body.palette-default-blue .cabin-photo-label{display:block}
+body.palette-default-blue .home-redesign{background:#0b0f14!important;border-color:#27313d!important;box-shadow:0 0 0 1px rgba(16,170,255,.12),0 10px 30px rgba(0,0,0,.28)!important}
+body.palette-default-blue .home-redesign h1{color:#f6f7fb!important;text-shadow:none!important}
+body.palette-default-blue .home-tagline{color:#aab3bd!important}body.palette-default-blue .home-tagline span{color:#10aaff!important}
+body.palette-default-blue .home-module{background:#101720!important;border-color:#27313d!important;box-shadow:none!important}
+body.palette-default-blue .home-module:not(:first-child):hover{background:#142431!important;border-color:#10aaff!important}
+body.palette-default-blue .home-module-icon,body.palette-default-blue .home-module-arrow,body.palette-default-blue .home-appliance-arrow{color:#10aaff!important}
+body.palette-default-blue .home-appliance,body.palette-default-blue .home-search{background:#0b0f14!important;border-color:#27313d!important;box-shadow:none!important}
+body.palette-default-blue .home-appliance:hover,body.palette-default-blue .home-search:hover{background:#142431!important;border-color:#10aaff!important}
+@media(max-width:380px){body.palette-default-blue #title{font-size:20px!important}}
+
+body.palette-default-blue .v2-appliance-home{background:#05070a!important}
 </style>
 
 
@@ -6534,6 +6590,7 @@ v2.2 Android cold-start smoothing test:
 
 </head>
 <body>
+<script>try{var startupPalette=localStorage.getItem("inventoryPalette")||"default-blue";if(startupPalette==="default-blue"||startupPalette==="yellow")document.body.classList.add("palette-default-blue","dark")}catch(e){document.body.classList.add("palette-default-blue","dark")}</script>
 
 <section class="v2-appliance-home open v2-static-startup" aria-label="Blackwood CFS system home">
   <div class="v2-appliance-home-card home-redesign">
@@ -6787,9 +6844,9 @@ v2.2 Android cold-start smoothing test:
           <span class="theme-dot green"></span>
           Green
         </button>
-        <button class="theme-option" type="button" data-palette="yellow">
-          <span class="theme-dot yellow"></span>
-          Yellow
+        <button class="theme-option" type="button" data-palette="default-blue">
+          <span class="theme-dot default-blue"></span>
+          Default Blue
         </button>
         <button class="theme-option" type="button" data-palette="red">
           <span class="theme-dot red"></span>
@@ -6819,7 +6876,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.7 TEST Home + Hydrants Stable</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.8 TEST Cohesive Default Blue</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -6850,6 +6907,7 @@ v2.2 Android cold-start smoothing test:
   <div class="header-top">
     <button id="menuBtn" class="menu-btn" type="button" aria-label="Open appliance menu">☰</button>
     <div style="flex:1;">
+      <div class="inventory-kicker">Blackwood CFS</div>
       <h1 id="title">Inventory</h1>
       <div class="built" id="subtitle"></div>
     </div>
@@ -6948,7 +7006,7 @@ function setActiveAppliance(applianceName) {
   DATA = APPLIANCES[applianceName] || APPLIANCES["Blackwood Rescue"];
   activeLocker = "Home";
   if (searchEl) searchEl.value = "";
-  if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
+  if (title) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + (document.body.classList.contains("palette-default-blue") ? "" : " Inventory");
   document.querySelectorAll(".truck-option").forEach(b => b.classList.toggle("active", b.dataset.truck === DATA.appliance));
   makeTabs();
   renderImmediate();
@@ -7007,17 +7065,19 @@ function setTheme(mode) {
 }
 
 function setPalette(palette) {
-  const valid = ["blue", "green", "yellow", "red", "light"];
-  const chosen = valid.includes(palette) ? palette : "blue";
-  document.body.classList.remove("palette-blue", "palette-green", "palette-yellow", "palette-red", "palette-light");
+  const valid = ["default-blue", "blue", "green", "red", "light"];
+  const chosen = valid.includes(palette) ? palette : "default-blue";
+  document.body.classList.remove("palette-default-blue", "palette-blue", "palette-green", "palette-yellow", "palette-red", "palette-light");
   document.body.classList.add("palette-" + chosen);
   document.documentElement.classList.toggle("inventory-light-preload", chosen === "light");
+  document.documentElement.classList.toggle("inventory-default-blue-preload", chosen === "default-blue");
   setTheme(chosen === "light" ? "light" : "dark");
   document.querySelectorAll(".theme-option[data-palette]").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.palette === chosen);
   });
+  if (title && DATA) title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + (chosen === "default-blue" ? "" : " Inventory");
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", chosen === "light" ? "#f4f7fa" : "#06142d");
+  if (themeMeta) themeMeta.setAttribute("content", chosen === "light" ? "#f4f7fa" : chosen === "default-blue" ? "#05070a" : "#06142d");
   try { localStorage.setItem("inventoryPalette", chosen); } catch(e) {}
 }
 
@@ -7035,9 +7095,9 @@ try {
 }
 
 try {
-  setPalette(localStorage.getItem("inventoryPalette") || "blue");
+  setPalette((localStorage.getItem("inventoryPalette") || "default-blue").replace(/^yellow$/, "default-blue"));
 } catch(e) {
-  setPalette("blue");
+  setPalette("default-blue");
 }
 
 document.querySelectorAll(".theme-option[data-palette]").forEach(btn => {
@@ -7077,7 +7137,7 @@ document.querySelectorAll(".truck-option").forEach(btn => {
 });
 
 
-title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + " Inventory";
+title.textContent = (DATA.appliance === "34P" ? "Blackwood 34P" : DATA.appliance) + (document.body.classList.contains("palette-default-blue") ? "" : " Inventory");
 
 function esc(s) {
   return (s || "").toString().replace(/[&<>"']/g, m => ({
@@ -7618,6 +7678,7 @@ function renderPhoto() {
           <div class="photo-preview-bg"></div>
           <img loading="eager" decoding="async" src="${esc(front)}" alt="${esc(activeLocker)} front photo" onload="handleLockerPhotoLoad(this)" onerror="handleLockerPhotoError(this)">
         </div>
+        <span class="cabin-photo-label" aria-hidden="true">Front</span>
         <figcaption class="photo-path">File: ${esc(front)}</figcaption>
       </figure>
     ` : "";
@@ -7628,6 +7689,7 @@ function renderPhoto() {
           <div class="photo-preview-bg"></div>
           <img loading="eager" decoding="async" src="${esc(rear)}" alt="${esc(activeLocker)} rear photo" onload="handleLockerPhotoLoad(this)" onerror="handleLockerPhotoError(this)">
         </div>
+        <span class="cabin-photo-label" aria-hidden="true">Rear</span>
         <figcaption class="photo-path">File: ${esc(rear)}</figcaption>
       </figure>
     ` : "";
@@ -9927,8 +9989,8 @@ installNativeLockerSwipe();
 // v2.8.0 inventory palette startup enforcement
 (function(){
   function applySavedInventoryPalette(){
-    let chosen = "blue";
-    try { chosen = localStorage.getItem("inventoryPalette") || "blue"; } catch(e) {}
+    let chosen = "default-blue";
+    try { chosen = (localStorage.getItem("inventoryPalette") || "default-blue").replace(/^yellow$/, "default-blue"); } catch(e) {}
     const light = chosen === "light";
 
     document.documentElement.classList.toggle("inventory-light-preload", light);
@@ -9936,6 +9998,7 @@ installNativeLockerSwipe();
     if (document.body) {
       document.body.classList.toggle("dark", !light);
       document.body.classList.toggle("palette-light", light);
+      document.body.classList.toggle("palette-default-blue", chosen === "default-blue");
     }
 
     if (document.documentElement.dataset) {
@@ -9960,6 +10023,7 @@ installNativeLockerSwipe();
 // v2.0 34P display title fix
 (function(){
   function fix34PTitleText(){
+    if (document.body.classList.contains("palette-default-blue")) return;
     document.querySelectorAll("h1, h2, .app-title, .brand-title, .title, [class*='title']").forEach(function(el){
       if (el.closest(".truck-menu, .drawer, .hamburger-menu, nav, aside, .v2-appliance-home, .modal, .v2-global-search-modal")) return;
 
@@ -9988,8 +10052,8 @@ installNativeLockerSwipe();
 // v2.8.0 final inventory palette enforcement
 (function(){
   function enforceInventoryPalette(){
-    let chosen = "blue";
-    try { chosen = localStorage.getItem("inventoryPalette") || "blue"; } catch(e) {}
+    let chosen = "default-blue";
+    try { chosen = (localStorage.getItem("inventoryPalette") || "default-blue").replace(/^yellow$/, "default-blue"); } catch(e) {}
     const light = chosen === "light";
 
     document.documentElement.classList.toggle("inventory-light-preload", light);
@@ -9997,6 +10061,7 @@ installNativeLockerSwipe();
     if (document.body) {
       document.body.classList.toggle("dark", !light);
       document.body.classList.toggle("palette-light", light);
+      document.body.classList.toggle("palette-default-blue", chosen === "default-blue");
     }
 
     document.querySelectorAll(".theme-rescue-frost-button, [data-theme='rescue-frost'], button[value='light'], button[data-mode='light'], option[value='light'], option[value='rescue-frost']").forEach(function(el){

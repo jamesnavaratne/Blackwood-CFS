@@ -545,6 +545,17 @@
     .picker-chevron{display:grid;place-items:center;flex:none;width:28px;height:28px;align-self:center;transform:none;transition:transform .15s ease}
     .picker-chevron svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .street-picker-button[aria-expanded="true"] .picker-chevron{transform:rotate(180deg)}
+
+    /* Shared module typography and restrained operational controls. */
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-shadow:0 0 12px rgba(16,170,255,.6)}
+    h1{font-size:22px;line-height:1.05;letter-spacing:-.03em;font-weight:700}
+    .live-badge{gap:5px;padding:7px 8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}
+    .live-dot{width:7px;height:7px;background:#34d980;box-shadow:none}
+    .street-picker-button,.official-link{border-color:var(--line);border-radius:10px;background:var(--panel);box-shadow:0 0 0 1px rgba(16,170,255,.06),0 0 13px rgba(16,170,255,.07)}
+    .official-link{padding:0 12px;color:var(--text);font-size:12px;font-weight:700;text-decoration:none}
+    .official-link:hover,.street-picker-button:hover{border-color:var(--cyan)}
+    .tab-btn{font-weight:850}
+    @media(max-width:380px){h1{font-size:20px}.official-link{padding:0 9px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -571,7 +582,7 @@
           </button>
           <div class="street-menu" id="streetMenu" role="listbox" aria-label="Street locations" hidden></div>
         </div>
-        <a class="official-link" id="officialLink" href="#" target="_blank" rel="external noopener noreferrer">🔗 Location SA</a>
+        <a class="official-link" id="officialLink" href="#" target="_blank" rel="external noopener noreferrer">↗ Location SA</a>
       </div>
     </header>
 
