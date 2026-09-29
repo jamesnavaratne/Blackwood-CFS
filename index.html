@@ -6805,6 +6805,29 @@ body.palette-default-blue #lockerPhoto .locker-fullbleed-card .cabin-photo-switc
   display:flex!important;position:absolute!important;top:10px!important;right:10px!important;z-index:3!important;
 }
 @media(max-width:600px){body #lockerPhoto .locker-fullbleed-card,body.dark #lockerPhoto .locker-fullbleed-card{height:178px!important;min-height:178px!important}}
+
+/* Isolated photo surface: this class never inherits the legacy photo-card capsule. */
+#lockerPhoto .locker-reference-photo{
+  box-sizing:border-box;position:relative;display:block;width:100%;height:220px;
+  margin:0 0 19px;padding:0;overflow:hidden;
+  border:1px solid #285170;border-radius:12px;
+  background-color:#0b0f14;background-position:center 45%;background-size:cover;background-repeat:no-repeat;
+  cursor:zoom-in;
+}
+#lockerPhoto .locker-reference-photo .photo-text,
+#lockerPhoto .locker-reference-photo .missing-photo,
+#lockerPhoto .locker-reference-photo .locker-direct-photo,
+#lockerPhoto .locker-reference-photo .cabin-photo-grid{display:none!important}
+#lockerPhoto .locker-reference-photo .cabin-photo-switch{
+  position:absolute;z-index:3;top:12px;right:12px;display:flex;gap:5px;
+}
+#lockerPhoto .locker-reference-photo .cabin-view-btn{
+  min-height:32px;padding:5px 10px;border:1px solid rgba(255,255,255,.35);
+  border-radius:7px;background:rgba(5,7,10,.8);color:#f6f7fb;
+  font:750 11px system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:none;
+}
+#lockerPhoto .locker-reference-photo .cabin-view-btn.active{border-color:#10aaff;background:rgba(16,170,255,.28)}
+@media(max-width:600px){#lockerPhoto .locker-reference-photo{height:178px}}
 </style>
 
 
@@ -7129,7 +7152,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.18 TEST Reference Photo Surface</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.19 TEST Isolated Photo Card</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -7938,7 +7961,7 @@ function handleLockerPhotoError(img) {
     shell.classList.remove("photo-ready");
     shell.style.display = "none";
   }
-  const card = img.closest(".photo-card");
+  const card = img.closest(".photo-card, .locker-reference-photo");
   if (card) {
     const missing = card.querySelector(".missing-photo");
     if (missing) missing.style.display = "block";
@@ -7980,7 +8003,7 @@ function renderPhoto() {
     ` : "";
 
     photoEl.innerHTML = `
-      <div class="photo-card cabin-photo-card locker-fullbleed-card">
+      <div class="locker-reference-photo">
         <div class="photo-text">
           <h2>${esc(lp.title || activeLocker)}</h2>
           <small class="cabin-photo-hint">Tap photo to enlarge</small>
@@ -7995,12 +8018,12 @@ function renderPhoto() {
         </div>
       </div>
     `;
-    setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), front || rear);
+    setLockerPhotoSurface(photoEl.querySelector(".locker-reference-photo"), front || rear);
     photoEl.querySelectorAll(".cabin-view-btn").forEach(button => {
       button.addEventListener("click", event => {
         event.stopPropagation();
         const view = button.dataset.cabinView;
-        setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), view === "rear" ? rear : front);
+        setLockerPhotoSurface(photoEl.querySelector(".locker-reference-photo"), view === "rear" ? rear : front);
         photoEl.querySelectorAll(".cabin-photo-figure").forEach(figure => figure.classList.toggle("active", figure.dataset.cabinView === view));
         photoEl.querySelectorAll(".cabin-view-btn").forEach(choice => {
           const selected = choice.dataset.cabinView === view;
@@ -8014,7 +8037,7 @@ function renderPhoto() {
 
   const src = lockerPhotoPath(lp.photo, DATA.appliance);
   photoEl.innerHTML = `
-    <div class="photo-card locker-fullbleed-card">
+    <div class="locker-reference-photo">
       <div class="photo-text">
         <h2>${esc(lp.title || activeLocker)}</h2>
         <p class="photo-path">File: ${esc(src)}</p>
@@ -8026,7 +8049,7 @@ function renderPhoto() {
       </div>
     </div>
   `;
-  setLockerPhotoSurface(photoEl.querySelector(".locker-fullbleed-card"), src);
+  setLockerPhotoSurface(photoEl.querySelector(".locker-reference-photo"), src);
 }
 
 function groupRecords(records) {
@@ -8966,7 +8989,7 @@ function initialisePhotoModalFeature() {
   document.addEventListener("click", (event) => {
     const target = event.target && typeof event.target.closest === "function" ? event.target : null;
     if (!target) return;
-    const card = target.closest(".photo-card");
+    const card = target.closest(".photo-card, .locker-reference-photo");
     if (!card) return;
 
     const clickedImg = target.closest("img");
