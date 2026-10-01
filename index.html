@@ -3356,7 +3356,6 @@ body[data-theme*="yellow"] {
    Keeps each locker using the app's existing correct title/photo/path. */
 
 /* Main locker photo container: compact, not bulky */
-#lockerPhoto,
 .locker-photo,
 .location-photo,
 .locker-photo-wrap,
@@ -3484,7 +3483,6 @@ body[data-theme*="yellow"] {
 }
 
 @media (max-width: 640px) {
-  #lockerPhoto,
   .locker-photo,
   .location-photo,
   .locker-photo-wrap,
@@ -4085,7 +4083,6 @@ body.theme-yellow .system-home-header-btn {
 /* v2.0 stable patch - theme-aware locker photo capsules
    Uses current palette variables so locker/cabin photo containers no longer stay Rescue Blue.
    CSS-only: no inventory, photo path, or Directions logic changes. */
-body.dark #lockerPhoto,
 body.dark .locker-photo,
 body.dark .location-photo,
 body.dark .locker-photo-wrap,
@@ -6828,6 +6825,12 @@ body.palette-default-blue #lockerPhoto .locker-fullbleed-card .cabin-photo-switc
 }
 #lockerPhoto .locker-reference-photo .cabin-view-btn.active{border-color:#10aaff;background:rgba(16,170,255,.28)}
 @media(max-width:600px){#lockerPhoto .locker-reference-photo{height:178px}}
+
+/* The host is a layout slot, never a second photo card. */
+body #lockerPhoto,body.dark #lockerPhoto,body.dark.palette-default-blue #lockerPhoto{
+ padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+ background:transparent!important;box-shadow:none!important;overflow:visible!important;
+}
 </style>
 
 
@@ -7152,7 +7155,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.19 TEST Isolated Photo Card</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.20 TEST Photo Host Fix</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
