@@ -6884,9 +6884,15 @@ body.palette-default-blue .v2-appliance-home .home-redesign{
 }
 
 /* Inventory title follows its appliance's approved System Home colour. */
-body.palette-default-blue #title[data-appliance-name="Blackwood Rescue"]{color:#d9ac35!important}
-body.palette-default-blue #title[data-appliance-name="34P"]{color:#52b879!important}
-body.palette-default-blue #title[data-appliance-name="CAFS 24"]{color:#a779d6!important}
+body.palette-default-blue #title[data-appliance-name="Blackwood Rescue"]{--appliance-heading-accent:#d9ac35}
+body.palette-default-blue #title[data-appliance-name="34P"]{--appliance-heading-accent:#52b879}
+body.palette-default-blue #title[data-appliance-name="CAFS 24"]{--appliance-heading-accent:#a779d6}
+
+/* Approved option 2: white appliance title with a short coloured underline. */
+body.palette-default-blue #title[data-appliance-name]{
+ color:#f6f7fb!important;display:inline-block!important;
+ padding-bottom:7px!important;border-bottom:2px solid var(--appliance-heading-accent,transparent)!important;
+}
 </style>
 
 
@@ -7211,7 +7217,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.22 TEST Approved Home Appliance Colours</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.23 TEST White Headings Coloured Underline</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
