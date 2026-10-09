@@ -780,6 +780,9 @@ body.offline-banner-visible .content, body.app-update-banner-visible .content { 
 .brand .kicker{display:block;margin:0!important;font-size:11px!important;font-weight:800!important;letter-spacing:.16em!important;line-height:13px!important;text-transform:uppercase}
 .brand h1{margin:2px 0 0!important;font-size:22px!important;font-weight:700!important;letter-spacing:-.03em!important;line-height:23.1px!important}
 @media(max-width:380px){.brand h1{font-size:20px!important;line-height:21px!important}}
+
+button.street-map-reference{background:transparent;font-family:inherit;cursor:pointer}
+button.street-map-reference:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 </style>
 
 <!--
@@ -1513,10 +1516,12 @@ function openEntry(id){
   els.cardName.textContent = selected.name;
   els.cardSub.textContent = (selected.areas||[]).join(' · ');
   const info=[];
-  if(selected.mapRef) info.push(`<span class="infoPill accent">Map ${escapeHtml(selected.mapRef)}</span>`);
+  if(selected.mapRef) info.push(`<button type="button" class="infoPill accent street-map-reference" aria-label="Open UBD maps list, map ${escapeHtml(selected.mapRef)}">Map ${escapeHtml(selected.mapRef)}</button>`);
   if(selected.code) info.push(`<span class="infoPill accent">${escapeHtml(selected.code)}</span>`);
   (selected.flags||[]).forEach(f=>info.push(`<span class="infoPill">${escapeHtml(f)}</span>`));
   els.cardInfo.innerHTML=info.join('');
+  const streetMapReference = els.cardInfo.querySelector('.street-map-reference');
+  if(streetMapReference) streetMapReference.onclick = () => openMapList('street');
   els.bookCopy.innerHTML = formatDirectionsHtml(selected);
   els.sourceText.textContent = 'Source: ' + selected.source;
   updateHydrantsButton();

@@ -6888,11 +6888,20 @@ body.palette-default-blue #title[data-appliance-name="Blackwood Rescue"]{--appli
 body.palette-default-blue #title[data-appliance-name="34P"]{--appliance-heading-accent:#52b879}
 body.palette-default-blue #title[data-appliance-name="CAFS 24"]{--appliance-heading-accent:#a779d6}
 
-/* Approved option 2: white appliance title with a short coloured underline. */
-body.palette-default-blue #title[data-appliance-name]{
- color:#f6f7fb!important;display:inline-block!important;
- padding-bottom:7px!important;border-bottom:2px solid var(--appliance-heading-accent,transparent)!important;
-}
+/* Approved option 3: white title with a coloured marker beside the heading stack. */
+body.palette-default-blue #title[data-appliance-name]{color:#f6f7fb!important}
+body.palette-default-blue .header-top > div[data-appliance-name]{padding-left:10px!important;border-left:3px solid var(--appliance-heading-accent)!important}
+body.palette-default-blue .header-top > div[data-appliance-name="Blackwood Rescue"]{--appliance-heading-accent:#d9ac35}
+body.palette-default-blue .header-top > div[data-appliance-name="34P"]{--appliance-heading-accent:#52b879}
+body.palette-default-blue .header-top > div[data-appliance-name="CAFS 24"]{--appliance-heading-accent:#a779d6}
+
+/* Quick appliance switcher: compact native chooser beside the unchanged title. */
+.appliance-heading-row{display:flex;align-items:center;gap:4px;min-width:0}
+.appliance-heading-row #title{min-width:0}
+#quickApplianceSelect{appearance:none;-webkit-appearance:none;flex:0 0 28px;width:28px;height:36px;margin:0;padding:0;border:0;border-radius:6px;color:transparent;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236bdcff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center no-repeat;font-size:16px;cursor:pointer;box-shadow:none}
+#quickApplianceSelect option{color:#f6f7fb;background:#0b0f14;font:16px system-ui}
+#quickApplianceSelect:focus-visible{outline:2px solid #6bdcff;outline-offset:2px}
+#quickApplianceSelect:hover{background-color:rgba(107,220,255,.06)}
 </style>
 
 
@@ -7217,7 +7226,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.23 TEST White Headings Coloured Underline</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.25 TEST Quick Appliance and UBD Link</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -7249,7 +7258,7 @@ v2.2 Android cold-start smoothing test:
     <button id="menuBtn" class="menu-btn" type="button" aria-label="Open appliance menu">☰</button>
     <div style="flex:1;">
       <div class="inventory-kicker">Blackwood CFS</div>
-      <h1 id="title">Inventory</h1>
+      <div class="appliance-heading-row"><h1 id="title">Inventory</h1><select id="quickApplianceSelect" aria-label="Select appliance" title="Switch appliance"><option value="Blackwood Rescue">Blackwood Rescue</option><option value="34P">Blackwood 34P</option><option value="CAFS 24">CAFS 24</option></select></div>
       <div class="built" id="subtitle"></div>
     </div>
     <div class="header-actions">
@@ -7342,6 +7351,10 @@ function resetInventoryNavigationPosition() {
     main.classList.remove("inventory-native-transitioning");
   }
 }
+
+document.getElementById('quickApplianceSelect').addEventListener('change', function () {
+  if (APPLIANCES[this.value] && this.value !== DATA.appliance) setActiveAppliance(this.value);
+});
 
 function setActiveAppliance(applianceName) {
   resetInventoryNavigationPosition();
@@ -7653,7 +7666,11 @@ function renderLockerToolbar() {
 }
 
 function renderImmediate() {
-  if (title && DATA) title.dataset.applianceName = DATA.appliance;
+  if (title && DATA) {
+    title.dataset.applianceName = DATA.appliance;
+    title.closest('.header-top > div').dataset.applianceName = DATA.appliance;
+    document.getElementById('quickApplianceSelect').value = DATA.appliance;
+  }
   const records = filteredRecords();
   renderSummary(records);
   renderLockerToolbar();
