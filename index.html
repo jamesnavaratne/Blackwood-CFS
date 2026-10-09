@@ -6831,6 +6831,62 @@ body #lockerPhoto,body.dark #lockerPhoto,body.dark.palette-default-blue #lockerP
  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
  background:transparent!important;box-shadow:none!important;overflow:visible!important;
 }
+
+/* System Home: a shared accent palette for every appliance. */
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]{background:#102b3d!important;border-color:#30789c!important;color:#f6f7fb!important;box-shadow:inset 0 1px 0 rgba(115,220,255,.08)!important;text-shadow:none!important;transform:none!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck] .home-appliance-arrow{color:#6bdcff!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:hover,body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:active{background:#15384e!important;border-color:#10aaff!important;transform:none!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:focus-visible{outline:2px solid #6bdcff!important;outline-offset:3px!important}
+body.palette-default-blue .home-redesign .home-module-icon,body.palette-default-blue .home-redesign .home-module-arrow{color:#6bdcff!important}
+
+/* Appliance recognition: subtle coloured type and softly tinted surfaces. */
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck="rescue"]{--appliance-ink:#d9ac35;--appliance-surface:#252319;--appliance-edge:#5b5132;--appliance-hover:#322e1f}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck="34p"]{--appliance-ink:#52b879;--appliance-surface:#172920;--appliance-edge:#345944;--appliance-hover:#20362a}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck="cafs24"]{--appliance-ink:#a779d6;--appliance-surface:#251f30;--appliance-edge:#524168;--appliance-hover:#322941}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]{color:var(--appliance-ink)!important;background:var(--appliance-surface)!important;border-color:var(--appliance-edge)!important;box-shadow:none!important;transform:none!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck] .home-appliance-arrow{color:var(--appliance-ink)!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:hover,body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:active{background:var(--appliance-hover)!important;border-color:var(--appliance-ink)!important;transform:none!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:focus-visible{outline:2px solid var(--appliance-ink)!important;outline-offset:3px!important}
+
+/* Text-only appliance accents; retain the shared blue pill surface. */
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]{background:#102b3d!important;border-color:#30789c!important;box-shadow:inset 0 1px 0 rgba(115,220,255,.08)!important;color:var(--appliance-ink)!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:hover,body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:active{background:#15384e!important;border-color:#10aaff!important;color:var(--appliance-ink)!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:focus-visible{outline:2px solid #6bdcff!important;outline-offset:3px!important}
+
+/* Original Default Blue appliance pill finish, with text accents only. */
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]{background:#0b0f14!important;border-color:#27313d!important;box-shadow:none!important;color:var(--appliance-ink)!important}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:hover,body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck]:active{background:#142431!important;border-color:#10aaff!important;box-shadow:none!important}
+
+/* Original Default Blue arrows; appliance colour is confined to the name. */
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck] .home-appliance-arrow{color:#10aaff!important}
+
+/* Shared module label typography and consistent arrows across button/link markup. */
+body.palette-default-blue .home-redesign .home-module-heading,
+body.palette-default-blue .home-redesign .home-module-link,
+body.palette-default-blue .home-redesign .home-module-label{
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;
+ font-size:17px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:.012em!important;
+}
+body.palette-default-blue .home-redesign .home-module-arrow{
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;
+ font-size:27px!important;font-weight:300!important;line-height:1!important;
+ display:grid!important;place-items:center!important;width:20px!important;height:30px!important;flex:none!important;
+ color:#6bdcff!important;
+}
+body.palette-default-blue .home-redesign .home-appliance[data-v2-home-truck] .home-appliance-arrow{color:#6bdcff!important}
+@media(max-width:370px){body.palette-default-blue .home-redesign .home-module-heading,body.palette-default-blue .home-redesign .home-module-link,body.palette-default-blue .home-redesign .home-module-label{font-size:16px!important}}
+
+/* A more defined blue outer card, keeping the inner pills unchanged. */
+body.palette-default-blue .v2-appliance-home .home-redesign{
+ background:#0b0f14!important;
+ border:2px solid #28658a!important;
+ box-shadow:0 0 0 1px rgba(107,220,255,.05) inset,0 12px 36px rgba(0,0,0,.38)!important;
+}
+
+/* Inventory title follows its appliance's approved System Home colour. */
+body.palette-default-blue #title[data-appliance-name="Blackwood Rescue"]{color:#d9ac35!important}
+body.palette-default-blue #title[data-appliance-name="34P"]{color:#52b879!important}
+body.palette-default-blue #title[data-appliance-name="CAFS 24"]{color:#a779d6!important}
 </style>
 
 
@@ -6876,7 +6932,7 @@ v2.2 Android cold-start smoothing test:
     <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
     <div class="home-modules">
       <section class="home-module" aria-label="Inventory">
-        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Inventory</span></div>
+        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Appliance Inventory</span></div>
         <div class="home-appliances" aria-label="Appliances">
           <button type="button" class="home-appliance" data-v2-home-truck="rescue"><span>Rescue</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
           <button type="button" class="home-appliance" data-v2-home-truck="34p"><span>34P</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
@@ -7155,7 +7211,7 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><strong>Version:</strong> v2.9.4.20 TEST Photo Host Fix</div>
+  <div class="drawer-note"><strong>Version:</strong> v2.9.4.22 TEST Approved Home Appliance Colours</div>
 </aside>
 
 <div id="itemModalBackdrop" class="modal-backdrop"></div>
@@ -7591,6 +7647,7 @@ function renderLockerToolbar() {
 }
 
 function renderImmediate() {
+  if (title && DATA) title.dataset.applianceName = DATA.appliance;
   const records = filteredRecords();
   renderSummary(records);
   renderLockerToolbar();
@@ -9474,7 +9531,7 @@ installNativeLockerSwipe();
     <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
     <div class="home-modules">
       <section class="home-module" aria-label="Inventory">
-        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Inventory</span></div>
+        <div class="home-module-heading"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 5V3h8v2M8 10h8M8 14h5"/></svg></span><span>Appliance Inventory</span></div>
         <div class="home-appliances" aria-label="Appliances">
           <button type="button" class="home-appliance" data-v2-home-truck="rescue"><span>Rescue</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
           <button type="button" class="home-appliance" data-v2-home-truck="34p"><span>34P</span><span class="home-appliance-arrow" aria-hidden="true">›</span></button>
