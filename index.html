@@ -7287,6 +7287,7 @@ v2.2 Android cold-start smoothing test:
 <div id="modalDetails" class="modal-detail-grid"></div>
     <div class="modal-bottom-actions">
       <button id="modalReportIssueBtn" class="modal-report-issue-btn" type="button">Report Issue</button>
+      <button id="blackwoodAdminEdit" class="modal-report-issue-btn" style="margin-left:8px" type="button" aria-label="Edit this item in Blackwood Admin">Edit in Admin ↗</button>
     </div>
     
   </div>
@@ -8376,6 +8377,14 @@ updateModalServiceButtons(effectiveStatus);
     modalField("Checked by", r.checkedBy),
   ].join("");
 
+  const editButton = document.getElementById("blackwoodAdminEdit");
+  if (editButton) {
+    editButton.onclick = () => {
+      const id = String(r.id || "").trim();
+      if (!id) { alert("This item does not have a stable inventory ID."); return; }
+      window.open("admin/?item=" + encodeURIComponent(id), "_blank", "noopener,noreferrer");
+    };
+  }
   itemModalBackdrop.classList.add("open");
   itemModal.classList.add("open");
 }
