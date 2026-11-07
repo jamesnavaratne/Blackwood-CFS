@@ -747,6 +747,8 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 
       let map;
       let activeHydrantOverlay = null;
+      let liveHydrantPoints = null;
+      let hydrantQueryController = null;
       let pendingHydrantOverlay = null;
       let userLocationMarker = null;
       let userAccuracyCircle = null;
@@ -998,6 +1000,57 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         return `${MAP_SERVICE}/export?${params.toString()}`;
       }
 
+      // If the official MapServer image export is unavailable, request the same
+      // official SA Water hydrant features directly from Location SA layer 334.
+      // No coordinates are stored or fabricated; this remains live/online only.
+      async function showHydrantsFromOfficialFeatures(bounds, requestId) {
+        if (hydrantQueryController) hydrantQueryController.abort();
+        const controller = new AbortController();
+        hydrantQueryController = controller;
+        const timer = window.setTimeout(() => controller.abort(), 15000);
+        try {
+          const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
+          const params = new URLSearchParams({
+            where: '1=1', geometry: bbox, geometryType: 'esriGeometryEnvelope',
+            spatialRel: 'esriSpatialRelIntersects', inSR: '4326', outSR: '4326',
+            outFields: 'objectid', returnGeometry: 'true', f: 'geojson'
+          });
+          const response = await fetch(`${MAP_SERVICE}/${HYDRANT_LAYER_ID}/query?${params}`, {
+            mode: 'cors', cache: 'no-store', signal: controller.signal
+          });
+          if (!response.ok) throw new Error(`Official feature service HTTP ${response.status}`);
+          const data = await response.json();
+          if (!Array.isArray(data.features) || data.error) throw new Error('Invalid official feature response');
+          if (requestId !== overlayRequest) return;
+          const layer = L.layerGroup();
+          let count = 0;
+          for (const feature of data.features) {
+            if (!feature || !feature.geometry || feature.geometry.type !== 'Point') continue;
+            const coordinates = feature.geometry.coordinates;
+            if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) continue;
+            L.circleMarker([coordinates[1], coordinates[0]], {
+              radius: 4.5, color: '#e00017', weight: 2, fillColor: '#ffffff',
+              fillOpacity: 1, opacity: 1, interactive: false
+            }).addTo(layer);
+            count++;
+          }
+          if (liveHydrantPoints) liveHydrantPoints.remove();
+          if (activeHydrantOverlay) { activeHydrantOverlay.remove(); activeHydrantOverlay = null; }
+          liveHydrantPoints = layer.addTo(map);
+          setMessage(count ? `Showing ${count} live Location SA hydrants (feature fallback).` :
+            'No hydrants returned for this view. Verify in Location SA.', count ? 'success' : 'error');
+        } catch (error) {
+          if (requestId === overlayRequest) {
+            if (liveHydrantPoints) { liveHydrantPoints.remove(); liveHydrantPoints = null; }
+            setMessage('The official hydrant layer could not be loaded. Open Location SA to verify.', 'error');
+            console.warn('Location SA hydrant image and feature requests failed:', error);
+          }
+        } finally {
+          window.clearTimeout(timer);
+          if (hydrantQueryController === controller) hydrantQueryController = null;
+        }
+      }
+
       function refreshHydrantLayer() {
         if (!map || !navigator.onLine) return;
 
@@ -1006,6 +1059,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         if (!bounds.isValid() || size.x < 1 || size.y < 1) return;
 
         const requestId = ++overlayRequest;
+        if (hydrantQueryController) hydrantQueryController.abort();
         const url = hydrantExportUrl(bounds, size);
         setMessage('Loading official hydrant layer…', 'loading');
 
@@ -1028,6 +1082,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
             return;
           }
           if (activeHydrantOverlay) activeHydrantOverlay.remove();
+          if (liveHydrantPoints) { liveHydrantPoints.remove(); liveHydrantPoints = null; }
           nextOverlay.setOpacity(1);
           activeHydrantOverlay = nextOverlay;
           pendingHydrantOverlay = null;
@@ -1038,7 +1093,8 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
           if (requestId !== overlayRequest) return;
           nextOverlay.remove();
           pendingHydrantOverlay = null;
-          setMessage('The official hydrant layer could not be loaded. Try Location SA.', 'error');
+          setMessage('Trying the official live hydrant features…', 'loading');
+          showHydrantsFromOfficialFeatures(bounds, requestId);
         });
 
         nextOverlay.addTo(map);
