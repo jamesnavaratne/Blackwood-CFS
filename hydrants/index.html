@@ -625,7 +625,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         <span class="spinner" aria-hidden="true"></span>
         <span id="mapMessageText">Loading official hydrant layer…</span>
       </div>
-      <div class="map-credit">Road map: Location SA · Hydrant data © SA Water Corporation via Location SA · Live online layer 334</div>
+      <div class="map-credit">Road map: Location SA · Hydrant data © SA Water Corporation via Location SA · Live online layer 6</div>
     </section>
 
     <nav class="bottom-nav" aria-label="Primary">
@@ -652,11 +652,11 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
     (() => {
       'use strict';
 
-      const BUILD = 'Blackwood CFS v2.9.4.5 Stable — 2026-09-29';
-      const MAP_SERVICE = 'https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer';
+      const BUILD = 'Blackwood CFS v2.9.4.28 — Official Hydrants Layer 6 RC1';
+      const MAP_SERVICE = 'https://agsplus.geodata.sa.gov.au/arcgis/rest/services/Infrastructure_Utilities/MapServer';
       const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
       const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
-      const HYDRANT_LAYER_ID = 334;
+      const HYDRANT_LAYER_ID = 6;
 
       const STATION = Object.freeze({ id: 'station', label: 'Blackwood CFS', suburb: 'Hawthorndene', lat: -35.02315147312423, lon: 138.62864279398076, fallback: true });
       const catalogue = Array.isArray(window.BLACKWOOD_HYDRANT_LOCATIONS) ? window.BLACKWOOD_HYDRANT_LOCATIONS : [];
@@ -1000,35 +1000,41 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         return `${MAP_SERVICE}/export?${params.toString()}`;
       }
 
-      // If the official MapServer image export is unavailable, request the same
-      // official SA Water hydrant features directly from Location SA layer 334.
-      // No coordinates are stored or fabricated; this remains live/online only.
+      // Official South Australian government hydrant layer 6.
+      // Query live features; fall back to an official image overlay if necessary.
+      // If response is potentially truncated, display an explicit warning instead.
+      function detailedError(error) {
+        return error && error.message ? error.message : String(error);
+      }
+
       async function showHydrantsFromOfficialFeatures(bounds, requestId) {
         if (hydrantQueryController) hydrantQueryController.abort();
         const controller = new AbortController();
         hydrantQueryController = controller;
-        const timer = window.setTimeout(() => controller.abort(), 15000);
+        const timer = window.setTimeout(() => controller.abort(), 18000);
         try {
           const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
           const params = new URLSearchParams({
             where: '1=1', geometry: bbox, geometryType: 'esriGeometryEnvelope',
             spatialRel: 'esriSpatialRelIntersects', inSR: '4326', outSR: '4326',
-            outFields: 'objectid', returnGeometry: 'true', f: 'geojson'
+            outFields: 'objectid', returnGeometry: 'true', f: 'geojson',
+            resultRecordCount: '2000'
           });
-          const response = await fetch(`${MAP_SERVICE}/${HYDRANT_LAYER_ID}/query?${params}`, {
-            mode: 'cors', cache: 'no-store', signal: controller.signal
-          });
-          if (!response.ok) throw new Error(`Official feature service HTTP ${response.status}`);
+          const url = `${MAP_SERVICE}/${HYDRANT_LAYER_ID}/query?${params}`;
+          console.info('[Blackwood hydrants] Official alternative hydrant query:', url);
+          const response = await fetch(url, { mode: 'cors', cache: 'no-store', signal: controller.signal });
+          if (!response.ok) throw new Error(`Layer 6 query HTTP ${response.status}`);
           const data = await response.json();
-          if (!Array.isArray(data.features) || data.error) throw new Error('Invalid official feature response');
+          if (data.error) throw new Error(`ArcGIS: ${data.error.message || 'service error'}`);
+          if (!Array.isArray(data.features)) throw new Error('Unexpected feature response (no features array)');
+          if (data.exceededTransferLimit || data.features.length >= 2000) throw new Error('Feature limit reached; zoom in to check complete hydrant coverage');
           if (requestId !== overlayRequest) return;
           const layer = L.layerGroup();
           let count = 0;
           for (const feature of data.features) {
-            if (!feature || !feature.geometry || feature.geometry.type !== 'Point') continue;
-            const coordinates = feature.geometry.coordinates;
-            if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) continue;
-            L.circleMarker([coordinates[1], coordinates[0]], {
+            const c = feature && feature.geometry && feature.geometry.coordinates;
+            if (!Array.isArray(c) || !Number.isFinite(c[0]) || !Number.isFinite(c[1])) continue;
+            L.circleMarker([c[1], c[0]], {
               radius: 4.5, color: '#e00017', weight: 2, fillColor: '#ffffff',
               fillOpacity: 1, opacity: 1, interactive: false
             }).addTo(layer);
@@ -1037,67 +1043,63 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
           if (liveHydrantPoints) liveHydrantPoints.remove();
           if (activeHydrantOverlay) { activeHydrantOverlay.remove(); activeHydrantOverlay = null; }
           liveHydrantPoints = layer.addTo(map);
-          setMessage(count ? `Showing ${count} live Location SA hydrants (feature fallback).` :
-            'No hydrants returned for this view. Verify in Location SA.', count ? 'success' : 'error');
+          setMessage(`Official live hydrants: ${count} hydrant${count === 1 ? '' : 's'} returned in view. Use Location SA to verify when needed.`, count ? 'success' : 'error');
+          console.info(`[Blackwood hydrants] Official hydrant features loaded: ${count}`);
         } catch (error) {
-          if (requestId === overlayRequest) {
-            if (liveHydrantPoints) { liveHydrantPoints.remove(); liveHydrantPoints = null; }
-            setMessage('The official hydrant layer could not be loaded. Open Location SA to verify.', 'error');
-            console.warn('Location SA hydrant image and feature requests failed:', error);
-          }
+          if (requestId !== overlayRequest) return;
+          console.warn('[Blackwood hydrants] Official feature query failed:', error);
+          setMessage(`Layer 6 query failed (${detailedError(error)}). Trying alternate image export…`, 'loading');
+          showHydrantsFromOfficialImage(bounds, requestId);
         } finally {
           window.clearTimeout(timer);
           if (hydrantQueryController === controller) hydrantQueryController = null;
         }
       }
 
-      function refreshHydrantLayer() {
-        if (!map || !navigator.onLine) return;
-
-        const bounds = map.getBounds();
-        const size = map.getSize();
-        if (!bounds.isValid() || size.x < 1 || size.y < 1) return;
-
-        const requestId = ++overlayRequest;
-        if (hydrantQueryController) hydrantQueryController.abort();
-        const url = hydrantExportUrl(bounds, size);
-        setMessage('Loading official hydrant layer…', 'loading');
-
-        if (pendingHydrantOverlay) {
-          pendingHydrantOverlay.remove();
-          pendingHydrantOverlay = null;
-        }
-
-        const nextOverlay = L.imageOverlay(url, bounds, {
-          opacity: 0,
-          interactive: false,
-          zIndex: 360,
-          alt: 'Live Location SA hydrant layer'
+      function showHydrantsFromOfficialImage(bounds, requestId) {
+        if (pendingHydrantOverlay) { pendingHydrantOverlay.remove(); pendingHydrantOverlay = null; }
+        const nextOverlay = L.imageOverlay(hydrantExportUrl(bounds, map.getSize()), bounds, {
+          opacity: 0, interactive: false, zIndex: 360,
+          alt: 'Official alternative hydrant layer 6 image'
         });
         pendingHydrantOverlay = nextOverlay;
-
-        nextOverlay.once('load', () => {
-          if (requestId !== overlayRequest) {
-            nextOverlay.remove();
-            return;
+        const timeout = window.setTimeout(() => {
+          if (pendingHydrantOverlay === nextOverlay && requestId === overlayRequest) {
+            nextOverlay.remove(); pendingHydrantOverlay = null;
+            setMessage('Official hydrant image timed out. Use Location SA to verify.', 'error');
           }
+        }, 18000);
+        nextOverlay.once('load', () => {
+          window.clearTimeout(timeout);
+          if (requestId !== overlayRequest) { nextOverlay.remove(); return; }
           if (activeHydrantOverlay) activeHydrantOverlay.remove();
           if (liveHydrantPoints) { liveHydrantPoints.remove(); liveHydrantPoints = null; }
           nextOverlay.setOpacity(1);
           activeHydrantOverlay = nextOverlay;
           pendingHydrantOverlay = null;
-          setMessage('Official hydrant layer updated.', 'success');
+          setMessage('Official hydrant image loaded. Use Location SA to verify when needed.', 'success');
+          console.info('[Blackwood hydrants] Alternative official hydrant image loaded');
         });
-
         nextOverlay.once('error', () => {
+          window.clearTimeout(timeout);
           if (requestId !== overlayRequest) return;
-          nextOverlay.remove();
-          pendingHydrantOverlay = null;
-          setMessage('Trying the official live hydrant features…', 'loading');
-          showHydrantsFromOfficialFeatures(bounds, requestId);
+          nextOverlay.remove(); pendingHydrantOverlay = null;
+          setMessage('Both official hydrant methods failed. Check Network tab; use Location SA to verify.', 'error');
+          console.warn('[Blackwood hydrants] Alternative official image export failed');
         });
-
         nextOverlay.addTo(map);
+      }
+
+      function refreshHydrantLayer() {
+        if (!map || !navigator.onLine) return;
+        const bounds = map.getBounds();
+        const size = map.getSize();
+        if (!bounds.isValid() || size.x < 1 || size.y < 1) return;
+        const requestId = ++overlayRequest;
+        if (hydrantQueryController) hydrantQueryController.abort();
+        if (pendingHydrantOverlay) { pendingHydrantOverlay.remove(); pendingHydrantOverlay = null; }
+        setMessage('Loading official live hydrants…', 'loading');
+        showHydrantsFromOfficialFeatures(bounds, requestId);
       }
 
       function scheduleHydrantRefresh(delay = 140) {

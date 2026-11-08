@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-28-hydrant-feature-fallback-test-20261106';
+const CACHE_NAME = 'blackwood-cfs-v2-9-4-28-official-hydrants-layer6-rc1-20261108';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
