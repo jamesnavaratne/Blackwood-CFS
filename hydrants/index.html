@@ -657,6 +657,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
       const BASEMAP_TILES = 'https://basemap.geohub.sa.gov.au/server/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/tile/{z}/{y}/{x}';
       const LOCATION_SA_VIEWER = 'https://location.sa.gov.au/viewer/';
       const HYDRANT_LAYER_ID = 6;
+      const LOCATION_SA_VIEWER_HYDRANT_UID = 334; // Separate Location SA viewer dataset ID, not ArcGIS layer 6
 
       const STATION = Object.freeze({ id: 'station', label: 'Blackwood CFS', suburb: 'Hawthorndene', lat: -35.02315147312423, lon: 138.62864279398076, fallback: true });
       const catalogue = Array.isArray(window.BLACKWOOD_HYDRANT_LOCATIONS) ? window.BLACKWOOD_HYDRANT_LOCATIONS : [];
@@ -823,7 +824,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
           x: String(centre.lng ?? centre.lon),
           y: String(centre.lat),
           z: String(zoom),
-          uids: String(HYDRANT_LAYER_ID),
+          uids: String(LOCATION_SA_VIEWER_HYDRANT_UID),
           pinx: '',
           piny: '',
           pinTitle: '',
