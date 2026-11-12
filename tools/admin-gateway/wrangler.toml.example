@@ -8,8 +8,8 @@ ADMIN_ORIGIN = "https://jamesnavaratne.github.io"
 ADMIN_URL = "https://jamesnavaratne.github.io/Blackwood-CFS/admin/"
 GITHUB_REPO = "jamesnavaratne/Blackwood-CFS"
 DEFAULT_BRANCH = "main"
-ALLOWED_LOGINS = "REPLACE_WITH_GITHUB_USERNAME"
-GITHUB_CLIENT_ID = "REPLACE_WITH_GITHUB_OAUTH_APP_CLIENT_ID"
+ALLOWED_LOGINS = "jamesnavaratne"
+GITHUB_CLIENT_ID = "de1b3a2ed37e41abafcf95c2738783eb"
 
 # Create a KV namespace and replace ID:
 [[kv_namespaces]]
