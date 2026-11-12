@@ -1,0 +1,20 @@
+name = "blackwood-cfs-admin-gateway"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+# URLs must match the actual published admin app and GitHub repository.
+[vars]
+ADMIN_ORIGIN = "https://jamesnavaratne.github.io"
+ADMIN_URL = "https://jamesnavaratne.github.io/Blackwood-CFS/admin/"
+GITHUB_REPO = "jamesnavaratne/Blackwood-CFS"
+DEFAULT_BRANCH = "main"
+ALLOWED_LOGINS = "REPLACE_WITH_GITHUB_USERNAME"
+GITHUB_CLIENT_ID = "REPLACE_WITH_GITHUB_OAUTH_APP_CLIENT_ID"
+
+# Create a KV namespace and replace ID:
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secret, NOT in TOML or GitHub repository:
+# npx wrangler secret put GITHUB_CLIENT_SECRET
