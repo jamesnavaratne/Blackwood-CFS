@@ -1,24 +1,25 @@
 {
-  "name": "Blackwood CFS Admin \u2014 Pilot",
+  "name": "Blackwood CFS Admin",
   "short_name": "CFS Admin",
-  "description": "Blackwood inventory draft editor and change-package exporter",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Inventory edits, photos and reviewable change packages",
+  "start_url": "/Blackwood-CFS/admin/",
+  "scope": "/Blackwood-CFS/admin/",
   "display": "standalone",
   "theme_color": "#10294c",
   "background_color": "#071322",
   "icons": [
     {
-      "src": "../icons/icon-192.png",
+      "src": "./admin-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "../icons/icon-512.png",
+      "src": "./admin-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "id": "/Blackwood-CFS/admin/"
 }
