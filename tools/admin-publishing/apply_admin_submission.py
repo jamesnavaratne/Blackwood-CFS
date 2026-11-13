@@ -71,7 +71,7 @@ def run(repo:Path, proposal:Path,check:bool=False):
                 if ident in indices:fail('Duplicate existing ID '+ident)
                 indices[ident]=(row,cells)
         existing=set(indices)
-        seen=set(); edits=[]; photos=[]; assigned={}; maxid={x:0 for x in APPS.values()}
+        seen=set(); edits=[]; photos=[]; assigned={}; photo_paths={}; maxid={x:0 for x in APPS.values()}
         for ident in existing:
             for prefix in maxid:
                 mt=re.fullmatch(re.escape(prefix)+r'-(\d+)',ident)
@@ -113,7 +113,15 @@ def run(repo:Path, proposal:Path,check:bool=False):
                 filename=f'admin-{new_id.lower()}-{hashlib.sha256(pic).hexdigest()[:12]}.jpg'
                 target=repo/'photos'/PHOTO_DIR[app]/'items'/filename
                 photos.append((target,pic))
-                data={**data,'photo':filename}
+                photo_paths[new_id]=target.relative_to(repo).as_posix()
+                # The operational item modal renders extraPhoto first; the legacy 'photo'
+                # column is not the displayed override. Preserve existing Photo and
+                # update ExtraPhoto so the rebuild embeds the uploaded image reference.
+                data={**data,'extraPhoto':filename}
+                # A replacement is additional to the original Photo column; do not
+                # clear that field merely because the Admin form exports it blank.
+                if op=='update' and not data.get('photo'):
+                    data.pop('photo',None)
             edits.append((op,ident,data,new_id))
         # Validate all new image paths before mutating anything.
         if len({str(p) for p,_ in photos})!=len(photos):fail('Duplicate photo paths')
@@ -143,7 +151,7 @@ def run(repo:Path, proposal:Path,check:bool=False):
                             cell=ET.Element(f'{{{M}}}c',{'r':f'{col}{row.get("r")}','s':'6'})
                             row.append(cell)
                         set_text(cell,data[key])
-        report={'status':'validated' if check else 'applied','changes':len(edits),'added':sum(x[0]=='add' for x in edits),'updated':sum(x[0]=='update' for x in edits),'removed':sum(x[0]=='remove' for x in edits),'assigned_ids':assigned,'photos':len(photos),'source':proposal.name}
+        report={'status':'validated' if check else 'applied','changes':len(edits),'added':sum(x[0]=='add' for x in edits),'updated':sum(x[0]=='update' for x in edits),'removed':sum(x[0]=='remove' for x in edits),'assigned_ids':assigned,'photos':len(photos),'photo_paths':photo_paths,'source':proposal.name}
         if check:return report
         # Existing file member metadata and every other XML part are unchanged.
         targetbytes=serialise(root)
