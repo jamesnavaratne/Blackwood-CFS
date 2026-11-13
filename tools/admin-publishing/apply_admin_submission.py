@@ -71,7 +71,7 @@ def run(repo:Path, proposal:Path,check:bool=False):
                 if ident in indices:fail('Duplicate existing ID '+ident)
                 indices[ident]=(row,cells)
         existing=set(indices)
-        seen=set(); edits=[]; photos=[]; assigned={}; photo_paths={}; maxid={x:0 for x in APPS.values()}
+        seen=set(); edits=[]; photos=[]; removed_photos=[]; assigned={}; photo_paths={}; maxid={x:0 for x in APPS.values()}
         for ident in existing:
             for prefix in maxid:
                 mt=re.fullmatch(re.escape(prefix)+r'-(\d+)',ident)
@@ -102,7 +102,19 @@ def run(repo:Path, proposal:Path,check:bool=False):
             if op=='add':
                 prefix=APPS[app];maxid[prefix]+=1;new_id=f'{prefix}-{maxid[prefix]:04d}'
                 assigned[ident]=new_id
+            remove_photo=ch.get('removePhoto',False)
+            if not isinstance(remove_photo,bool):fail('Invalid photo removal flag')
+            if remove_photo and (op!='update' or ch.get('photo') is not None):fail('Cannot remove a photo on add or simultaneously upload a photo')
             photo=ch.get('photo')
+            if remove_photo:
+                # Clear the preferred Admin override while retaining the legacy Photo.
+                data={**data,'extraPhoto':''}
+                previous_extra=text(cells.get('L'),shared) if cells.get('L') is not None else ''
+                if previous_extra.startswith('admin-') and re.fullmatch(r'admin-[a-z0-9-]+-[a-f0-9]{12}\.jpg',previous_extra):
+                    old_path=repo/'photos'/PHOTO_DIR[app]/'items'/previous_extra
+                    # Do not delete an image reused by another inventory record.
+                    used_elsewhere=any(old_ident!=ident and any(text(other_cells.get(col),shared)==previous_extra for col in ('K','L') if other_cells.get(col) is not None) for old_ident,(_,other_cells) in indices.items())
+                    if old_path.exists() and not used_elsewhere:removed_photos.append(old_path)
             if photo is not None:
                 if not isinstance(photo,dict) or photo.get('type')!='image/jpeg':fail('Photo must be an optimised JPEG')
                 encoded=photo.get('data','')
@@ -151,7 +163,7 @@ def run(repo:Path, proposal:Path,check:bool=False):
                             cell=ET.Element(f'{{{M}}}c',{'r':f'{col}{row.get("r")}','s':'6'})
                             row.append(cell)
                         set_text(cell,data[key])
-        report={'status':'validated' if check else 'applied','changes':len(edits),'added':sum(x[0]=='add' for x in edits),'updated':sum(x[0]=='update' for x in edits),'removed':sum(x[0]=='remove' for x in edits),'assigned_ids':assigned,'photos':len(photos),'photo_paths':photo_paths,'source':proposal.name}
+        report={'status':'validated' if check else 'applied','changes':len(edits),'added':sum(x[0]=='add' for x in edits),'updated':sum(x[0]=='update' for x in edits),'removed':sum(x[0]=='remove' for x in edits),'assigned_ids':assigned,'photos':len(photos),'removed_photos':[x.relative_to(repo).as_posix() for x in removed_photos],'photo_paths':photo_paths,'source':proposal.name}
         if check:return report
         # Existing file member metadata and every other XML part are unchanged.
         targetbytes=serialise(root)
@@ -166,6 +178,8 @@ def run(repo:Path, proposal:Path,check:bool=False):
                 if path.exists() and path.read_bytes()!=content:fail('Photo filename collision')
                 path.write_bytes(content)
             temppath.replace(wbpath)
+            for old_path in removed_photos:
+                old_path.unlink(missing_ok=True)
         finally:
             temppath.unlink(missing_ok=True)
     return report
