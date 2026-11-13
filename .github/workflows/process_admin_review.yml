@@ -1,0 +1,97 @@
+name: Process Blackwood Admin review proposal
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Draft Admin pull request number (e.g. 1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: admin-review-${{ inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm proposal is a safe draft PR in this repository
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          [[ "$NUMBER" =~ ^[1-9][0-9]*$ ]] || { echo 'Invalid pull request number'; exit 1; }
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}" > "$RUNNER_TEMP/pr.json"
+          jq -e --arg repo "$GITHUB_REPOSITORY" \
+            '.state == "open" and .draft == true and .base.ref == "main" and .head.repo.full_name == $repo and (.head.ref | startswith("admin-review/"))' \
+            "$RUNNER_TEMP/pr.json" > /dev/null
+          SHA=$(jq -r '.head.sha' "$RUNNER_TEMP/pr.json")
+          BRANCH=$(jq -r '.head.ref' "$RUNNER_TEMP/pr.json")
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}/files?per_page=100" | jq -s 'add' > "$RUNNER_TEMP/changed-files.json"
+          # Only a single JSON proposal is permitted; no PR-supplied scripts/workflows.
+          jq -e 'length == 1 and .[0].status == "added" and (.[0].filename | test("^admin/submissions/[a-zA-Z0-9_-]+\\.json$"))' "$RUNNER_TEMP/changed-files.json" > /dev/null
+          FILE=$(jq -r '.[0].filename' "$RUNNER_TEMP/changed-files.json")
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "proposal=$FILE" >> "$GITHUB_OUTPUT"
+      - name: Check out trusted processor from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: trusted
+          persist-credentials: false
+      - name: Check out exact PR commit into a separate folder
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+          path: proposal
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ensure this proposal has not been processed already
+        working-directory: proposal
+        env:
+          FILE: ${{ steps.pr.outputs.proposal }}
+        run: |
+          test ! -f "admin/processed/$(basename "$FILE")" || { echo 'Proposal already processed'; exit 1; }
+      - name: Check proposal and validate all expected edits
+        working-directory: proposal
+        env:
+          FILE: ${{ steps.pr.outputs.proposal }}
+        run: python ../trusted/tools/admin-publishing/apply_admin_submission.py --repo-root . --proposal "$FILE" --check-only
+      - name: Apply proposed inventory changes and photographs
+        working-directory: proposal
+        env:
+          FILE: ${{ steps.pr.outputs.proposal }}
+        run: |
+          set -euo pipefail
+          mkdir -p admin/processed
+          python ../trusted/tools/admin-publishing/apply_admin_submission.py --repo-root . --proposal "$FILE" > "admin/processed/$(basename "$FILE")"
+      - name: Rebuild and validate inventory from Excel
+        working-directory: proposal
+        run: |
+          python ../trusted/tools/rebuild_inventory_from_excel.py
+          python ../trusted/tools/rebuild_inventory_from_excel.py --check-only
+      - name: Commit the reviewable outputs to the draft PR branch
+        working-directory: proposal
+        env:
+          BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Blackwood_CFS_Master_Inventory.xlsx data/inventory.json index.html content-metadata.json offline-assets.json admin/processed/ photos/
+          if git diff --cached --quiet; then echo 'No changes were generated'; exit 1; fi
+          git commit -m 'Admin: reconcile reviewed proposal with master workbook and photos'
+          git push origin "HEAD:refs/heads/${BRANCH}"
+          echo 'Review the resulting workbook, generated inventory and photo files in the draft pull request before merging.'

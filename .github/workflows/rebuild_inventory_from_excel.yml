@@ -3,6 +3,7 @@ name: Rebuild inventory, hydrants and offline metadata
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'Blackwood_CFS_Master_Inventory.xlsx'
       - 'tools/rebuild_inventory_from_excel.py'
