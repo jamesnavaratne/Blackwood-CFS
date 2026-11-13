@@ -1,0 +1,30 @@
+{
+  "format": "blackwood-admin-change-package",
+  "version": 1,
+  "source": "Admin v0.4",
+  "exportedAt": "2026-11-13T03:28:29.686Z",
+  "changes": [
+    {
+      "op": "update",
+      "id": "BR-0081",
+      "data": {
+        "id": "BR-0081",
+        "appliance": "Blackwood Rescue",
+        "locker": "Locker 6",
+        "section": "",
+        "subsection": "",
+        "item": "BROOM [x2]",
+        "quantity": "2",
+        "description": "",
+        "notes": "",
+        "tags": "",
+        "status": "In service"
+      },
+      "photo": null,
+      "removePhoto": true
+    }
+  ],
+  "submittedBy": "jamesnavaratne",
+  "submittedVia": "blackwood-admin-gateway",
+  "reviewStatus": "proposal-only"
+}
