@@ -96,11 +96,31 @@ button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:no
  #publishingGuide .guide-step.current:after{font-size:.59rem}
 }
 @media(max-width:550px){.console-hero{gap:8px;flex-wrap:wrap}.console-badge{white-space:normal;font-size:.72rem}.compact-inventory .row.inventory-heading{align-items:flex-start}.inventory-heading #expandInventoryBtn{flex:0 0 auto}#editorPanel .row{gap:6px}#toggleEditorBtn{margin-left:auto}}
-</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9 Guided Workspace</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
+
+/* v0.9.1 — authentication belongs in the header, independent of editing. */
+.console-hero{align-items:stretch;gap:18px}
+.console-hero>div:first-child{flex:1;min-width:170px}
+.hero-auth{width:min(100%,385px);flex:0 1 385px;display:flex;flex-direction:column;justify-content:center;gap:9px;background:#081c30b8;border:1px solid #3c6686;border-radius:12px;padding:14px}
+.hero-auth-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero-auth-help{font-size:.73rem;color:#b4c9dd}
+.hero-auth-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hero-auth-controls button{min-height:40px;font-size:.82rem;padding:8px 12px}
+.hero-auth-controls .github-connect{background:#218850;border-color:#54db91;color:#fff;box-shadow:0 2px 14px #1a9a5044}
+.hero-auth-controls .github-connect:hover{background:#279c5c}
+.hero-auth-message{font-size:.73rem;line-height:1.35;color:#b3cadd;overflow-wrap:anywhere}
+.console-badge.state-idle{color:#c3d8e9;background:#183850;border-color:#507594}
+#publishingConnectionHint{margin-top:12px;font-size:.79rem;color:#aac8e2}
+@media(max-width:830px){.console-hero{flex-direction:column}.hero-auth{width:100%;flex:auto}.hero-auth-controls button{flex:1}}
+@media(max-width:550px){.console-hero{padding:13px}.hero-auth{padding:11px}.hero-auth-help{display:none}.hero-auth-message{font-size:.72rem}}
+</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9.1 Connected Workspace</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
 
 <section class="console-hero" aria-label="Admin Console">
  <div><div class="console-eyebrow">Blackwood CFS</div><h2>Administration Console</h2><div class="sub">Find equipment · Manage photographs · Publish reviewed changes</div></div>
- <span class="console-badge" id="topGithubState">GitHub: checking</span>
+ <div class="hero-auth" aria-label="GitHub publishing connection">
+  <div class="hero-auth-top"><span class="console-badge state-checking" id="topGithubState">◌ Checking GitHub…</span><span class="hero-auth-help">Connect for publishing & live PR status</span></div>
+  <div class="hero-auth-controls"><button type="button" id="githubSignIn" class="github-connect">Sign in with GitHub ↗</button><button class="secondary hidden" type="button" id="githubCheck">Refresh connection</button><button class="secondary hidden" type="button" id="githubSignOut">Sign out</button></div>
+  <div class="hero-auth-message" id="githubStatus" role="status" aria-live="polite">Checking your GitHub connection…</div>
+ </div>
 </section>
 <div class="console-metrics" aria-label="Admin summary"><div class="metric"><strong id="metricEquipment">—</strong><span>Equipment records</span></div><div class="metric"><strong>3</strong><span>Appliances</span></div><div class="metric"><strong id="metricDrafts">0</strong><span>Local drafts</span></div></div>
 <nav class="console-nav" aria-label="Admin sections"><a href="#inventoryPanel" id="inventoryNavLink">Equipment</a><a href="#draftPanel">Drafts</a><a href="#publishPanel">Publish</a><a href="#publishingGuide">Guide</a></nav>
@@ -108,14 +128,14 @@ button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:no
 <section class="panel hidden" id="editorPanel"><div class="row"><div class="grow"><div class="console-eyebrow">02 · EDIT</div><h2>Edit equipment</h2></div><span class="pill" id="editTag">Select item</span><button type="button" class="secondary" id="toggleEditorBtn" aria-expanded="true">Collapse editor</button></div><div id="editorContents"><div class="toolbar"><button type="button" class="secondary" id="backToInventoryBtn">Clear selection</button></div><div id="empty">Choose an item above or create a new draft item.</div><form id="editor" class="hidden"><div class="two"><label class="field"><span>Item name</span><input name="item" required maxlength="250"></label><label class="field"><span>Appliance</span><select name="appliance" required></select></label></div><div class="two"><label class="field"><span>Locker (existing locations)</span><select name="locker" id="lockerSelect"></select></label><label class="field"><span>Section (existing locations)</span><select name="section" id="sectionSelect"></select></label></div><div class="two"><label class="field"><span>Subsection (existing locations)</span><select name="subsection" id="subsectionSelect"></select></label><label class="field"><span>Quantity</span><input name="quantity"></label></div><label class="field"><span>Description</span><textarea name="description"></textarea></label><label class="field"><span>Notes</span><textarea name="notes"></textarea></label><div class="two"><label class="field"><span>Tags</span><input name="tags"></label><label class="field"><span>Status</span><select name="status"><option>In service</option><option>Out of service</option></select></label></div><label class="field"><span>Photograph — camera or library (optimised before saving)</span><input type="file" id="photoFile" accept="image/*" capture="environment"></label><div class="row"><img id="photoPreview" class="hidden" alt="Photo preview"><span class="sub" id="photoInfo"></span></div><div class="sub">Photos are resized to a maximum 1600 pixels and compressed to JPEG. Keep a separate original for archival purposes.</div>
 <div class="toolbar"><button type="button" id="removePhotoBtn" class="danger">Remove added photo</button></div>
 <div id="photoRemovalNote" class="sub" role="status" aria-live="polite">Removes an Admin-added replacement photo and returns to the original inventory photo where available. Save draft to publish.</div><div class="toolbar"><button type="submit">Save draft</button><button type="button" class="secondary" id="resetEditorBtn">Clear selection</button><button type="button" class="danger" id="deleteBtn">Propose removal</button></div></form></div></section>
-<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the highlighted publishing step.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="toolbar"><button type="button" id="githubSignIn">Sign in with GitHub</button><button class="secondary" type="button" id="githubCheck">Check login</button><button class="secondary" type="button" id="githubSignOut">Sign out</button></div><div class="notice sub" id="githubStatus" role="status" aria-live="polite">Not connected. Draft export remains available without GitHub.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div></section><section class="panel" id="draftPanel"><h2>Draft changes</h2><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></section></div>
+<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the highlighted publishing step.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="sub" id="publishingConnectionHint">GitHub connection is managed at the top of this page. Local drafts can be edited without signing in.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div></section><section class="panel" id="draftPanel"><h2>Draft changes</h2><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></section></div>
 <aside class="panel" id="publishingGuide" aria-label="Publishing steps">
 <div class="guide-topline"><div><div class="console-eyebrow">LIVE PUBLISHING GUIDE</div><h2>From edit to live app</h2></div><button type="button" class="secondary" id="refreshPrStatus" title="Refresh GitHub status">↻ Refresh</button></div>
 <div id="livePrStatus" role="status" aria-live="polite"><strong class="pr-state">Checking publication</strong><div>Loading the latest tracked proposal…</div></div>
 <div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Processing Action ↗</a></div>
 <div class="guide-steps" id="guideSteps">
 <div class="guide-step" data-step="0"><span class="guide-num">1</span><div><strong>Save your equipment edits</strong><p>Make the changes, then select <b>Save draft</b>. Nothing is published yet.</p></div></div>
-<div class="guide-step" data-step="1"><span class="guide-num">2</span><div><strong>Submit draft to GitHub</strong><p>Check connection, then press <b>Submit drafts for review</b>. Note your new PR number.</p></div></div>
+<div class="guide-step" data-step="1"><span class="guide-num">2</span><div><strong>Submit draft to GitHub</strong><p><b>Sign in with GitHub at the top</b> if needed, then choose <b>Submit drafts for review</b>. Keep the new PR number.</p></div></div>
 <div class="guide-step" data-step="2"><span class="guide-num">3</span><div><strong>Run processing Action</strong><p>Go to <b>Actions → Process Blackwood Admin review proposal → Run workflow</b>. Use branch <b>main</b> and enter the <b>new PR number</b>. Wait for a green success.</p><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Run processing ↗</a></div></div>
 <div class="guide-step" data-step="3"><span class="guide-num">4</span><div><strong>Approve workflow if requested</strong><p>Return to the PR. If GitHub says <b>Workflow awaiting approval</b>, select <b>Approve workflows to run</b> and wait for checks to finish. Otherwise continue.</p></div></div>
 <div class="guide-step" data-step="4"><span class="guide-num">5</span><div><strong>Review processed changes</strong><p>In <b>Files changed</b>, check the Excel master, inventory data, photo changes and <code>admin/processed/</code> report. Validation must be green.</p></div></div>
@@ -189,16 +209,21 @@ $('pinForm').addEventListener('submit',e=>{e.preventDefault();const pin=pinInput
 if(sessionStorage.getItem(PIN_SESSION)==='yes')unlockAdmin();else requestAnimationFrame(()=>{pinInput.focus();pinInput.select()});
 // OAuth gateway: users never input GitHub tokens in the browser. Gateway stores OAuth credentials.
 const gatewayStore='blackwood-admin-gateway-url';let gatewaySession=sessionStorage.getItem('blackwood-admin-gateway-session')||'';
-$('apiUrl').value=localStorage.getItem(gatewayStore)||'';
+$('apiUrl').value=localStorage.getItem(gatewayStore)||'https://blackwood-cfs-admin-gateway.blackwood-cfs.workers.dev';
 function gatewayOrigin(){const u=$('apiUrl').value.trim().replace(/\/+$/,'');return /^https:\/\/[a-z0-9.-]+(?::443)?$/i.test(u)?u:null}
 function showGithubStatus(t){$('githubStatus').textContent=t;$('githubSubmit').disabled=!gatewaySession||!Object.keys(drafts).length}
 $('apiUrl').addEventListener('change',()=>{let u=gatewayOrigin();if(u)localStorage.setItem(gatewayStore,u);else showGithubStatus('Enter a valid HTTPS gateway origin, with no path.')});
 async function gateway(path,options={}){const base=gatewayOrigin();if(!base)throw Error('Admin gateway is not configured.');const resp=await fetch(base+path,{...options,headers:{...options.headers,...(gatewaySession?{Authorization:'Bearer '+gatewaySession}:{})}});const body=await resp.json().catch(()=>({}));if(!resp.ok)throw Error(body.error||'HTTP '+resp.status);return body}
 $('githubSignIn').onclick=()=>{let u=gatewayOrigin();if(!u)return showGithubStatus('Configure gateway HTTPS address first.');localStorage.setItem(gatewayStore,u);location.href=u+'/auth/start'};
-$('githubCheck').onclick=async()=>{try{let r=await gateway('/api/me');showGithubStatus('Authenticated as GitHub @'+r.login+' — proposals only')}catch(e){showGithubStatus('Not connected: '+e.message)}};
-$('githubSignOut').onclick=async()=>{try{await gateway('/api/logout',{method:'POST'})}catch(e){}gatewaySession='';sessionStorage.removeItem('blackwood-admin-gateway-session');showGithubStatus('Signed out.')};
+$('githubCheck').onclick=async()=>{
+ if(!gatewaySession){showGithubStatus('Signed out. Sign in above to publish and track changes.');return;}
+ showGithubStatus('Checking GitHub session…');
+ try{const r=await gateway('/api/me');showGithubStatus('Authenticated as GitHub @'+r.login+' — ready to publish');if(typeof updatePR==='function')updatePR();}
+ catch(e){gatewaySession='';sessionStorage.removeItem('blackwood-admin-gateway-session');showGithubStatus('Session expired or unavailable: '+e.message);if(typeof updatePR==='function')updatePR();}
+};
+$('githubSignOut').onclick=async()=>{try{await gateway('/api/logout',{method:'POST'})}catch(e){}gatewaySession='';sessionStorage.removeItem('blackwood-admin-gateway-session');showGithubStatus('Signed out.');if(typeof updatePR==='function')updatePR();};
 $('githubSubmit').onclick=async()=>{const changes=Object.values(drafts);if(!changes.length)return alert('No draft changes to submit.');if(!confirm('Create a draft GitHub pull request containing '+changes.length+' change(s)? No changes will be published automatically.'))return;showGithubStatus('Submitting review request…');try{const res=await gateway('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format:'blackwood-admin-change-package',version:1,source:'Admin v0.4',exportedAt:new Date().toISOString(),changes})});$('githubStatus').replaceChildren(document.createTextNode('Draft pull request created: '));const a=document.createElement('a');a.href=res.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='#'+res.number+' — open GitHub review';$('githubStatus').append(a);$('githubSubmit').disabled=false}catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}};
-(async()=>{const hash=new URLSearchParams(location.hash.replace(/^#/,'')),ticket=hash.get('ticket');if(ticket){history.replaceState(null,'',location.pathname+location.search);try{const r=await gateway('/auth/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket})});gatewaySession=r.session;sessionStorage.setItem('blackwood-admin-gateway-session',gatewaySession);$('githubCheck').click()}catch(e){showGithubStatus('Authentication failed: '+e.message)}}else if(gatewaySession){$('githubCheck').click()}})();
+(async()=>{const hash=new URLSearchParams(location.hash.replace(/^#/,'')),ticket=hash.get('ticket');if(ticket){history.replaceState(null,'',location.pathname+location.search);showGithubStatus('Checking GitHub session…');try{const r=await gateway('/auth/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket})});gatewaySession=r.session;sessionStorage.setItem('blackwood-admin-gateway-session',gatewaySession);$('githubCheck').click()}catch(e){showGithubStatus('Authentication failed: '+e.message)}}else if(gatewaySession){$('githubCheck').click()}})();
 
 // v0.9: continuous selection strip and independent collapsible editor.
 let inventoryCompact=false;
@@ -260,9 +285,21 @@ $('refreshPrStatus').onclick=updatePR;
 const originalRefresh=refresh;
 refresh=function(){originalRefresh();updateConsoleState();};
 const originalShowGithubStatus=showGithubStatus;
-showGithubStatus=function(t){originalShowGithubStatus(t);const b=$('topGithubState');if(b){const connected=t.startsWith('Authenticated'),waiting=/checking|submitting|connecting/i.test(t),bad=/failed|unsuccessful|error|not connected/i.test(t);b.textContent=connected?'● GitHub connected':waiting?'◌ GitHub checking…':bad?'● GitHub attention':t.startsWith('Signed out')?'○ GitHub signed out':'◌ GitHub: '+t.slice(0,30);b.className='console-badge '+(connected?'state-ok':bad?'state-error':waiting?'state-checking':'state-idle');}};
-// Set a clear initial status instead of leaving 'checking' indefinitely when logged out.
-if(!gatewaySession)showGithubStatus('Signed out. Sign in with GitHub when ready to submit.');
+function setGitHubHeaderState(status){
+ const badge=$('topGithubState'), signIn=$('githubSignIn'), check=$('githubCheck'), signOut=$('githubSignOut'), hint=$('publishingConnectionHint');
+ if(!badge)return;
+ const connected=status.startsWith('Authenticated'), checking=/^Checking|^Submitting|^Connecting/i.test(status), broken=/expired|failed|unsuccessful|error|unavailable|not connected/i.test(status);
+ badge.textContent=connected?'● GitHub connected':checking?'◌ Checking connection…':broken?'● Connection needs attention':'○ GitHub not connected';
+ badge.className='console-badge '+(connected?'state-ok':checking?'state-checking':broken?'state-error':'state-idle');
+ signIn.classList.toggle('hidden',connected||checking);
+ check.classList.toggle('hidden',!connected);
+ signOut.classList.toggle('hidden',!connected);
+ signIn.textContent=broken?'Reconnect GitHub ↗':'Sign in with GitHub ↗';
+ if(hint)hint.textContent=connected?'GitHub connected. Submit saved drafts here; track reconciliation in the publishing guide.':'Sign in at the top to submit drafts and check live PR status. You can still edit and save drafts locally.';
+}
+showGithubStatus=function(t){originalShowGithubStatus(t);setGitHubHeaderState(t)};
+if(!gatewaySession)showGithubStatus('Signed out. Sign in with GitHub when ready to publish.');
+else showGithubStatus('Checking GitHub session…');
 // Store the successful PR number and show the next action.
 $('githubSubmit').onclick=async()=>{
  const changes=Object.values(drafts);if(!changes.length)return alert('No drafts to submit.');
@@ -273,7 +310,7 @@ $('githubSubmit').onclick=async()=>{
   trackedPR=Number(res.number);localStorage.setItem(PR_TRACK_KEY,String(trackedPR));
   $('githubStatus').replaceChildren(document.createTextNode('Draft pull request created: '));
   const a=document.createElement('a');a.href=res.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='#'+res.number+' — open GitHub review';$('githubStatus').append(a);
-  $('githubSubmit').disabled=false;showPRMessage('PR #'+trackedPR+' · Submitted','Next: run the processing Action using PR #'+trackedPR+'.');setTrackerSteps(2);if(window.matchMedia('(min-width:1001px)').matches)$('publishingGuide').scrollIntoView({behavior:'smooth',block:'nearest'});
+  $('githubSubmit').disabled=false;showGithubStatus('Authenticated as GitHub — proposal #'+trackedPR+' submitted');showPRMessage('PR #'+trackedPR+' · Submitted','Next: run the processing Action using PR #'+trackedPR+'.');setTrackerSteps(2);if(window.matchMedia('(min-width:1001px)').matches)$('publishingGuide').scrollIntoView({behavior:'smooth',block:'nearest'});
  }catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}
 };
 updateConsoleState();updatePR();
