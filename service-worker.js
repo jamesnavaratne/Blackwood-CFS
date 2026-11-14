@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-maps-rc2';
+const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-directions-rc3';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';

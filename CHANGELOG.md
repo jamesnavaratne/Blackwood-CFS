@@ -1,3 +1,7 @@
+# v2.9.4.30 — Menu & Directions RC3 — 15 November 2026
+
+See MENU_DIRECTIONS_RC3_CHANGELOG.md.
+
 # v2.9.4.29 — Menu & Maps RC2 — 15 November 2026
 
 See `MENU_MAPS_RC2_CHANGELOG.md` for changes and checks.
