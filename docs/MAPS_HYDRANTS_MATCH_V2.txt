@@ -1,0 +1,12 @@
+Blackwood CFS - Maps precise Hydrants match, v2
+
+Install: extract into your EXISTING Blackwood-CFS repository, preserving folders. Replace only maps/index.html. Commit and push via GitHub Desktop.
+
+Changes:
+- Removed second dropdown arrow (CSS pseudo chevron).
+- Dropdown focus border uses continuous rounded inset ring.
+- Zoom control copied to 44x38 white square buttons, unified shadow, pinned above fixed bottom ribbon (including Android safe area).
+- Reversed double-tap and vertical slide: down zooms in, up zooms out.
+- Map scroll viewport and bottom padding retained; no changes to data, tabs, Directions, Hydrants or inventory.
+
+Test on Android after deployment: dropdown focus, zoom controls clear of ribbon, double tap-hold slide down/up, left-edge pan, tab switching. Desktop Hydrants heading alignment deferred.

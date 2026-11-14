@@ -22,7 +22,7 @@ header{height:var(--headerh);display:flex;align-items:center;gap:12px;background
 .pickerrow{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
 .pickwrap{display:none;min-width:0;flex:1;position:relative}
 .mobilepicker{appearance:none;-webkit-appearance:none;min-width:0;display:block;width:100%;padding:11px 37px 11px 12px;border-radius:10px;background:#101720;border:1px solid #35485b;color:#fff;font-size:14px;font-weight:700;line-height:1.25;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-.pickwrap::after{content:"";position:absolute;right:15px;top:calc(50% - 4px);width:7px;height:7px;border-right:2px solid #10aaff;border-bottom:2px solid #10aaff;transform:rotate(45deg);pointer-events:none}
+.pickwrap::after{content:none!important}
 .viewerbar .controls{flex:none}.viewerbar .control.subtle{font-size:12px;font-weight:750;height:35px;padding:0 14px}
 #viewport{scroll-padding:12px}
 nav{position:fixed;bottom:0;left:0;right:0;z-index:30;height:calc(var(--navh) + env(safe-area-inset-bottom));padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;border-top:1px solid #27313d;background:#05070af5;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}nav a{border-radius:13px;min-height:54px;color:#aab3bd;text-decoration:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;font-weight:850;font-size:11px;white-space:nowrap}nav a.active{background:#10334c;color:#10aaff}nav svg{height:21px;width:21px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -56,6 +56,22 @@ header.topbar{height:auto;min-height:0;display:block;padding:calc(10px + env(saf
 @media (min-width:801px){.viewerbar{padding-top:10px}.map-zoom{bottom:14px;right:10px}.main{height:calc(100dvh - var(--navh) - env(safe-area-inset-bottom) - 62px)}}
 @media (max-width:800px){:root{--navh:73px}.main{height:calc(100dvh - var(--navh) - env(safe-area-inset-bottom) - 62px)}.viewerbar{display:block;padding:0 13px 10px;min-height:0}.pickerrow{display:block}.pickwrap{display:block}.view-title{display:none!important}.mobilepicker{display:block}.map-zoom{top:auto;bottom:10px;right:10px}.map-zoom button{width:44px;height:38px}#stack{padding:8px 7px 40px}}
 @media (max-width:380px){.title-row h1{font-size:20px!important;line-height:21px!important}.title-actions{gap:5px}.viewerbar{padding-left:13px;padding-right:13px}.mobilepicker{font-size:17px}.map-zoom button{width:44px;height:38px}}
+
+/* Precision v2: align to the existing Hydrants interface. */
+.pickwrap::after{content:none!important}
+.mobilepicker{-webkit-appearance:none!important;appearance:none!important;background-image:none!important;outline:none!important;box-shadow:none!important}
+.mobilepicker:focus,.mobilepicker:focus-visible{outline:none!important;border-color:#10aaff!important;box-shadow:inset 0 0 0 1px #10aaff!important}
+.pickwrap:focus-within{border-radius:12px;box-shadow:0 0 0 1px #10aaff;overflow:visible}
+.picker-chevron{right:10px;z-index:2}
+/* Leaflet's ZoomControl from Hydrants: 44 x 38, white, square sides, one control shadow. */
+.map-zoom{position:fixed!important;right:calc(10px + env(safe-area-inset-right))!important;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 16px)!important;top:auto!important;border-radius:0!important;overflow:hidden!important;gap:0!important;filter:none!important;box-shadow:0 4px 15px rgba(0,0,0,.28)!important;z-index:29!important;background:#fff}
+.map-zoom button{display:block!important;width:44px!important;height:38px!important;line-height:38px!important;padding:0!important;border:0!important;border-bottom:1px solid #ccc!important;border-radius:0!important;background:#fff!important;color:#13233d!important;font-size:23px!important;font-weight:650!important;box-shadow:none!important;text-align:center!important}
+.map-zoom button:last-child{border-bottom:0!important}
+/* Give the map its own space above the taskbar, as in Hydrants. */
+#viewport{min-height:0;overscroll-behavior:contain;scroll-padding-bottom:20px}
+#stack{padding-bottom:70px}
+.sidebarhead .mapsearch:focus{outline:none;box-shadow:inset 0 0 0 1px #10aaff;border-color:#10aaff}
+@media(max-width:800px){.map-zoom{right:calc(10px + env(safe-area-inset-right))!important;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 16px)!important}}
 </style></head>
 <body>
 <header class="topbar"><div class="title-row"><div><p class="eyebrow">Blackwood CFS</p><h1>Maps</h1></div><div class="title-actions"><button class="control subtle reset-top" id="reset" title="Reset all saved map positions" aria-label="Reset all map positions">Reset</button><a class="home-btn" href="../index.html" aria-label="Back to system home" title="System Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5.5h5V20"></path></svg></a></div></div></header>
@@ -107,7 +123,7 @@ pane.addEventListener('touchmove',e=>{
  const t=e.touches[0];
  if(dragZoom){
    const dy=t.clientY-dragZoom.startY;
-   if(Math.abs(dy)>5){dragZoom.changed=true;e.preventDefault();setZoom(dragZoom.startZoom*Math.exp(-dy/170))}
+   if(Math.abs(dy)>5){dragZoom.changed=true;e.preventDefault();setZoom(dragZoom.startZoom*Math.exp(dy/170))}
  }else if(singleStart&&Math.hypot(t.clientX-singleStart.x,t.clientY-singleStart.y)>12) singleStart.moved=true;
 },{passive:false});
 pane.addEventListener('touchend',e=>{
