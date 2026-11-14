@@ -1,45 +1,43 @@
-BLACKWOOD CFS — SHARED BOTTOM RIBBON INTEGRATION TEST
+BLACKWOOD CFS — SYSTEM HOME (APPROVED HTML) UPDATE
 
-This is an IN-PLACE UPDATE, not a full old app. It updates the
-existing repository pages so it preserves newer inventory / Admin /
-Hydrants / Maps data and files.
+Install after the SHARED RIBBON update that is already working.
+This patch brings the real System Home layout and icons into line with the
+user's supplied Blackwood_CFS_Directions_Arrow_Maps_Folded_Preview(1).html.
 
-INSTALLATION
-1. Make sure GitHub Desktop has no uncommitted personal work that you
-   don't want mixed into the update. Commit/back up first.
-2. Unzip this ZIP into the ROOT of your live Blackwood-CFS GitHub checkout,
-   alongside index.html (keep the shared/ folder).
-3. Double-click INSTALL_SHARED_RIBBON.cmd (Windows).
-4. Confirm SUCCESS. If preflight fails, no operational pages are touched.
-5. Check GitHub Desktop: changes should be limited to index.html,
-   directions/index.html, maps/index.html, hydrants/index.html and new
-   shared/ribbon.css, shared/home-icons.js. The ribbon template HTML files
-   remain under shared/ as the common source for future maintenance.
-6. Commit + push and refresh the installed PWA / website after deploy.
+1. Extract ALL files from this ZIP into your Blackwood-CFS repository folder.
+2. Run INSTALL_SYSTEM_HOME.cmd from that folder.
+3. The script checks for the known System Home and shared ribbon structures.
+4. GitHub Desktop: review and commit these files:
+   - index.html (two references inserted by the installer)
+   - shared/home-final.css
+   - shared/home-final.js
+5. Push and refresh the main app (and installed Android PWA if applicable).
 
-CHANGES
-- Exact approved v4 diamond right-turn SVG for Directions Book.
-- Original folded map SVG from approved preview for Maps.
-- Same inventory and hydrants icons on EVERY tab.
-- Same CSS sizing, text, spacing, active colour, safe-area space and
-  bottom alignment on ALL tabs and System Home.
-- Home Directions Book/Maps icons synchronized with the ribbon.
-- No changes to inventory, directions entries, PDF maps, hydrant services,
-  editing, Admin credentials, or PR publishing.
+WHAT IT DOES
+- Directions Book: exact approved diamond right-turn arrow SVG from the supplied HTML.
+- Maps: exact existing folded-map SVG from the supplied HTML.
+- System Home: same pill and appliance arrangement, spacing, typography,
+  and Default Blue colours as the approved visual reference.
+- Adds a Maps pill if any System Home render path is missing it.
+- Preserves functional appliance, search and Directions buttons, and existing Maps/Hydrants links.
+- Preserves the already-installed shared four-tab ribbon without touching it.
+- Respects System Home re-rendering and refreshes icons on the recreated home screen.
 
-CHECKS
-- Switch repeatedly between Inventory, Directions Book, Maps and
-  Hydrants on both desktop and Android: the ribbon geometry should not jump.
-- Verify System Home displays the same four tabs and icons.
-- Verify active blue vs inactive grey, no icon swapping.
-- Confirm switching tabs retains existing workspace behaviour.
-- Test older Android cached PWA after normal refresh/update.
+FILES INCLUDED
+  shared/home-final.css
+  shared/home-final.js
+  INSTALL_SYSTEM_HOME.ps1
+  INSTALL_SYSTEM_HOME.cmd
+  READ_ME_FIRST.txt
 
-BACKUPS
-Installer stores four original HTML pages outside the checkout in a
-Blackwood-CFS-Ribbon-Backup-<timestamp> folder beside your repository.
+No replacement index.html is supplied: it is patched against YOUR current version.
+No inventory, Excel, Admin, Directions Book, Maps, Hydrants or service worker files are replaced.
+Backups of index.html are made outside the repository, beside the Blackwood-CFS folder.
 
-NOTE: This is an integration TEST update, not yet a declared stable release.
-The script has been structurally checked against the prior integrated app
-snapshot, but must be tested on the live repo because it may contain further
-personal changes. Nothing is committed or pushed automatically.
+TESTS TO PERFORM
+- System Home startup and Home button both show Directions Book, Maps, Live Hydrants in order.
+- Diamond arrow on Directions Book, folded-map icon on Maps.
+- All home pills still navigate correctly.
+- Appliance selection and global search still work.
+- Shared ribbon still stays at identical height and icon size across tabs.
+- Test on Android PWA and desktop after deployment.
