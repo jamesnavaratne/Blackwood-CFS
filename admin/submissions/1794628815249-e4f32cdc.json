@@ -1,0 +1,30 @@
+{
+  "format": "blackwood-admin-change-package",
+  "version": 1,
+  "source": "Admin v0.9.2",
+  "exportedAt": "2026-11-14T04:00:15.325Z",
+  "changes": [
+    {
+      "op": "update",
+      "id": "CAFS24-0001",
+      "data": {
+        "id": "CAFS24-0001",
+        "appliance": "CAFS 24",
+        "locker": "Cabin",
+        "section": "Above Driver",
+        "subsection": "",
+        "item": "DRIVERS LOG BOOK",
+        "quantity": "",
+        "description": "",
+        "notes": "",
+        "tags": "",
+        "status": "In service"
+      },
+      "photo": null,
+      "removePhoto": false
+    }
+  ],
+  "submittedBy": "jamesnavaratne",
+  "submittedVia": "blackwood-admin-gateway",
+  "reviewStatus": "proposal-only"
+}
