@@ -112,6 +112,12 @@ button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:no
 #publishingConnectionHint{margin-top:12px;font-size:.79rem;color:#aac8e2}
 @media(max-width:830px){.console-hero{flex-direction:column}.hero-auth{width:100%;flex:auto}.hero-auth-controls button{flex:1}}
 @media(max-width:550px){.console-hero{padding:13px}.hero-auth{padding:11px}.hero-auth-help{display:none}.hero-auth-message{font-size:.72rem}}
+
+/* v0.9.2 publication clarity */
+.fold-heading{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:750;font-size:1.04rem;min-height:31px}.fold-heading::-webkit-details-marker{display:none}.fold-chevron{color:#9dbbd4;transition:transform .2s}details[open]>.fold-heading .fold-chevron{transform:rotate(180deg)}.fold-body{padding-top:12px}.count-bubble{display:inline-block;background:#20466a;color:#c8e9ff;border:1px solid #4072a0;border-radius:7px;font-size:.73rem;padding:3px 8px;margin-left:5px}
+.pr-reference{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px;border:1px solid #4287b5;border-radius:10px;background:#0c304d;margin-top:12px}.pr-reference strong{display:block;font-size:1.35rem;color:#e8f5ff}.pr-caption{display:block;font-size:.65rem;letter-spacing:.11em;color:#9bbfdc;font-weight:750}.pr-reference button{font-size:.75rem;padding:7px 9px;min-height:36px}.status-recency{color:#9cb6c9;font-size:.7rem;line-height:1.5}.guide-manual{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.guide-manual button{min-height:36px;padding:7px 9px;font-size:.73rem;background:#237f50;border-color:#59d995;color:#fff}.history-entry{padding:12px 0;border-bottom:1px solid #274a64}.history-entry:last-child{border-bottom:0}.history-entry strong{color:#eaf6ff}.history-entry .small-note{display:block;font-size:.76rem;color:#a8bed3;margin:4px 0}.history-entry .history-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.history-entry button,.history-entry a{font-size:.74rem;padding:6px 9px;min-height:34px;border:1px solid #427498;border-radius:7px;background:#164266;color:#d4ecff;text-decoration:none}.history-entry .success{color:#96f7bf}.history-entry .attention{color:#ffce7d}
+#livePrStatus.state-offline{background:#283643;border-color:#688094;color:#d0dfec}#livePrStatus.state-offline .pr-state{color:#d9e6f1}
+@media(max-width:1000px){#publishingGuide .pr-reference{padding:5px 9px;margin:0 0 5px}#publishingGuide .pr-reference strong{font-size:1.02rem}#publishingGuide .pr-reference button{min-height:30px;padding:4px 8px}#publishingGuide #statusRecency{display:none}#publishingGuide .guide-manual{display:flex;margin:4px 0}#publishingGuide .guide-manual button{font-size:.7rem;min-height:30px;padding:4px 8px}}
 </style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9.1 Connected Workspace</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
 
 <section class="console-hero" aria-label="Admin Console">
@@ -123,16 +129,16 @@ button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:no
  </div>
 </section>
 <div class="console-metrics" aria-label="Admin summary"><div class="metric"><strong id="metricEquipment">—</strong><span>Equipment records</span></div><div class="metric"><strong>3</strong><span>Appliances</span></div><div class="metric"><strong id="metricDrafts">0</strong><span>Local drafts</span></div></div>
-<nav class="console-nav" aria-label="Admin sections"><a href="#inventoryPanel" id="inventoryNavLink">Equipment</a><a href="#draftPanel">Drafts</a><a href="#publishPanel">Publish</a><a href="#publishingGuide">Guide</a></nav>
+<nav class="console-nav" aria-label="Admin sections"><a href="#inventoryPanel" id="inventoryNavLink">Equipment</a><a href="#draftPanel">Drafts</a><a href="#historyPanel">History</a><a href="#publishPanel">Publish</a><a href="#publishingGuide">Guide</a></nav>
 <div id="adminWorkspace"><div id="adminWorkspaceMain"><section class="panel" id="inventoryPanel"><div class="row inventory-heading"><div class="grow"><div class="console-eyebrow">01 · SELECT</div><h2>Equipment inventory</h2><div id="selectionSummary" class="sub">Choose equipment to begin editing.</div></div><button type="button" class="secondary hidden" id="expandInventoryBtn" aria-expanded="false">Expand inventory</button></div><div class="two"><label class="field"><span>Appliance</span><select id="appliance"><option value="">All appliances</option></select></label><label class="field"><span>Search equipment or ID</span><input id="search" placeholder="Name, locker, ID..."></label></div><div class="row compact-chooser hidden" id="compactChooser"><label class="field grow"><span>Quick-change equipment</span><select id="quickEquipment" aria-label="Choose equipment to edit"></select></label></div><div id="inventoryResults"><div id="summary"></div><div id="list" class="list"></div></div></section>
 <section class="panel hidden" id="editorPanel"><div class="row"><div class="grow"><div class="console-eyebrow">02 · EDIT</div><h2>Edit equipment</h2></div><span class="pill" id="editTag">Select item</span><button type="button" class="secondary" id="toggleEditorBtn" aria-expanded="true">Collapse editor</button></div><div id="editorContents"><div class="toolbar"><button type="button" class="secondary" id="backToInventoryBtn">Clear selection</button></div><div id="empty">Choose an item above or create a new draft item.</div><form id="editor" class="hidden"><div class="two"><label class="field"><span>Item name</span><input name="item" required maxlength="250"></label><label class="field"><span>Appliance</span><select name="appliance" required></select></label></div><div class="two"><label class="field"><span>Locker (existing locations)</span><select name="locker" id="lockerSelect"></select></label><label class="field"><span>Section (existing locations)</span><select name="section" id="sectionSelect"></select></label></div><div class="two"><label class="field"><span>Subsection (existing locations)</span><select name="subsection" id="subsectionSelect"></select></label><label class="field"><span>Quantity</span><input name="quantity"></label></div><label class="field"><span>Description</span><textarea name="description"></textarea></label><label class="field"><span>Notes</span><textarea name="notes"></textarea></label><div class="two"><label class="field"><span>Tags</span><input name="tags"></label><label class="field"><span>Status</span><select name="status"><option>In service</option><option>Out of service</option></select></label></div><label class="field"><span>Photograph — camera or library (optimised before saving)</span><input type="file" id="photoFile" accept="image/*" capture="environment"></label><div class="row"><img id="photoPreview" class="hidden" alt="Photo preview"><span class="sub" id="photoInfo"></span></div><div class="sub">Photos are resized to a maximum 1600 pixels and compressed to JPEG. Keep a separate original for archival purposes.</div>
 <div class="toolbar"><button type="button" id="removePhotoBtn" class="danger">Remove added photo</button></div>
 <div id="photoRemovalNote" class="sub" role="status" aria-live="polite">Removes an Admin-added replacement photo and returns to the original inventory photo where available. Save draft to publish.</div><div class="toolbar"><button type="submit">Save draft</button><button type="button" class="secondary" id="resetEditorBtn">Clear selection</button><button type="button" class="danger" id="deleteBtn">Propose removal</button></div></form></div></section>
-<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the highlighted publishing step.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="sub" id="publishingConnectionHint">GitHub connection is managed at the top of this page. Local drafts can be edited without signing in.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div></section><section class="panel" id="draftPanel"><h2>Draft changes</h2><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></section></div>
+<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the highlighted publishing step.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="sub" id="publishingConnectionHint">GitHub connection is managed at the top of this page. Local drafts can be edited without signing in.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div></section><section class="panel" id="draftPanel"><details id="draftDetails"><summary class="fold-heading"><span>Draft changes <span class="count-bubble" id="draftCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></div></details></section><section class="panel" id="historyPanel"><details id="historyDetails"><summary class="fold-heading"><span>Publishing history <span class="count-bubble" id="historyCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div class="sub">Submissions on this device. PR history is retained even when drafts are cleared.</div><div id="historyEntries" aria-live="polite"></div></div></details></section></div>
 <aside class="panel" id="publishingGuide" aria-label="Publishing steps">
 <div class="guide-topline"><div><div class="console-eyebrow">LIVE PUBLISHING GUIDE</div><h2>From edit to live app</h2></div><button type="button" class="secondary" id="refreshPrStatus" title="Refresh GitHub status">↻ Refresh</button></div>
-<div id="livePrStatus" role="status" aria-live="polite"><strong class="pr-state">Checking publication</strong><div>Loading the latest tracked proposal…</div></div>
-<div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Processing Action ↗</a></div>
+<div class="pr-reference" id="prReference"><div><span class="pr-caption">TRACKED PULL REQUEST</span><strong id="prNumber">No PR yet</strong></div><button id="copyPr" class="secondary" type="button" disabled>Copy number</button></div><div id="livePrStatus" role="status" aria-live="polite"><strong class="pr-state">Checking publication</strong><div>Loading the latest tracked proposal…</div></div>
+<div id="statusRecency" class="status-recency" aria-live="polite"></div><div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Processing Action ↗</a></div>
 <div class="guide-steps" id="guideSteps">
 <div class="guide-step" data-step="0"><span class="guide-num">1</span><div><strong>Save your equipment edits</strong><p>Make the changes, then select <b>Save draft</b>. Nothing is published yet.</p></div></div>
 <div class="guide-step" data-step="1"><span class="guide-num">2</span><div><strong>Submit draft to GitHub</strong><p><b>Sign in with GitHub at the top</b> if needed, then choose <b>Submit drafts for review</b>. Keep the new PR number.</p></div></div>
@@ -141,7 +147,7 @@ button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:no
 <div class="guide-step" data-step="4"><span class="guide-num">5</span><div><strong>Review processed changes</strong><p>In <b>Files changed</b>, check the Excel master, inventory data, photo changes and <code>admin/processed/</code> report. Validation must be green.</p></div></div>
 <div class="guide-step" data-step="5"><span class="guide-num">6</span><div><strong>Ready for review → Merge</strong><p>When files are correct and checks have passed, select <b>Ready for review</b>, then <b>Merge pull request</b> and confirm.</p></div></div>
 <div class="guide-step" data-step="6"><span class="guide-num">7</span><div><strong>Confirm volunteer app update</strong><p>Check the Pages deployment under Actions; refresh Blackwood CFS and verify the edited item and photograph.</p><a href="https://jamesnavaratne.github.io/Blackwood-CFS/" target="_blank" rel="noopener noreferrer">Open live app ↗</a></div></div>
-</div><div class="guide-footer" id="guideDraftStatus">Choose equipment and save a draft to start.</div>
+</div><div class="guide-manual" id="guideManual"><button type="button" id="reviewedBtn" class="secondary hidden">I checked Files changed ✓</button><button type="button" id="publishedBtn" class="secondary hidden">I verified the live app ✓</button></div><div class="guide-footer" id="guideDraftStatus">Choose equipment and save a draft to start.</div>
 </aside></div>
 <script>
 'use strict';const $=id=>document.getElementById(id),KEY='blackwood-admin-v02-drafts';let base=[],records=[],chosen=null,photoData=null,removePhoto=false,drafts={};const fields=['id','appliance','locker','section','subsection','item','quantity','description','notes','tags','status'];
@@ -234,56 +240,64 @@ $('toggleEditorBtn').onclick=()=>setEditorExpanded($('editorContents').classList
 $('quickEquipment').onchange=e=>{if(e.target.value&&e.target.value!==chosen)select(e.target.value)};
 function updateQuickEquipment(){const sel=$('quickEquipment');if(!sel)return;const q=$('search').value.toLowerCase(),ap=$('appliance').value;let matches=records.filter(r=>(!ap||r.appliance===ap)&&[r.id,r.item,r.locker,r.section].some(v=>String(v||'').toLowerCase().includes(q)));if(chosen&&!matches.some(r=>r.id===chosen)){const current=records.find(r=>r.id===chosen);if(current)matches.unshift(current)}const selected=chosen||'';sel.replaceChildren();const defaultOpt=document.createElement('option');defaultOpt.value='';defaultOpt.textContent='Select equipment…';sel.append(defaultOpt);for(const r of matches){const opt=document.createElement('option');opt.value=r.id;opt.textContent=r.item+' · '+r.locker+' · '+r.id;sel.append(opt)}sel.value=selected;}
 function showSavedToast(){const e=$('selectionSummary');if(e){e.textContent='✓ Draft saved · '+(records.find(r=>r.id===chosen)?.item||chosen)+' · Continue editing or submit to GitHub.';e.classList.add('saved');setTimeout(()=>e.classList.remove('saved'),3200)}}
-// Admin v0.8 read-only publishing tracker. All status queries go through the existing OAuth gateway.
-const PR_TRACK_KEY='blackwood-admin-last-pr';
+// v0.9.2: PR number is permanent; progress only advances on verified GitHub facts or explicit review.
+const PR_TRACK_KEY='blackwood-admin-last-pr',PR_HISTORY_KEY='blackwood-admin-pr-history-v092',PR_PAYLOAD_PREFIX='blackwood-admin-submitted-v092-';
 let trackedPR=Number(localStorage.getItem(PR_TRACK_KEY)||0),prState=null;
+function readHistory(){try{const v=JSON.parse(localStorage.getItem(PR_HISTORY_KEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}}
+let submissionHistory=readHistory(),prRefreshToken=0;
+function saveHistory(){try{localStorage.setItem(PR_HISTORY_KEY,JSON.stringify(submissionHistory.slice(0,30)));return true}catch(e){console.warn('Could not save publishing history',e);return false}}
+function findHistory(n){return submissionHistory.find(x=>x.number===Number(n))}
+function upsertHistory(n,fields){let h=findHistory(n);if(!h){h={number:Number(n),createdAt:new Date().toISOString(),step:2,status:'Submitted',items:[]};submissionHistory.unshift(h)}Object.assign(h,fields);submissionHistory.sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt));saveHistory();return h}
+function currentHistory(){return trackedPR?findHistory(trackedPR):null}
 function showDraftEntries(){
- const target=$('draftEntries'); if(!target)return;
- target.replaceChildren(); const entries=Object.values(drafts);
- for(const d of entries){
-  const item=document.createElement('div');item.className='draft-entry';
-  const info=document.createElement('div'); const label=document.createElement('strong');
-  label.textContent=d.data?.item||d.base?.item||d.id;
-  const detail=document.createElement('small');detail.textContent=(d.op||'update').toUpperCase()+' · '+(d.data?.appliance||d.base?.appliance||'')+' · '+d.id;
-  info.append(label,detail); const b=document.createElement('button');b.className='secondary';b.textContent='Open';
-  b.onclick=()=>{if(d.op==='remove'){alert('Removal proposal saved. Discard the draft to undo this removal.');return;}select(d.id);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});};
-  item.append(info,b);target.append(item);
+ const target=$('draftEntries');if(!target)return;target.replaceChildren();
+ for(const d of Object.values(drafts)){
+  const item=document.createElement('div');item.className='draft-entry';const info=document.createElement('div');const label=document.createElement('strong');label.textContent=d.data?.item||d.base?.item||d.id;const detail=document.createElement('small');detail.textContent=(d.op||'update').toUpperCase()+' · '+(d.data?.appliance||d.base?.appliance||'')+' · '+d.id;info.append(label,detail);
+  const b=document.createElement('button');b.className='secondary';b.textContent='Open';b.onclick=()=>{if(d.op==='remove'){alert('Removal proposal saved. Discard the draft to undo this removal.');return;}select(d.id);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'})};item.append(info,b);target.append(item)
  }
 }
-function setTrackerSteps(next){
- const steps=[...document.querySelectorAll('.guide-step')];
- steps.forEach((el,i)=>{el.classList.toggle('done',i<next);el.classList.toggle('current',i===next);el.classList.toggle('pending',i>next);el.setAttribute('aria-current',i===next?'step':'false')});const active=steps[next];if(active&&window.matchMedia('(max-width:1000px)').matches)active.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+function showHistory(){const target=$('historyEntries');target.replaceChildren();$('historyCount').textContent=submissionHistory.length;
+ if(!submissionHistory.length){const empty=document.createElement('p');empty.className='sub';empty.textContent='No submissions recorded on this device yet.';target.append(empty);return}
+ for(const h of submissionHistory.slice(0,20)){
+  const row=document.createElement('div');row.className='history-entry';const title=document.createElement('strong');title.textContent='PR #'+h.number+(h.number===trackedPR?' · Tracked':'');const summary=document.createElement('span');summary.className='small-note';summary.textContent=(h.status||'Submitted')+' · '+(h.items||[]).map(i=>i.item).filter(Boolean).slice(0,3).join(', ')+(h.items?.length>3?' + more':'');
+  const date=document.createElement('span');date.className='small-note';date.textContent=h.createdAt?new Date(h.createdAt).toLocaleString():'';const actions=document.createElement('div');actions.className='history-actions';const open=document.createElement('a');open.href='https://github.com/jamesnavaratne/Blackwood-CFS/pull/'+h.number;open.target='_blank';open.rel='noopener noreferrer';open.textContent='Open PR ↗';actions.append(open);
+  if(h.number!==trackedPR){const track=document.createElement('button');track.type='button';track.textContent='Track this PR';track.onclick=()=>{trackedPR=h.number;localStorage.setItem(PR_TRACK_KEY,String(trackedPR));renderTrackerReference();updatePR();showHistory()};actions.append(track)}
+  if(localStorage.getItem(PR_PAYLOAD_PREFIX+h.number)&&h.status!=='Published'){
+   const restore=document.createElement('button');restore.type='button';restore.textContent='Restore drafts';restore.onclick=()=>restoreSubmission(h.number);actions.append(restore)
+  }
+  row.append(title,summary,date,actions);target.append(row)
+ }
 }
-function updateConsoleState(){
- if($('metricEquipment'))$('metricEquipment').textContent=base.length||'—';
- if($('metricDrafts'))$('metricDrafts').textContent=Object.keys(drafts).length;
- showDraftEntries();
- if(!trackedPR){setTrackerSteps(Object.keys(drafts).length?1:0)}
+function restoreSubmission(n){const raw=localStorage.getItem(PR_PAYLOAD_PREFIX+n);if(!raw)return alert('This submission has no locally retained draft backup.');let saved;try{saved=JSON.parse(raw)}catch(e){return alert('Stored draft backup could not be read.')}
+ if(!confirm('Restore draft changes from PR #'+n+'? Current drafts with the same item IDs will be replaced. No changes will be published.'))return;
+ drafts={...drafts,...saved};if(!persist())return;refresh();$('draftDetails').open=true;alert('Drafts restored. Review any existing published changes before submitting them again.')}
+function setTrackerSteps(next){const steps=[...document.querySelectorAll('.guide-step')];const activeIndex=Math.max(0,Math.min(6,Number(next)||0));steps.forEach((el,i)=>{el.classList.toggle('done',i<activeIndex);el.classList.toggle('current',i===activeIndex);el.classList.toggle('pending',i>activeIndex);el.setAttribute('aria-current',i===activeIndex?'step':'false')});const active=steps[activeIndex];if(active&&window.matchMedia('(max-width:1000px)').matches){active.scrollIntoView({block:'nearest',inline:'center',behavior:'auto'})}}
+function renderTrackerReference(){const el=$('prNumber');el.textContent=trackedPR?'#'+trackedPR:'No PR yet';$('copyPr').disabled=!trackedPR;$('trackedPrLink').href=trackedPR?'https://github.com/jamesnavaratne/Blackwood-CFS/pull/'+trackedPR:'https://github.com/jamesnavaratne/Blackwood-CFS/pulls';$('trackedPrLink').textContent=trackedPR?'Open PR #'+trackedPR+' ↗':'Pull requests ↗'}
+$('copyPr').onclick=async()=>{if(!trackedPR)return;const value=String(trackedPR);try{await navigator.clipboard.writeText(value);$('copyPr').textContent='Copied #'+value+' ✓';setTimeout(()=>$('copyPr').textContent='Copy number',2200)}catch(e){window.prompt('Copy the PR number for GitHub Actions:',value)}};
+function updateConsoleState(){if($('metricEquipment'))$('metricEquipment').textContent=base.length||'—';if($('metricDrafts'))$('metricDrafts').textContent=Object.keys(drafts).length;const n=Object.keys(drafts).length;$('draftCount').textContent=n;showDraftEntries();showHistory();if(!trackedPR)setTrackerSteps(n?1:0)}
+function showPRMessage(title,detail,kind='checking'){const el=$('livePrStatus');el.className='state-'+kind;el.replaceChildren();const t=document.createElement('strong');t.className='pr-state';t.textContent=title;const d=document.createElement('div');d.textContent=detail;el.append(t,d)}
+function showNextActions(h){$('reviewedBtn').classList.toggle('hidden',!h||h.step!==4||h.status==='Closed');$('publishedBtn').classList.toggle('hidden',!h||h.step!==6||h.status==='Published')}
+function advancePR(next,status,details){const h=upsertHistory(trackedPR,{step:Math.max(currentHistory()?.step||2,next),status,lastVerified:new Date().toISOString()});setTrackerSteps(h.step);$('statusRecency').textContent='Last confirmed: '+new Date(h.lastVerified).toLocaleString();showPRMessage('PR #'+trackedPR+' · '+status,details,status==='Merged'||status==='Published'?'ok':status==='Closed'||status==='Checks failed'?'error':'action');showNextActions(h);showHistory()}
+async function updatePR(){const token=++prRefreshToken;renderTrackerReference();
+ if(!trackedPR){showPRMessage('No PR tracked','Submit a draft to create a GitHub pull request.','checking');$('statusRecency').textContent='';setTrackerSteps(Object.keys(drafts).length?1:0);showNextActions(null);return}
+ let h=currentHistory()||upsertHistory(trackedPR,{step:2,status:'Existing PR — status not checked'});setTrackerSteps(h.step);showNextActions(h);
+ if(!gatewaySession){showPRMessage('PR #'+trackedPR+' · Sign in to check','Your PR number and last confirmed step are saved. Sign in to refresh its GitHub status.','offline');$('statusRecency').textContent=h.lastVerified?'Last confirmed: '+new Date(h.lastVerified).toLocaleString():'No GitHub status verified yet';return}
+ showPRMessage('PR #'+trackedPR+' · Checking…','Contacting GitHub. Your previous progress is retained.','checking');
+ try{const r=await gateway('/api/pr-status?number='+trackedPR);if(token!==prRefreshToken)return;prState=r;
+  if(r.merged){if(currentHistory()?.status==='Published'){showPRMessage('PR #'+trackedPR+' · Published ✓','You confirmed the live app update on this device.','ok');setTrackerSteps(6);showNextActions(currentHistory());return}advancePR(6,'Merged','Changes merged into main. Check the Pages deployment and live equipment before confirming publication.');return}
+  if(!r.open){upsertHistory(trackedPR,{status:'Closed'});showPRMessage('PR #'+trackedPR+' · Closed','This PR was closed without merging. Restore its drafts from History if needed.','error');showHistory();return}
+  if(!r.processed){h=upsertHistory(trackedPR,{status:'Processing required',lastVerified:new Date().toISOString()});showPRMessage('PR #'+trackedPR+' · Run processing','Open Actions → Process Blackwood Admin review proposal. Use main and PR #'+trackedPR+'.','action');setTrackerSteps(h.step);showNextActions(h);showHistory();return}
+  if(r.checks==='failure'){h=upsertHistory(trackedPR,{status:'Checks failed',lastVerified:new Date().toISOString(),step:Math.max(h.step,3)});showPRMessage('PR #'+trackedPR+' · Checks failed','Open GitHub checks and resolve the failure before merging.','error');setTrackerSteps(h.step);showNextActions(h);showHistory();return}
+  if(r.checks==='pending'){advancePR(3,'Validation pending','Reconciliation detected. GitHub may ask you to approve the validation workflow; then wait for green checks.');return}
+  if(r.checks==='success'){advancePR(4,'Ready to inspect','Validation passed. Open Files changed and verify the Excel master, item data, photos and processing report.');return}
+  advancePR(3,'Reconciled · check GitHub','Processed files detected; validation status is not available. Inspect GitHub checks before reviewing or merging.');
+ }catch(err){if(token!==prRefreshToken)return;h=currentHistory()||h;showPRMessage('PR #'+trackedPR+' · Status unavailable','Could not refresh GitHub ('+err.message+'). The saved progress and PR number have not changed.','offline');$('statusRecency').textContent=h.lastVerified?'Last confirmed: '+new Date(h.lastVerified).toLocaleString():'No GitHub status verified yet';setTrackerSteps(h.step);showNextActions(h)}
 }
-function showPRMessage(title,detail){
- const el=$('livePrStatus'); if(!el)return;el.className=/Merged/.test(title)?'state-ok':/failed|Closed|unavailable/.test(title)?'state-error':/required|awaiting|Submitted/.test(title)?'state-action':'state-checking';
- el.replaceChildren();const t=document.createElement('strong');t.className='pr-state';t.textContent=title;
- const d=document.createElement('div');d.textContent=detail;el.append(t,d);
-}
-async function updatePR(){
- if(!trackedPR){showPRMessage('No PR tracked','Submit an Admin draft to create a review pull request.');setTrackerSteps(Object.keys(drafts).length?1:0);return;}
- $('trackedPrLink').href='https://github.com/jamesnavaratne/Blackwood-CFS/pull/'+trackedPR;
- $('trackedPrLink').textContent='Open PR #'+trackedPR+' ↗';
- if(!gatewaySession){showPRMessage('PR #'+trackedPR+' · Sign in needed','GitHub login is required to refresh its status.');setTrackerSteps(2);return;}
- try {
-  const r=await gateway('/api/pr-status?number='+trackedPR);prState=r;
-  if(r.merged){showPRMessage('PR #'+trackedPR+' · Merged','Changes have merged into main. Check Pages deployment and verify the volunteer app.');setTrackerSteps(6)}
-  else if(!r.open){showPRMessage('PR #'+trackedPR+' · Closed','This PR was closed without publication.');setTrackerSteps(1)}
-  else if(!r.processed){showPRMessage('PR #'+trackedPR+' · Processing required','Run “Process Blackwood Admin review proposal” from main with PR number '+trackedPR+'. Do not merge yet.');setTrackerSteps(2)}
-  else if(r.checks==='failure'){showPRMessage('PR #'+trackedPR+' · Checks failed','Open the PR and inspect the failed checks. Do not merge.');setTrackerSteps(4)}
-  else if(r.checks==='pending'){showPRMessage('PR #'+trackedPR+' · Validation running','Wait for the GitHub validation checks to finish, then review Files changed.');setTrackerSteps(3)}
-  else {showPRMessage('PR #'+trackedPR+' · Processed for review','Reconciled files are present. Review Excel, inventory, photos and report; then approve and merge if correct.');setTrackerSteps(4)}
- }catch(err){showPRMessage('PR #'+trackedPR+' · Status unavailable',err.message+' — use GitHub links to check manually.');setTrackerSteps(2)}
-}
+$('reviewedBtn').onclick=()=>{const h=currentHistory();if(!h||h.step!==4)return;if(!confirm('Have you reviewed the changed Excel, inventory, photographs and processing report, and confirmed validation passed?'))return;advancePR(5,'Reviewed locally','You confirmed the changed files. Mark the PR ready for review and merge it on GitHub.');};
+$('publishedBtn').onclick=()=>{const h=currentHistory();if(!h||h.step!==6)return;if(!confirm('Have you checked the live volunteer app and verified the published changes?'))return;upsertHistory(trackedPR,{status:'Published',step:6,publishedAt:new Date().toISOString()});localStorage.removeItem(PR_PAYLOAD_PREFIX+trackedPR);showPRMessage('PR #'+trackedPR+' · Published ✓','Live app verification confirmed on this device.','ok');$('publishedBtn').classList.add('hidden');showHistory()};
 $('refreshPrStatus').onclick=updatePR;
-// Existing refresh and sign-in remain responsible for draft content and auth.
 const originalRefresh=refresh;
-refresh=function(){originalRefresh();updateConsoleState();};
+refresh=function(){originalRefresh();updateConsoleState()};
 const originalShowGithubStatus=showGithubStatus;
 function setGitHubHeaderState(status){
  const badge=$('topGithubState'), signIn=$('githubSignIn'), check=$('githubCheck'), signOut=$('githubSignOut'), hint=$('publishingConnectionHint');
@@ -300,17 +314,20 @@ function setGitHubHeaderState(status){
 showGithubStatus=function(t){originalShowGithubStatus(t);setGitHubHeaderState(t)};
 if(!gatewaySession)showGithubStatus('Signed out. Sign in with GitHub when ready to publish.');
 else showGithubStatus('Checking GitHub session…');
-// Store the successful PR number and show the next action.
+// Successful submission moves active drafts to recoverable local history.
 $('githubSubmit').onclick=async()=>{
  const changes=Object.values(drafts);if(!changes.length)return alert('No drafts to submit.');
- if(!confirm('Create a draft GitHub pull request containing '+changes.length+' change(s)? Nothing is published automatically.'))return;
+ if(!confirm('Submit '+changes.length+' draft change(s) to GitHub for review? Nothing will be published automatically.'))return;
  showGithubStatus('Submitting review request…');
  try{
-  const res=await gateway('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format:'blackwood-admin-change-package',version:1,source:'Admin v0.9',exportedAt:new Date().toISOString(),changes})});
+  const res=await gateway('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format:'blackwood-admin-change-package',version:1,source:'Admin v0.9.2',exportedAt:new Date().toISOString(),changes})});
   trackedPR=Number(res.number);localStorage.setItem(PR_TRACK_KEY,String(trackedPR));
-  $('githubStatus').replaceChildren(document.createTextNode('Draft pull request created: '));
-  const a=document.createElement('a');a.href=res.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='#'+res.number+' — open GitHub review';$('githubStatus').append(a);
-  $('githubSubmit').disabled=false;showGithubStatus('Authenticated as GitHub — proposal #'+trackedPR+' submitted');showPRMessage('PR #'+trackedPR+' · Submitted','Next: run the processing Action using PR #'+trackedPR+'.');setTrackerSteps(2);if(window.matchMedia('(min-width:1001px)').matches)$('publishingGuide').scrollIntoView({behavior:'smooth',block:'nearest'});
+  const backup=Object.fromEntries(changes.map(d=>[d.id,d]));let backedUp=false;
+  try{localStorage.setItem(PR_PAYLOAD_PREFIX+trackedPR,JSON.stringify(backup));backedUp=true}catch(e){console.warn('Backup not saved; keeping active drafts',e)}
+  upsertHistory(trackedPR,{step:2,status:'Submitted',createdAt:new Date().toISOString(),items:changes.map(x=>({id:x.id,item:x.data?.item||x.base?.item||x.id,op:x.op})),lastVerified:new Date().toISOString()});
+  if(backedUp){const previous=drafts;drafts={};if(!persist()){drafts=previous;alert('Proposal submitted, but local storage could not be updated. Drafts remain; avoid submitting them twice.')}else{resetSelection();refresh();$('draftDetails').open=false}}
+  else alert('PR #'+trackedPR+' was created. Device storage is full, so drafts remain in the active list. Do not submit them again.');
+  showGithubStatus('Authenticated as GitHub — PR #'+trackedPR+' submitted');renderTrackerReference();showPRMessage('PR #'+trackedPR+' · Submitted','Next: run the processing Action using the PR number above.','action');setTrackerSteps(2);showHistory();showNextActions(currentHistory());
  }catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}
 };
 updateConsoleState();updatePR();
