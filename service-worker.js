@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-15-clean-rc1';
+const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-maps-rc2';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -14,6 +14,7 @@ const APP_SHELL = [
   './data/inventory.json',
   './directions/index.html',
   './shared/ribbon.css',
+  './shared/release.js',
   './shared/home-final.css',
   './shared/home-final.js',
   './shared/home-icons.js',

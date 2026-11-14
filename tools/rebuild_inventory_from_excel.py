@@ -307,6 +307,7 @@ def offline_asset_urls(repo_root: Path):
         "./maps/index.html",
         "./maps/maps-data.js",
         "./shared/ribbon.css",
+        "./shared/release.js",
         "./shared/home-final.css",
         "./shared/home-final.js",
         "./shared/home-icons.js",
@@ -328,7 +329,12 @@ def write_content_metadata_and_offline_manifest(repo_root: Path, index_path: Pat
     directions_updated = directions_updated_utc(repo_root)
     version = content_version(repo_root)
     assets = offline_asset_urls(repo_root)
+    # Release label remains separate from the content fingerprint; rebuilds must preserve it.
+    release_source = repo_root / "shared" / "release.js"
+    release_match = re.search(r'BLACKWOOD_APP_RELEASE\s*=\s*("(?:[^"\\]|\\.)*")', release_source.read_text(encoding="utf-8")) if release_source.exists() else None
+    app_version = json.loads(release_match.group(1)) if release_match else "Unspecified release"
     metadata = {
+        "appVersion": app_version,
         "inventoryExcelModifiedUtc": inventory_updated,
         "directionsUpdatedUtc": directions_updated,
         "contentUpdatedUtc": _latest_iso(inventory_updated, directions_updated),

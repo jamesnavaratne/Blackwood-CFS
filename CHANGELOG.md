@@ -1,3 +1,7 @@
+# v2.9.4.29 — Menu & Maps RC2 — 15 November 2026
+
+See `MENU_MAPS_RC2_CHANGELOG.md` for changes and checks.
+
 # v2.9.4.5 Stable — 2026-09-29
 
 - Consolidated every verified v2.9.4.4 tablet, UBD and mobile safe-area change into one unambiguous stable release.
