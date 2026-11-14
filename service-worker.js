@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-v2-9-4-28-official-hydrants-layer6-rc2-viewer-uid334-maps-preview';
+const CACHE_NAME = 'blackwood-cfs-2026-11-15-clean-rc1';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -13,7 +13,10 @@ const APP_SHELL = [
   './offline-assets.json',
   './data/inventory.json',
   './directions/index.html',
-  './directions/maps/ubd/maps.js',
+  './shared/ribbon.css',
+  './shared/home-final.css',
+  './shared/home-final.js',
+  './shared/home-icons.js',
   './maps/index.html',
   './maps/maps-data.js',
   './hydrants/index.html',

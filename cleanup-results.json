@@ -1,0 +1,208 @@
+{
+  "source_zip": "Nov 26 app no git.zip",
+  "release": "2026-11-15 CLEAN RC1",
+  "removed": [
+    "INSTALL_SYSTEM_HOME.ps1",
+    "INSTALL_SYSTEM_HOME.cmd",
+    "INSTALL_SHARED_RIBBON.ps1",
+    "INSTALL_SHARED_RIBBON.cmd",
+    "INSTALL_MAPS_TAB.cmd",
+    "OPEN_MAPS_TEST.html",
+    "MAPS_TRIAL_README.txt",
+    "MAPS_UPDATE_README.txt",
+    "UPLOAD_THESE_FILES_TO_GITHUB.txt",
+    "READ_ME_FIRST.txt",
+    "HYDRANTS_MERGE_TEST_REPORT.md",
+    "HYDRANTS_SECOND_PASS_TEST_REPORT.md",
+    "FULL_HYDRANTS_ROLLOUT_TEST_REPORT.md",
+    "TRAINING_MODULE_TEST_REPORT.md",
+    "START_HERE.md",
+    "directions/maps/ubd/maps.js"
+  ],
+  "compress": [
+    {
+      "file": "maps/assets/dewnr/dewnr-01-p01.jpg",
+      "before": 1668422,
+      "after": 1585911,
+      "saved": 82511,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-01-p02.jpg",
+      "before": 1850075,
+      "after": 1750367,
+      "saved": 99708,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-01-p03.jpg",
+      "before": 1541026,
+      "after": 1476892,
+      "saved": 64134,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-01-p04.jpg",
+      "before": 3348528,
+      "after": 3136606,
+      "saved": 211922,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-02-p01.jpg",
+      "before": 2115639,
+      "after": 2031322,
+      "saved": 84317,
+      "dimensions": [
+        3333,
+        2359
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-02-p02.jpg",
+      "before": 2154744,
+      "after": 2066622,
+      "saved": 88122,
+      "dimensions": [
+        3333,
+        2359
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-02-p03.jpg",
+      "before": 2117958,
+      "after": 2031807,
+      "saved": 86151,
+      "dimensions": [
+        3333,
+        2359
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-02-p04.jpg",
+      "before": 2162642,
+      "after": 2070450,
+      "saved": 92192,
+      "dimensions": [
+        3333,
+        2359
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-02-p05.jpg",
+      "before": 2037279,
+      "after": 1957834,
+      "saved": 79445,
+      "dimensions": [
+        3333,
+        2359
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-03-p01.jpg",
+      "before": 1759299,
+      "after": 1671640,
+      "saved": 87659,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-03-p02.jpg",
+      "before": 3465622,
+      "after": 3241890,
+      "saved": 223732,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-04-p01.jpg",
+      "before": 1620764,
+      "after": 1534532,
+      "saved": 86232,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-04-p02.jpg",
+      "before": 556450,
+      "after": 519601,
+      "saved": 36849,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-04-p03.jpg",
+      "before": 3391818,
+      "after": 3173678,
+      "saved": 218140,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-05-p01.jpg",
+      "before": 1247903,
+      "after": 1182844,
+      "saved": 65059,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-05-p02.jpg",
+      "before": 3175060,
+      "after": 2973282,
+      "saved": 201778,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-06-p01.jpg",
+      "before": 1062403,
+      "after": 1014770,
+      "saved": 47633,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    },
+    {
+      "file": "maps/assets/dewnr/dewnr-06-p02.jpg",
+      "before": 2712101,
+      "after": 2560997,
+      "saved": 151104,
+      "dimensions": [
+        3335,
+        2358
+      ]
+    }
+  ],
+  "total_before": 37987733,
+  "total_after": 35981045,
+  "offline_count": 91,
+  "content_version": "content-87691584f0f279dac07b"
+}
