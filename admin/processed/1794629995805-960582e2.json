@@ -1,0 +1,16 @@
+{
+  "status": "applied",
+  "changes": 1,
+  "added": 1,
+  "updated": 0,
+  "removed": 0,
+  "assigned_ids": {
+    "NEW-mwfwc1be-u9nh": "CAFS-0001"
+  },
+  "photos": 1,
+  "removed_photos": [],
+  "photo_paths": {
+    "CAFS-0001": "photos/cafs24/items/admin-cafs-0001-a815ce784e9c.jpg"
+  },
+  "source": "1794629995805-960582e2.json"
+}
