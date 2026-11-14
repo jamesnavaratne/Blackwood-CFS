@@ -585,6 +585,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 .title-row h1{margin:2px 0 0!important;font-size:22px!important;font-weight:700!important;letter-spacing:-.03em!important;line-height:23.1px!important}
 @media(max-width:380px){.title-row h1{font-size:20px!important;line-height:21px!important}}
 </style>
+<style id="maps-four-tab-patch">.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important}@media(max-width:410px){.bottom-nav .tab-btn{font-size:10px!important;letter-spacing:-.01em}}</style>
 </head>
 <body>
   <main class="app-shell">
@@ -634,10 +635,11 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         <span>Inventory</span>
       </a>
       <a class="tab-btn" id="directionsNavLink" href="../directions/index.html" aria-label="Open Directions Book">
-        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3z"></path><path d="M8 15v-4a3 3 0 0 1 3-3h5"></path><path d="m13 5 3 3-3 3"></path></svg>
         <span>Directions Book</span>
       </a>
-      <button class="tab-btn active" id="hydrantsNavButton" type="button" aria-current="page" aria-label="Hydrants active tab">
+            <a class="tab-btn" id="mapsNavLink" href="../maps/index.html" aria-label="Open Maps"><svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span>Maps</span></a>
+<button class="tab-btn active" id="hydrantsNavButton" type="button" aria-current="page" aria-label="Hydrants active tab">
         <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20v-8a4 4 0 0 1 8 0v8"></path><path d="M6 20h12M7 9h10M10 5h4M12 5V2M5 13H3v4h2M19 13h2v4h-2"></path></svg>
         <span>Hydrants</span>
       </button>
