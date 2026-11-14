@@ -1,0 +1,34 @@
+{
+  "format": "blackwood-admin-change-package",
+  "version": 1,
+  "source": "Admin v0.9.2",
+  "exportedAt": "2026-11-14T04:41:08.548Z",
+  "changes": [
+    {
+      "op": "remove",
+      "id": "CAFS-0001",
+      "base": {
+        "id": "CAFS-0001",
+        "appliance": "CAFS 24",
+        "locker": "Rear",
+        "section": "",
+        "subsection": "",
+        "item": "TEST CAFS ITEM",
+        "quantity": "2",
+        "category": "",
+        "description": "This is a test item on CAFS",
+        "status": "In service",
+        "photo": "",
+        "extraPhoto": "admin-cafs-0001-a815ce784e9c.jpg",
+        "lastChecked": "",
+        "checkedBy": "",
+        "tags": "",
+        "notes": "",
+        "location": "Rear"
+      }
+    }
+  ],
+  "submittedBy": "jamesnavaratne",
+  "submittedVia": "blackwood-admin-gateway",
+  "reviewStatus": "proposal-only"
+}
