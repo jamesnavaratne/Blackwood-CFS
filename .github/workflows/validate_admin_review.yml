@@ -20,5 +20,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Require reconciled files before approval
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$BASE_REF" --depth=1
+          FILES=$(git diff --name-only "origin/$BASE_REF" HEAD)
+          PROPOSALS=$(printf '%s\n' "$FILES" | grep -E '^admin/submissions/[a-zA-Z0-9_-]+\.json$' || true)
+          COUNT=$(printf '%s\n' "$PROPOSALS" | grep -c . || true)
+          if [ "$COUNT" -eq 0 ]; then echo 'No Admin proposal in this change'; exit 0; fi
+          if [ "$COUNT" -ne 1 ]; then echo 'Expected one Admin proposal'; exit 1; fi
+          PROPOSAL=$(printf '%s\n' "$PROPOSALS" | head -1)
+          REPORT="admin/processed/$(basename "$PROPOSAL")"
+          test -f "$REPORT" || { echo 'BLOCKED: Proposal has not been reconciled. Run Process Blackwood Admin review proposal.'; exit 1; }
+          echo "$FILES" | grep -qx 'Blackwood_CFS_Master_Inventory.xlsx' || { echo 'BLOCKED: workbook not changed'; exit 1; }
+          echo "$FILES" | grep -qx 'data/inventory.json' || { echo 'BLOCKED: inventory not rebuilt'; exit 1; }
+          python - "$REPORT" "$PROPOSAL" <<'PYCHECK'
+          import json,sys,pathlib
+          report=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report.get('status')=='applied' and report.get('source')==pathlib.Path(sys.argv[2]).name, 'Invalid processing report'
+          print('Admin proposal processed and matched:',sys.argv[2])
+          PYCHECK
       - name: Validate workbook and generated app without mutating files
         run: python tools/rebuild_inventory_from_excel.py --check-only

@@ -46,6 +46,29 @@ export default {async fetch(req,env){
  if(u.pathname==='/api/logout'&&req.method==='POST'){
   if(!validRequestOrigin(req,env))return reject('Origin not permitted',403);const a=await authorised(req,env);if(a)await env.SESSIONS.delete('session:'+a.key);return json({ok:true},200,cors);
  }
+
+ if(u.pathname==='/api/pr-status'&&req.method==='GET'){
+  if(!validRequestOrigin(req,env))return json({error:'Origin not permitted'},403,cors);
+  const a=await authorised(req,env);if(!a)return json({error:'Not signed in'},401,cors);
+  const number=u.searchParams.get('number');
+  if(!/^[1-9][0-9]{0,8}$/.test(number||''))return json({error:'Invalid pull request number'},400,cors);
+  const repo='/repos/'+env.GITHUB_REPO;
+  const pr=await gh(a.token,repo+'/pulls/'+number);
+  // The files endpoint is paginated; cap at 100 and fail closed on unusually large PRs.
+  const files=await gh(a.token,repo+'/pulls/'+number+'/files?per_page=100');
+  if(!Array.isArray(files)||files.length>=100)return json({error:'PR too large for safe status assessment; inspect on GitHub'},409,cors);
+  const names=files.map(f=>f.filename);
+  const proposals=names.filter(n=>/^admin\/submissions\/[a-zA-Z0-9_-]+\.json$/.test(n));
+  const reports=names.filter(n=>/^admin\/processed\/[a-zA-Z0-9_-]+\.json$/.test(n));
+  const processed=proposals.length===1&&reports.includes(proposals[0].replace('admin/submissions/','admin/processed/'))&&names.includes('Blackwood_CFS_Master_Inventory.xlsx')&&names.includes('data/inventory.json');
+  let checks='unknown';
+  try{
+   const runs=await gh(a.token,repo+'/commits/'+encodeURIComponent(pr.head.sha)+'/check-runs?per_page=100');
+   const matching=(runs.check_runs||[]).filter(x=>x.name==='validate');
+   if(matching.length){checks=matching.some(x=>x.status!=='completed')?'pending':matching.some(x=>x.conclusion!=='success')?'failure':'success';}
+  }catch(e){checks='unknown';}
+  return json({number:pr.number,url:pr.html_url,open:pr.state==='open',merged:pr.merged===true,draft:pr.draft===true,processed,checks,head:pr.head.sha},200,cors);
+ }
  if(u.pathname==='/api/submit'&&req.method==='POST'){
   if(!validRequestOrigin(req,env))return json({error:'Origin not permitted'},403,cors);
   const a=await authorised(req,env);if(!a)return json({error:'Not signed in'},401,cors);

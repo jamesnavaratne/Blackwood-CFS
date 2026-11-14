@@ -17,17 +17,50 @@
 @media(max-width:950px){#adminWorkspace{grid-template-columns:minmax(0,1fr)}#publishingGuide{position:static;max-height:none;grid-row:1}#publishingGuide details:not([open]) .guide-steps{display:none}#publishingGuide details summary{cursor:pointer;font-weight:700;list-style:none}#publishingGuide details summary:after{content:'  ▾';float:right}#publishingGuide details[open] summary:after{content:'  ▴'}}
 @media(min-width:951px){#publishingGuide details summary{display:none}}
 #pinGate{position:fixed;inset:0;z-index:100;background:#071322;display:flex;align-items:center;justify-content:center;padding:18px}#pinGate .panel{width:min(100%,410px);box-shadow:0 14px 50px #0009}#pinGate input{font-size:1.3rem;text-align:center;letter-spacing:.25em}.notice{padding:10px;border:1px solid #43698d;border-radius:10px;background:#0a2640;margin-top:8px}
-</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div><div class="foot">Shared PIN is a casual deterrent only, not secure authentication. GitHub login is still required to submit changes.</div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.7 publishing guide + photo removal</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
+
+/* Admin Console v0.8 visual refinement: deep Blackwood rescue blue */
+:root{--base:#071523;--panel:#10243a;--panel-light:#142d49;--outline:#2e4c6b;--accent:#5db8fb;--text:#eef6ff;--muted:#a7bdd2;color-scheme:dark;background:var(--base)}
+body{max-width:1540px;padding:0 18px 80px;background:radial-gradient(ellipse 1100px 520px at 50% -220px,#174f7a66,transparent 75%) no-repeat,var(--base)}
+header{background:#091a2df5;border-bottom:1px solid #305578;padding:15px 0 13px}header h1{font-size:1.35rem;letter-spacing:.01em}
+h2{font-size:1.06rem}input,select,textarea{background:#0b2035;border:1px solid #3c6082;min-height:44px}input:focus,select:focus,textarea:focus{outline:2px solid #5db8fbaa;outline-offset:1px}
+button,.button{border-radius:9px;font-weight:600;min-height:43px}button:hover:not(:disabled){filter:brightness(1.13)}button:focus-visible,a:focus-visible{outline:3px solid #79c9ff;outline-offset:2px}
+.panel{background:#0f2439;border:1px solid #2c4a68;border-radius:14px;padding:18px;box-shadow:0 8px 26px #020e1a25}
+#adminWorkspace{grid-template-columns:minmax(0,1fr) 335px;gap:20px}#publishingGuide{top:115px;max-height:calc(100dvh - 133px)}
+.console-hero{margin:18px 0 2px;border:1px solid #29527a;background:linear-gradient(120deg,#153b63,#0d2844 70%);border-radius:15px;padding:20px 22px;display:flex;justify-content:space-between;gap:18px;align-items:center}
+.console-hero h2{font-size:1.26rem;margin:2px 0 5px}.console-eyebrow{color:#81c9ff;font-weight:700;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase}
+.console-badge{border-radius:8px;background:#1b4968;border:1px solid #41749b;color:#bde6ff;padding:8px 11px;font-weight:650;font-size:.8rem;white-space:nowrap}
+.console-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0 4px}.metric{padding:11px 13px;border:1px solid #2b4966;background:#10273f;border-radius:10px}.metric strong{font-size:1.3rem;display:block;color:#e9f6ff}.metric span{font-size:.75rem;color:#a9bdd0}
+.console-nav{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 2px}.console-nav a{padding:9px 13px;border:1px solid #385777;border-radius:9px;background:#12304e;color:#c7e4ff;font-weight:650;text-decoration:none;font-size:.83rem}.console-nav a:hover{background:#19446b}
+.item{border-bottom-color:#29445e}.item:hover{background:#193a59}.item.active{background:#1e4c70}
+#publishingGuide{background:#0e2238}#publishingGuide .guide-step{transition:background .2s,border-color .2s;padding:12px 7px;border-radius:7px}
+#publishingGuide .guide-step.current{background:#143a57;border:1px solid #4285b4;padding:11px 8px;margin-top:2px}
+#publishingGuide .guide-step.done .guide-num{background:#174d47;color:#8ff2c8}
+#publishingGuide .guide-step.current .guide-num{background:#2476b5;color:white}
+#publishingGuide .guide-step.pending{opacity:.78}.guide-step p{font-size:.78rem}.guide-step a{line-height:1.7}
+#livePrStatus{font-size:.83rem;line-height:1.55;padding:12px;border-radius:10px;background:#10314d;border:1px solid #37668b;margin:9px 0}.pr-state{color:#a7d8ff;font-weight:700}
+.status-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.status-actions a{display:inline-block;background:#1c4a74;border:1px solid #4683af;border-radius:8px;padding:8px 10px;text-decoration:none;font-size:.78rem}
+#draftEntries .draft-entry{display:flex;gap:9px;align-items:center;justify-content:space-between;border-bottom:1px solid #254663;padding:9px 0}#draftEntries .draft-entry:last-child{border-bottom:0}
+#draftEntries button{font-size:.78rem;min-height:34px;padding:6px 10px}#draftEntries small{display:block;color:#a5bbd2;margin-top:3px}
+#publishPanel{border-color:#335a80}.warning{background:#302c23;border-color:#775f42;color:#ebdfc9}
+@media(max-width:1000px){#adminWorkspace{grid-template-columns:minmax(0,1fr)}#publishingGuide{position:static;max-height:none;grid-row:1}}
+@media(max-width:600px){body{padding:0 10px 80px}.panel{padding:13px}.console-hero{padding:16px;align-items:flex-start}.console-badge{font-size:.7rem}.console-metrics{gap:5px}.metric{padding:10px 8px}.metric strong{font-size:1.1rem}.metric span{font-size:.67rem}.console-nav a{flex:1;text-align:center;font-size:.77rem;padding:10px 6px}.toolbar button{min-width:130px}}
+</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div><div class="foot">Shared PIN is a casual deterrent only, not secure authentication. GitHub login is still required to submit changes.</div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.8 Design & Publishing Status</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
 <div class="warning"><strong>Admin editor access uses a shared four-digit PIN • GitHub publishing requires login.</strong> This page is public if published through GitHub Pages. The 4-digit PIN is a convenience lock, not secure authentication. Publishing separately requires authorised GitHub login. All submissions are review-only and never alter the live app automatically.</div>
+<section class="console-hero" aria-label="Admin Console">
+ <div><div class="console-eyebrow">Blackwood CFS</div><h2>Administration Console</h2><div class="sub">Find equipment · Manage photographs · Publish reviewed changes</div></div>
+ <span class="console-badge" id="topGithubState">GitHub: checking</span>
+</section>
+<div class="console-metrics" aria-label="Admin summary"><div class="metric"><strong id="metricEquipment">—</strong><span>Equipment records</span></div><div class="metric"><strong>3</strong><span>Appliances</span></div><div class="metric"><strong id="metricDrafts">0</strong><span>Local drafts</span></div></div>
+<nav class="console-nav" aria-label="Admin sections"><a href="#inventoryPanel" id="inventoryNavLink">Equipment</a><a href="#draftPanel">Drafts</a><a href="#publishPanel">Publish</a><a href="#publishingGuide">Guide</a></nav>
 <div id="adminWorkspace"><div id="adminWorkspaceMain"><section class="panel" id="inventoryPanel"><h2>Inventory</h2><div class="two"><label class="field"><span>Appliance</span><select id="appliance"><option value="">All appliances</option></select></label><label class="field"><span>Search equipment or ID</span><input id="search" placeholder="Name, locker, ID..."></label></div><div id="summary"></div><div id="list" class="list"></div></section>
 <section class="panel hidden" id="editorPanel"><div class="row"><h2 class="grow">Edit equipment</h2><span class="pill" id="editTag">Select item</span></div><div class="toolbar"><button type="button" class="secondary" id="backToInventoryBtn">← Back to inventory / Start over</button></div><div id="empty">Choose an item above or create a new draft item.</div><form id="editor" class="hidden"><div class="two"><label class="field"><span>Item name</span><input name="item" required maxlength="250"></label><label class="field"><span>Appliance</span><select name="appliance" required></select></label></div><div class="two"><label class="field"><span>Locker (existing locations)</span><select name="locker" id="lockerSelect"></select></label><label class="field"><span>Section (existing locations)</span><select name="section" id="sectionSelect"></select></label></div><div class="two"><label class="field"><span>Subsection (existing locations)</span><select name="subsection" id="subsectionSelect"></select></label><label class="field"><span>Quantity</span><input name="quantity"></label></div><label class="field"><span>Description</span><textarea name="description"></textarea></label><label class="field"><span>Notes</span><textarea name="notes"></textarea></label><div class="two"><label class="field"><span>Tags</span><input name="tags"></label><label class="field"><span>Status</span><select name="status"><option>In service</option><option>Out of service</option></select></label></div><label class="field"><span>Photograph — camera or library (optimised before saving)</span><input type="file" id="photoFile" accept="image/*" capture="environment"></label><div class="row"><img id="photoPreview" class="hidden" alt="Photo preview"><span class="sub" id="photoInfo"></span></div><div class="sub">Photos are resized to a maximum 1600 pixels and compressed to JPEG. Keep a separate original for archival purposes.</div>
 <div class="toolbar"><button type="button" id="removePhotoBtn" class="danger">Remove added photo</button></div>
 <div id="photoRemovalNote" class="sub" role="status" aria-live="polite">Removes an Admin-added replacement photo and returns to the original inventory photo where available. Save draft to publish.</div><div class="toolbar"><button type="submit">Save draft</button><button type="button" class="secondary" id="resetEditorBtn">Clear selection</button><button type="button" class="danger" id="deleteBtn">Propose removal</button></div></form></section>
-<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">After one-time setup of a secure GitHub gateway, sign in and submit drafts as a <strong>draft pull request</strong>. This does not update the master Excel workbook or publish anything to volunteers until manually reviewed and processed.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="toolbar"><button type="button" id="githubSignIn">Sign in with GitHub</button><button class="secondary" type="button" id="githubCheck">Check login</button><button class="secondary" type="button" id="githubSignOut">Sign out</button></div><div class="notice sub" id="githubStatus" role="status" aria-live="polite">Not connected. Draft export remains available without GitHub.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div><div class="foot">Never paste GitHub access tokens into Admin. The gateway holds credentials securely and only authorises allowlisted editors. The four-digit PIN does not grant GitHub access.</div></section><section class="panel"><h2>Draft changes</h2><div id="draftSummary" class="sub">No changes saved.</div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div><div class="foot">Exports include structured inventory edits and any attached replacement photographs. The package must be reviewed and applied to the master Excel workbook and photo library before rebuilding. GitHub submission requires a separately deployed and configured secure Admin gateway. Submissions create draft pull requests only; applying inventory changes and assigning permanent IDs remains a review-stage task.</div></section></div>
+<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">After one-time setup of a secure GitHub gateway, sign in and submit drafts as a <strong>draft pull request</strong>. This does not update the master Excel workbook or publish anything to volunteers until manually reviewed and processed.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="toolbar"><button type="button" id="githubSignIn">Sign in with GitHub</button><button class="secondary" type="button" id="githubCheck">Check login</button><button class="secondary" type="button" id="githubSignOut">Sign out</button></div><div class="notice sub" id="githubStatus" role="status" aria-live="polite">Not connected. Draft export remains available without GitHub.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div><div class="foot">Never paste GitHub access tokens into Admin. The gateway holds credentials securely and only authorises allowlisted editors. The four-digit PIN does not grant GitHub access.</div></section><section class="panel" id="draftPanel"><h2>Draft changes</h2><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="newBtn" class="secondary">+ Add equipment</button><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div><div class="foot">Exports include structured inventory edits and any attached replacement photographs. The package must be reviewed and applied to the master Excel workbook and photo library before rebuilding. GitHub submission requires a separately deployed and configured secure Admin gateway. Submissions create draft pull requests only; applying inventory changes and assigning permanent IDs remains a review-stage task.</div></section></div>
 <aside class="panel" id="publishingGuide" aria-label="GitHub publishing guide">
 <details open><summary>Publishing checklist — tap to expand</summary><div class="guide-steps">
-<h2>Publish your edits</h2><p class="sub">Follow these steps in order. Saving a draft does not update the volunteer app.</p>
-<div class="guide-hint" id="guideDraftStatus">Step 1: Edit an item and select <strong>Save draft</strong>.</div>
+<h2>Publish your edits</h2><p class="sub">Follow the highlighted next action. A saved draft does not update the volunteer app.</p>
+<div id="livePrStatus" role="status" aria-live="polite"><strong>GitHub PR tracking</strong><div>Submit a draft to start tracking its review and merge status.</div></div><div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Open pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Process in Actions ↗</a></div><button type="button" class="secondary" id="refreshPrStatus" style="width:100%">Refresh publishing status</button><div class="guide-hint" id="guideDraftStatus">Step 1: Edit an item and select <strong>Save draft</strong>.</div>
 <div class="guide-step"><span class="guide-num">1</span><div><strong>Save your draft</strong><p>Edit a record or remove its added photo, then tap <b>Save draft</b>. Check the Draft changes count.</p></div></div>
 <div class="guide-step"><span class="guide-num">2</span><div><strong>Submit to GitHub</strong><p>Check GitHub login, then select <b>Submit drafts for review</b>. Open the new draft pull request using its link.</p></div></div>
 <div class="guide-step"><span class="guide-num">3</span><div><strong>Process that PR</strong><p>From <b>Actions → Process Blackwood Admin review proposal → Run workflow</b>, select branch <b>main</b> and enter the <b>new PR number</b>. Wait for success.</p><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Open processing workflow ↗</a></div></div>
@@ -112,5 +145,73 @@ $('githubCheck').onclick=async()=>{try{let r=await gateway('/api/me');showGithub
 $('githubSignOut').onclick=async()=>{try{await gateway('/api/logout',{method:'POST'})}catch(e){}gatewaySession='';sessionStorage.removeItem('blackwood-admin-gateway-session');showGithubStatus('Signed out.')};
 $('githubSubmit').onclick=async()=>{const changes=Object.values(drafts);if(!changes.length)return alert('No draft changes to submit.');if(!confirm('Create a draft GitHub pull request containing '+changes.length+' change(s)? No changes will be published automatically.'))return;showGithubStatus('Submitting review request…');try{const res=await gateway('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format:'blackwood-admin-change-package',version:1,source:'Admin v0.4',exportedAt:new Date().toISOString(),changes})});$('githubStatus').replaceChildren(document.createTextNode('Draft pull request created: '));const a=document.createElement('a');a.href=res.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='#'+res.number+' — open GitHub review';$('githubStatus').append(a);$('githubSubmit').disabled=false}catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}};
 (async()=>{const hash=new URLSearchParams(location.hash.replace(/^#/,'')),ticket=hash.get('ticket');if(ticket){history.replaceState(null,'',location.pathname+location.search);try{const r=await gateway('/auth/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket})});gatewaySession=r.session;sessionStorage.setItem('blackwood-admin-gateway-session',gatewaySession);$('githubCheck').click()}catch(e){showGithubStatus('Authentication failed: '+e.message)}}else if(gatewaySession){$('githubCheck').click()}})();
+
+// Admin v0.8 read-only publishing tracker. All status queries go through the existing OAuth gateway.
+const PR_TRACK_KEY='blackwood-admin-last-pr';
+let trackedPR=Number(localStorage.getItem(PR_TRACK_KEY)||0),prState=null;
+function showDraftEntries(){
+ const target=$('draftEntries'); if(!target)return;
+ target.replaceChildren(); const entries=Object.values(drafts);
+ for(const d of entries){
+  const item=document.createElement('div');item.className='draft-entry';
+  const info=document.createElement('div'); const label=document.createElement('strong');
+  label.textContent=d.data?.item||d.base?.item||d.id;
+  const detail=document.createElement('small');detail.textContent=(d.op||'update').toUpperCase()+' · '+(d.data?.appliance||d.base?.appliance||'')+' · '+d.id;
+  info.append(label,detail); const b=document.createElement('button');b.className='secondary';b.textContent='Open';
+  b.onclick=()=>{if(d.op==='remove'){alert('Removal proposal saved. Discard the draft to undo this removal.');return;}select(d.id);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});};
+  item.append(info,b);target.append(item);
+ }
+}
+function setTrackerSteps(next){
+ const steps=[...document.querySelectorAll('.guide-step')];
+ steps.forEach((el,i)=>{el.classList.toggle('done',i<next);el.classList.toggle('current',i===next);el.classList.toggle('pending',i>next)});
+}
+function updateConsoleState(){
+ if($('metricEquipment'))$('metricEquipment').textContent=base.length||'—';
+ if($('metricDrafts'))$('metricDrafts').textContent=Object.keys(drafts).length;
+ showDraftEntries();
+ if(!trackedPR){setTrackerSteps(Object.keys(drafts).length?1:0)}
+}
+function showPRMessage(title,detail){
+ const el=$('livePrStatus'); if(!el)return;
+ el.replaceChildren();const t=document.createElement('strong');t.className='pr-state';t.textContent=title;
+ const d=document.createElement('div');d.textContent=detail;el.append(t,d);
+}
+async function updatePR(){
+ if(!trackedPR){showPRMessage('No PR tracked','Submit an Admin draft to create a review pull request.');setTrackerSteps(Object.keys(drafts).length?1:0);return;}
+ $('trackedPrLink').href='https://github.com/jamesnavaratne/Blackwood-CFS/pull/'+trackedPR;
+ $('trackedPrLink').textContent='Open PR #'+trackedPR+' ↗';
+ if(!gatewaySession){showPRMessage('PR #'+trackedPR+' · Sign in needed','GitHub login is required to refresh its status.');setTrackerSteps(2);return;}
+ try {
+  const r=await gateway('/api/pr-status?number='+trackedPR);prState=r;
+  if(r.merged){showPRMessage('PR #'+trackedPR+' · Merged','Changes have merged into main. Check Pages deployment and verify the volunteer app.');setTrackerSteps(5)}
+  else if(!r.open){showPRMessage('PR #'+trackedPR+' · Closed','This PR was closed without publication.');setTrackerSteps(1)}
+  else if(!r.processed){showPRMessage('PR #'+trackedPR+' · Processing required','Run “Process Blackwood Admin review proposal” from main with PR number '+trackedPR+'. Do not merge yet.');setTrackerSteps(2)}
+  else if(r.checks==='failure'){showPRMessage('PR #'+trackedPR+' · Checks failed','Open the PR and inspect the failed checks. Do not merge.');setTrackerSteps(3)}
+  else if(r.checks==='pending'){showPRMessage('PR #'+trackedPR+' · Validation running','Wait for the GitHub validation checks to finish, then review Files changed.');setTrackerSteps(3)}
+  else {showPRMessage('PR #'+trackedPR+' · Processed for review','Reconciled files are present. Review Excel, inventory, photos and report; then approve and merge if correct.');setTrackerSteps(3)}
+ }catch(err){showPRMessage('PR #'+trackedPR+' · Status unavailable',err.message+' — use GitHub links to check manually.');setTrackerSteps(2)}
+}
+$('refreshPrStatus').onclick=updatePR;
+// Existing refresh and sign-in remain responsible for draft content and auth.
+const originalRefresh=refresh;
+refresh=function(){originalRefresh();updateConsoleState();};
+const originalShowGithubStatus=showGithubStatus;
+showGithubStatus=function(t){originalShowGithubStatus(t);const b=$('topGithubState');if(b)b.textContent=t.startsWith('Authenticated')?'GitHub connected':t.startsWith('Not connected')||t.startsWith('Signed out')?'GitHub sign-in needed':'GitHub: '+t.slice(0,35);};
+// Store the successful PR number and show the next action.
+$('githubSubmit').onclick=async()=>{
+ const changes=Object.values(drafts);if(!changes.length)return alert('No drafts to submit.');
+ if(!confirm('Create a draft GitHub pull request containing '+changes.length+' change(s)? Nothing is published automatically.'))return;
+ showGithubStatus('Submitting review request…');
+ try{
+  const res=await gateway('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({format:'blackwood-admin-change-package',version:1,source:'Admin v0.8',exportedAt:new Date().toISOString(),changes})});
+  trackedPR=Number(res.number);localStorage.setItem(PR_TRACK_KEY,String(trackedPR));
+  $('githubStatus').replaceChildren(document.createTextNode('Draft pull request created: '));
+  const a=document.createElement('a');a.href=res.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='#'+res.number+' — open GitHub review';$('githubStatus').append(a);
+  $('githubSubmit').disabled=false;showPRMessage('PR #'+trackedPR+' · Submitted','Next: run the processing Action using PR #'+trackedPR+'.');setTrackerSteps(2);$('publishingGuide').scrollIntoView({behavior:'smooth',block:'nearest'});
+ }catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}
+};
+updateConsoleState();updatePR();
+
 if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></div></body></html>
