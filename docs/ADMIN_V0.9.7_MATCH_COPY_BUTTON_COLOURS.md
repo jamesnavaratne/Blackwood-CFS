@@ -1,0 +1,1 @@
+Admin v0.9.7: Open PR and Processing Action pills use the same background (#132b46) and border (#477bac) as the Copy number button. High-contrast white labels remain. Cache version advanced to v097. No changes to inventory or publishing functionality.

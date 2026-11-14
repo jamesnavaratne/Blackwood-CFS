@@ -177,6 +177,17 @@ button.is-busy::before{content:"";display:inline-block;width:14px;height:14px;ma
 .submit-availability.ready{background:#113d30;border-color:#399c6c;color:#b0f0cc}
 .draft-actions{display:flex;gap:8px}.draft-entry small{overflow-wrap:anywhere}
 @media(max-width:530px){.removal-actions button{flex:1 1 150px}.draft-entry{align-items:flex-start!important}.draft-actions{flex-shrink:0}}
+
+/* v0.9.6 — Quick GitHub links remain visible above collapsed instructions */
+#publishingGuide>.status-actions{display:flex!important;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+#publishingGuide>.status-actions a{display:inline-flex;align-items:center;justify-content:center;background:#132b46;border:1px solid #477bac;border-radius:8px;padding:8px 10px;min-height:36px;font-size:.78rem;font-weight:600;line-height:1.3;color:#edf4fc!important;text-decoration:none;opacity:1;white-space:nowrap}
+#publishingGuide>.status-actions a:hover{background:#1b3959;border-color:#78b7e6;color:#fff!important}
+#publishingGuide>.status-actions a:focus-visible{outline:2px solid #86cdff;outline-offset:2px}
+@media(max-width:1000px){
+ #publishingGuide>.status-actions{margin:4px 0;gap:6px}
+ #publishingGuide>.status-actions a{font-size:.72rem;padding:6px 9px;min-height:32px}
+ body{padding-bottom:132px}
+}
 </style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9.5 Add Equipment Ready</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
 
 <section class="console-hero" aria-label="Admin Console">
@@ -197,9 +208,10 @@ button.is-busy::before{content:"";display:inline-block;width:14px;height:14px;ma
 <aside class="panel" id="publishingGuide" aria-label="Publishing instructions">
 <div class="guide-topline"><div><div class="console-eyebrow">PUBLISHING GUIDE</div><h2>From edit to live app</h2></div></div>
 <div class="pr-reference" id="prReference"><div><span class="pr-caption">LATEST PULL REQUEST</span><strong id="prNumber">No PR yet</strong></div><button id="copyPr" class="secondary" type="button" disabled>Copy number</button></div>
+<div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Processing Action ↗</a></div>
 <details id="guideDetails" open><summary class="guide-summary"><span>Publishing instructions</span><span class="guide-summary-meta">7 steps <span class="chevron">▾</span></span></summary>
 <div class="guide-inner"><p class="guide-intro">Follow these steps in order. They are a reference checklist, not a live progress tracker. Your PR number above stays saved for GitHub Actions.</p>
-<div class="status-actions"><a id="trackedPrLink" href="https://github.com/jamesnavaratne/Blackwood-CFS/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a href="https://github.com/jamesnavaratne/Blackwood-CFS/actions/workflows/process_admin_review.yml" target="_blank" rel="noopener noreferrer">Processing Action ↗</a></div>
+
 <div class="guide-steps" id="guideSteps">
 <div class="guide-step" data-step="0"><span class="guide-num">1</span><div><strong>Save your equipment edits</strong><p>Make the changes, then select <b>Save draft</b>. Nothing is published yet.</p></div></div>
 <div class="guide-step" data-step="1"><span class="guide-num">2</span><div><strong>Submit draft to GitHub</strong><p><b>Sign in with GitHub at the top</b> if needed, then choose <b>Submit drafts for review</b>. Keep the new PR number.</p></div></div>
