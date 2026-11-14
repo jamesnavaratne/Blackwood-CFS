@@ -162,7 +162,22 @@ button.is-busy::before{content:"";display:inline-block;width:14px;height:14px;ma
  #publishingGuide .guide-step a{font-size:.76rem}
  #publishingGuide .status-actions{display:flex}
 }
-</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9.4 Add Equipment Ready</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
+/* v0.9.5 — clear removal, breathing room for Add action */
+.add-equipment-row{justify-content:flex-end;gap:12px;margin:12px 0 14px;align-items:center}
+.add-equipment-row .new-item-note{margin:0 auto 0 0;flex:1 1 230px}
+.add-equipment-row .add-equipment-action{flex:0 0 auto;min-width:205px}
+.compact-inventory .add-equipment-row{margin:9px 0 4px}
+@media(max-width:630px){.add-equipment-row .new-item-note{display:none}.add-equipment-row .add-equipment-action{min-width:0;width:auto;max-width:100%}}
+.removal-saved{background:#10382d;border:1px solid #4bc590;color:#dafce7;padding:15px;margin-bottom:17px;border-radius:12px}
+.removal-saved .removal-icon{font-size:1.4rem;font-weight:900;color:#80f0b0}
+.removal-saved strong{font-size:1rem}.removal-saved p{font-size:.81rem;color:#b6e9d0;margin:6px 0 0;line-height:1.55}
+.removal-actions{margin-top:12px;justify-content:flex-end}.removal-actions button{min-height:40px;font-size:.83rem}
+.removal-actions .publish-primary{background:#20834e;border-color:#69dda2}
+.submit-availability{padding:8px 10px;background:#17314b;border:1px solid #426482;border-radius:8px;line-height:1.45}
+.submit-availability.ready{background:#113d30;border-color:#399c6c;color:#b0f0cc}
+.draft-actions{display:flex;gap:8px}.draft-entry small{overflow-wrap:anywhere}
+@media(max-width:530px){.removal-actions button{flex:1 1 150px}.draft-entry{align-items:flex-start!important}.draft-actions{flex-shrink:0}}
+</style></head><body><div id="pinGate"><div class="panel"><h2 id="pinHeading">Blackwood Admin PIN</h2><p id="pinInstructions" class="sub">Enter the shared four-digit Admin PIN.</p><form id="pinForm"><label class="field"><span>4-digit PIN</span><input id="pinEntry" type="password" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" maxlength="4" required></label><button type="submit" style="width:100%" id="pinButton">Unlock Admin</button></form><div class="sub" id="pinStatus" role="status" aria-live="polite" style="margin-top:10px"></div></div></div><div id="adminContent" class="hidden"><header><div class="row"><div class="grow"><h1>Blackwood CFS <span style="color:#80baff">Admin</span></h1><div class="sub">Inventory editor · v0.9.5 Add Equipment Ready</div></div><a href="../" style="font-size:.84rem">← Main app</a></div></header>
 
 <section class="console-hero" aria-label="Admin Console">
  <div><div class="console-eyebrow">Blackwood CFS</div><h2>Administration Console</h2><div class="sub">Find equipment · Manage photographs · Publish reviewed changes</div></div>
@@ -174,11 +189,11 @@ button.is-busy::before{content:"";display:inline-block;width:14px;height:14px;ma
 </section>
 <div class="console-metrics" aria-label="Admin summary"><div class="metric"><strong id="metricEquipment">—</strong><span>Equipment records</span></div><div class="metric"><strong>3</strong><span>Appliances</span></div><div class="metric"><strong id="metricDrafts">0</strong><span>Local drafts</span></div></div>
 <nav class="console-nav" aria-label="Admin sections"><a href="#inventoryPanel" id="inventoryNavLink">Equipment</a><a href="#draftPanel">Drafts</a><a href="#historyPanel">History</a><a href="#publishPanel">Publish</a><a href="#publishingGuide">Guide</a></nav>
-<div id="adminWorkspace"><div id="adminWorkspaceMain"><section class="panel" id="inventoryPanel"><div class="row inventory-heading"><div class="grow"><div class="console-eyebrow">01 · SELECT</div><h2>Equipment inventory</h2><div id="selectionSummary" class="sub">Choose equipment to begin editing.</div></div><button type="button" class="secondary hidden" id="expandInventoryBtn" aria-expanded="false">Expand inventory</button></div><div class="two"><label class="field"><span>Appliance</span><select id="appliance"><option value="">All appliances</option></select></label><label class="field"><span>Search equipment or ID</span><input id="search" placeholder="Name, locker, ID..."></label></div><div class="row add-equipment-row"><button id="newBtn" class="add-equipment-action" type="button">＋ Add new equipment</button><span class="new-item-note">Add to the selected appliance, then save and submit for review.</span></div><div class="row compact-chooser hidden" id="compactChooser"><label class="field grow"><span>Quick-change equipment</span><select id="quickEquipment" aria-label="Choose equipment to edit"></select></label></div><div id="inventoryResults"><div id="summary"></div><div id="list" class="list"></div></div></section>
+<div id="adminWorkspace"><div id="adminWorkspaceMain"><section class="panel" id="inventoryPanel"><div class="row inventory-heading"><div class="grow"><div class="console-eyebrow">01 · SELECT</div><h2>Equipment inventory</h2><div id="selectionSummary" class="sub">Choose equipment to begin editing.</div></div><button type="button" class="secondary hidden" id="expandInventoryBtn" aria-expanded="false">Expand inventory</button></div><div class="two"><label class="field"><span>Appliance</span><select id="appliance"><option value="">All appliances</option></select></label><label class="field"><span>Search equipment or ID</span><input id="search" placeholder="Name, locker, ID..."></label></div><div class="row add-equipment-row"><span class="new-item-note">Choose an existing item below, or create a new one.</span><button id="newBtn" class="add-equipment-action" type="button">＋ Add new equipment</button></div><div class="row compact-chooser hidden" id="compactChooser"><label class="field grow"><span>Quick-change equipment</span><select id="quickEquipment" aria-label="Choose equipment to edit"></select></label></div><div id="inventoryResults"><div id="summary"></div><div id="list" class="list"></div></div></section>
 <section class="panel hidden" id="editorPanel"><div class="row"><div class="grow"><div class="console-eyebrow">02 · EDIT</div><h2>Edit equipment</h2></div><span class="pill" id="editTag">Select item</span><button type="button" class="secondary" id="toggleEditorBtn" aria-expanded="true">Collapse editor</button></div><div id="editorContents"><div class="toolbar"><button type="button" class="secondary" id="backToInventoryBtn">Clear selection</button></div><div id="empty">Choose an item above or create a new draft item.</div><form id="editor" class="hidden"><div class="two"><label class="field"><span>Item name</span><input name="item" required maxlength="250"></label><label class="field"><span>Appliance</span><select name="appliance" required></select></label></div><div class="two"><label class="field"><span>Locker (existing locations)</span><select name="locker" id="lockerSelect"></select></label><label class="field"><span>Section (existing locations)</span><select name="section" id="sectionSelect"></select></label></div><div class="two"><label class="field"><span>Subsection (existing locations)</span><select name="subsection" id="subsectionSelect"></select></label><label class="field"><span>Quantity</span><input name="quantity"></label></div><label class="field"><span>Description</span><textarea name="description"></textarea></label><label class="field"><span>Notes</span><textarea name="notes"></textarea></label><div class="two"><label class="field"><span>Tags</span><input name="tags"></label><label class="field"><span>Status</span><select name="status"><option>In service</option><option>Out of service</option></select></label></div><label class="field"><span>Photograph — camera or library (optimised before saving)</span><input type="file" id="photoFile" accept="image/*" capture="environment"></label><div class="row"><img id="photoPreview" class="hidden" alt="Photo preview"><span class="sub" id="photoInfo"></span></div><div class="sub">Photos are resized to a maximum 1600 pixels and compressed to JPEG. Keep a separate original for archival purposes.</div>
 <div class="toolbar"><button type="button" id="removePhotoBtn" class="danger">Remove added photo</button></div>
 <div id="photoRemovalNote" class="sub" role="status" aria-live="polite">Removes an Admin-added replacement photo and returns to the original inventory photo where available. Save draft to publish.</div><div class="toolbar"><button type="submit">Save draft</button><button type="button" class="secondary" id="resetEditorBtn">Clear selection</button><button type="button" class="danger" id="deleteBtn">Propose removal</button></div></form></div></section>
-<section class="panel" id="publishPanel"><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the publishing instructions at your own pace.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="sub" id="publishingConnectionHint">GitHub connection is managed at the top of this page. Local drafts can be edited without signing in.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div></section><section class="panel" id="draftPanel"><details id="draftDetails"><summary class="fold-heading"><span>Draft changes <span class="count-bubble" id="draftCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></div></details></section><section class="panel" id="historyPanel"><details id="historyDetails"><summary class="fold-heading"><span>Publishing history <span class="count-bubble" id="historyCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div class="sub">Submissions on this device. PR history is retained even when drafts are cleared.</div><div id="historyEntries" aria-live="polite"></div></div></details></section></div>
+<section class="panel" id="publishPanel"><div id="removalSavedBanner" class="removal-saved hidden" role="status" aria-live="polite"><div class="row"><span class="removal-icon">✓</span><div class="grow"><strong id="removalSavedTitle">Removal draft saved</strong><p>The item is still in the live inventory. Submit this draft to GitHub, run the processing Action, and merge the reviewed PR to publish the removal.</p></div></div><div class="row removal-actions"><button id="undoRecentRemoval" type="button" class="secondary">Undo removal</button><button id="focusSubmission" type="button" class="publish-primary">Continue to GitHub submission ↓</button></div></div><h2>GitHub review submission</h2><div class="sub">Submit saved drafts as a review pull request, then follow the publishing instructions at your own pace.</div><label class="field"><span>Admin gateway HTTPS address</span><input id="apiUrl" placeholder="https://your-admin-gateway.workers.dev" autocomplete="url"></label><div class="sub" id="publishingConnectionHint">GitHub connection is managed at the top of this page. Local drafts can be edited without signing in.</div><div class="toolbar"><button id="githubSubmit" disabled type="button">Submit drafts for review</button></div><div id="submitAvailability" class="sub submit-availability" role="status" aria-live="polite"></div></section><section class="panel" id="draftPanel"><details id="draftDetails"><summary class="fold-heading"><span>Draft changes <span class="count-bubble" id="draftCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div id="draftSummary" class="sub">No changes saved.</div><div id="draftEntries" aria-live="polite"></div><div class="toolbar"><button id="exportBtn">Export change package</button><button id="clearBtn" class="secondary">Clear drafts</button></div></div></details></section><section class="panel" id="historyPanel"><details id="historyDetails"><summary class="fold-heading"><span>Publishing history <span class="count-bubble" id="historyCount">0</span></span><span class="fold-chevron">▾</span></summary><div class="fold-body"><div class="sub">Submissions on this device. PR history is retained even when drafts are cleared.</div><div id="historyEntries" aria-live="polite"></div></div></details></section></div>
 <aside class="panel" id="publishingGuide" aria-label="Publishing instructions">
 <div class="guide-topline"><div><div class="console-eyebrow">PUBLISHING GUIDE</div><h2>From edit to live app</h2></div></div>
 <div class="pr-reference" id="prReference"><div><span class="pr-caption">LATEST PULL REQUEST</span><strong id="prNumber">No PR yet</strong></div><button id="copyPr" class="secondary" type="button" disabled>Copy number</button></div>
@@ -242,7 +257,16 @@ $('photoFile').addEventListener('change',async e=>{
  }catch(err){alert('Photo optimisation failed; please try another picture. '+err.message);e.target.value='';}
 });
 $('removePhotoBtn').onclick=()=>{if(!chosen)return;removePhoto=!removePhoto;if(removePhoto){photoData=null;$('photoFile').value='';}preview()};
-$('deleteBtn').onclick=()=>{if(!chosen||!confirm('Propose removal of this equipment from the master inventory?'))return;drafts[chosen]={op:'remove',id:chosen,base:base.find(x=>x.id===chosen)||null};if(persist()){resetSelection();refresh()}};
+$('deleteBtn').onclick=()=>{
+ if(!chosen)return;
+ const id=chosen,original=base.find(x=>x.id===id);
+ if(!original)return;
+ if(!confirm('Save a removal draft for '+original.item+'? The item will NOT be removed from the live app until its pull request is processed, reviewed and merged.'))return;
+ const previous=drafts[id];drafts[id]={op:'remove',id,base:original};
+ if(!persist()){if(previous)drafts[id]=previous;else delete drafts[id];return}
+ lastRemovalId=id;resetSelection();refresh();$('draftDetails').open=true;
+ updateRemovalBanner();$('publishPanel').scrollIntoView({behavior:'smooth',block:'start'});
+};
 $('newBtn').onclick=()=>{const id='NEW-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);const ap=$('appliance').value||'Blackwood Rescue';drafts[id]={op:'add',id,data:{id,item:'',appliance:ap,status:'In service'}};if(persist()){refresh();select(id);$('editor').elements.namedItem('item').focus();$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'})}};
 $('exportBtn').onclick=()=>{const changes=Object.values(drafts);if(!changes.length)return alert('No drafts to export.');const content=JSON.stringify({format:'blackwood-admin-change-package',version:1,exportedAt:new Date().toISOString(),source:'Admin v0.4 secure submission pilot',changes},null,2);const blob=new Blob([content],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Blackwood_Admin_Changes_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
 function resetSelection(){chosen=null;photoData=null;removePhoto=false;$('editor').reset();$('photoFile').value='';$('editor').classList.add('hidden');$('empty').classList.remove('hidden');$('editTag').textContent='Select item';$('photoPreview').classList.add('hidden');$('photoPreview').removeAttribute('src');$('photoInfo').textContent='';$('editorPanel').classList.add('hidden');$('inventoryPanel').classList.remove('hidden');setInventoryCompact(false);history.replaceState(null,'',location.pathname);renderList();$('inventoryPanel').scrollIntoView({behavior:'smooth',block:'start'});}
@@ -296,11 +320,33 @@ function saveHistory(){try{localStorage.setItem(PR_HISTORY_KEY,JSON.stringify(su
 function findHistory(n){return submissionHistory.find(x=>x.number===Number(n))}
 function upsertHistory(n,fields){let h=findHistory(n);if(!h){h={number:Number(n),createdAt:new Date().toISOString(),step:2,status:'Submitted',items:[]};submissionHistory.unshift(h)}Object.assign(h,fields);submissionHistory.sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt));saveHistory();return h}
 function currentHistory(){return trackedPR?findHistory(trackedPR):null}
+let lastRemovalId=null;
+function undoRemoval(id){
+ const d=drafts[id];if(!d||d.op!=='remove')return;
+ if(!confirm('Undo proposed removal of '+(d.base?.item||id)+'? The item will remain in the inventory.'))return;
+ delete drafts[id];if(!persist()){drafts[id]=d;return}
+ if(lastRemovalId===id)lastRemovalId=null;
+ refresh();updateRemovalBanner();
+ const notice=$('selectionSummary');notice.textContent='✓ Removal cancelled. Equipment is available again.';
+}
+function updateRemovalBanner(){
+ const active=lastRemovalId&&drafts[lastRemovalId]?.op==='remove'?drafts[lastRemovalId]:null;
+ $('removalSavedBanner').classList.toggle('hidden',!active);
+ if(active)$('removalSavedTitle').textContent='Removal draft saved · '+(active.base?.item||active.id);
+}
+function updateSubmissionAvailability(){
+ const el=$('submitAvailability');if(!el)return;
+ const count=Object.keys(drafts).length;
+ el.textContent=!count?'No unpublished drafts.':!gatewaySession?'Draft saved. Sign in with GitHub at the top to enable submission.':count+' draft change(s) ready to submit, including any proposed removals.';
+ el.className='sub submit-availability '+(count&&gatewaySession?'ready':'');
+}
+$('undoRecentRemoval').onclick=()=>{if(lastRemovalId)undoRemoval(lastRemovalId)};
+$('focusSubmission').onclick=()=>{$('githubSubmit').focus({preventScroll:true});$('publishPanel').scrollIntoView({behavior:'smooth',block:'start'})};
 function showDraftEntries(){
  const target=$('draftEntries');if(!target)return;target.replaceChildren();
  for(const d of Object.values(drafts)){
   const item=document.createElement('div');item.className='draft-entry';const info=document.createElement('div');const label=document.createElement('strong');label.textContent=d.data?.item||d.base?.item||d.id;const detail=document.createElement('small');detail.textContent=(d.op||'update').toUpperCase()+' · '+(d.data?.appliance||d.base?.appliance||'')+' · '+d.id;info.append(label,detail);
-  const b=document.createElement('button');b.className='secondary';b.textContent='Open';b.onclick=()=>{if(d.op==='remove'){alert('Removal proposal saved. Discard the draft to undo this removal.');return;}select(d.id);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'})};item.append(info,b);target.append(item)
+  const actions=document.createElement('div');actions.className='draft-actions';if(d.op==='remove'){const undo=document.createElement('button');undo.type='button';undo.className='secondary';undo.textContent='Undo removal';undo.onclick=()=>undoRemoval(d.id);actions.append(undo)}else{const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent='Open editor';b.onclick=()=>{select(d.id);$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'})};actions.append(b)}item.append(info,actions);target.append(item)
  }
 }
 function showHistory(){const target=$('historyEntries');target.replaceChildren();$('historyCount').textContent=submissionHistory.length;
@@ -324,7 +370,7 @@ function updateConsoleState(){if($('metricEquipment'))$('metricEquipment').textC
 // Publishing steps are deliberately static. GitHub reconciliation and approval are manual.
 function updatePR(){renderTrackerReference();showHistory()}
 const originalRefresh=refresh;
-refresh=function(){originalRefresh();updateConsoleState()};
+refresh=function(){originalRefresh();updateConsoleState();updateRemovalBanner();updateSubmissionAvailability()};
 const originalShowGithubStatus=showGithubStatus;
 function setGitHubHeaderState(status){
  const badge=$('topGithubState'), signIn=$('githubSignIn'), check=$('githubCheck'), signOut=$('githubSignOut'), hint=$('publishingConnectionHint');
@@ -338,7 +384,7 @@ function setGitHubHeaderState(status){
  signIn.textContent=broken?'Reconnect GitHub ↗':'Sign in with GitHub ↗';
  if(hint)hint.textContent=connected?'GitHub connected. Submit saved drafts here; follow the publishing instructions.':'Sign in at the top to submit drafts and review your saved PR number. You can still edit and save drafts locally.';
 }
-showGithubStatus=function(t){originalShowGithubStatus(t);setGitHubHeaderState(t)};
+showGithubStatus=function(t){originalShowGithubStatus(t);setGitHubHeaderState(t);updateSubmissionAvailability()};
 if(!gatewaySession)showGithubStatus('Signed out. Sign in with GitHub when ready to publish.');
 else showGithubStatus('Checking GitHub session…');
 
@@ -365,7 +411,7 @@ $('githubSubmit').onclick=async()=>{
   const backup=Object.fromEntries(changes.map(d=>[d.id,d]));let backedUp=false;
   try{localStorage.setItem(PR_PAYLOAD_PREFIX+trackedPR,JSON.stringify(backup));backedUp=true}catch(e){console.warn('Backup not saved; keeping active drafts',e)}
   upsertHistory(trackedPR,{step:2,status:'Submitted to GitHub',createdAt:new Date().toISOString(),items:changes.map(x=>({id:x.id,item:x.data?.item||x.base?.item||x.id,op:x.op})),lastVerified:new Date().toISOString()});
-  if(backedUp){const previous=drafts;drafts={};if(!persist()){drafts=previous;alert('Proposal submitted, but local storage could not be updated. Drafts remain; avoid submitting them twice.')}else{resetSelection();refresh();$('draftDetails').open=false}}
+  if(backedUp){const previous=drafts;drafts={};if(!persist()){drafts=previous;alert('Proposal submitted, but local storage could not be updated. Drafts remain; avoid submitting them twice.')}else{lastRemovalId=null;resetSelection();refresh();$('draftDetails').open=false}}
   else alert('PR #'+trackedPR+' was created. Device storage is full, so drafts remain in the active list. Do not submit them again.');
   showGithubStatus('Authenticated as GitHub — PR #'+trackedPR+' submitted');renderTrackerReference();showHistory();
  }catch(e){showGithubStatus('Submission unsuccessful — drafts kept: '+e.message)}finally{setBusy('githubSubmit',false)}
