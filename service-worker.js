@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-offline-rc4';
+const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-offline-rc5-beta';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -6,6 +6,7 @@ const CACHE_PREFIX = 'blackwood-cfs-';
 const APP_SHELL = [
   './',
   './index.html',
+  './beta/live-incidents.html',
   './manifest.json',
   './service-worker.js',
   './icon.png',

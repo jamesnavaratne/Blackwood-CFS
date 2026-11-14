@@ -7019,7 +7019,19 @@ v2.2 Android cold-start smoothing test:
 #drawer .drawer-note .release-label {display:block;}
 #drawer .drawer-note .drawer-admin-link {display:flex;width:max-content;max-width:100%;margin-top:9px;}
 </style>
-</head>
+<style>/* RC5: small, collapsed experimental section below version, separate Admin link */
+#drawer .drawer-beta-group {margin-top:10px;width:100%;font-size:.85rem;}
+#drawer .drawer-beta-group summary {display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;border:1px solid var(--line,rgba(143,179,222,.3));border-radius:11px;min-height:44px;padding:10px 12px;color:var(--text,#dceaff);background:color-mix(in srgb,var(--accent,#4488c9) 9%,transparent);font-weight:650;}
+#drawer .drawer-beta-group summary::-webkit-details-marker{display:none}
+#drawer .drawer-beta-title{display:flex;gap:10px;align-items:center}
+#drawer .drawer-beta-chevron{font-size:19px;line-height:1;transition:transform .2s}
+#drawer .drawer-beta-group[open] .drawer-beta-chevron{transform:rotate(180deg)}
+#drawer .drawer-beta-group summary:focus-visible,#drawer .drawer-beta-link:focus-visible{outline:2px solid var(--accent,#62a6ed);outline-offset:2px}
+#drawer .drawer-beta-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text,#dceaff);margin:6px 0 0 10px;padding:10px 12px;border:1px solid var(--line,rgba(143,179,222,.25));border-radius:10px;min-height:42px;font-size:.83rem}
+#drawer .drawer-beta-link:hover{color:var(--accent,#77bbff)}
+#drawer .drawer-beta-link span:last-child{margin-left:auto;color:var(--muted,#a1b4c9)}
+#drawer .drawer-note .drawer-admin-link{margin-top:12px}
+</style></head>
 <body>
 <script>try{var startupPalette=localStorage.getItem("inventoryPalette")||"default-blue";if(startupPalette==="default-blue"||startupPalette==="yellow")document.body.classList.add("palette-default-blue","dark")}catch(e){document.body.classList.add("palette-default-blue","dark")}</script>
 
@@ -7282,7 +7294,11 @@ v2.2 Android cold-start smoothing test:
     </div>
   </div>
 
-  <div class="drawer-note"><div class="release-label"><strong>Version:</strong> <span id="releaseVersion">Loading…</span></div><a class="drawer-admin-link" href="admin/index.html" aria-label="Open Blackwood CFS Admin">Open Admin <span aria-hidden="true">↗</span></a></div>
+  <div class="drawer-note"><div class="release-label"><strong>Version:</strong> <span id="releaseVersion">Loading…</span></div>
+  <details class="drawer-beta-group"><summary><span class="drawer-beta-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 9a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M8 15h8"/></svg>Beta</span><span class="drawer-beta-chevron" aria-hidden="true">⌄</span></summary>
+    <a class="drawer-beta-link" href="beta/live-incidents.html"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16a10 10 0 0 1 14 0M8 19a6 6 0 0 1 8 0M12 22h.01M12 3v8"/></svg>Live Incidents<span aria-hidden="true">↗</span></a>
+  </details>
+  <a class="drawer-admin-link" href="admin/index.html" aria-label="Open Blackwood CFS Admin">Open Admin <span aria-hidden="true">↗</span></a></div>
 </aside>
 
 <script>document.getElementById("releaseVersion").textContent = window.BLACKWOOD_APP_RELEASE || "Version unavailable";</script>

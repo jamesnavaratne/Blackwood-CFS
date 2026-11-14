@@ -1,9 +1,10 @@
 {
-  "version": "content-d48efaa553de309d581c",
+  "version": "content-d48efaa553de309d581c-rc5beta",
   "contentUpdatedUtc": "2026-11-15T00:00:00+10:30",
   "assets": [
     "./",
     "./index.html",
+    "./beta/live-incidents.html",
     "./manifest.json",
     "./service-worker.js",
     "./icon.png",
