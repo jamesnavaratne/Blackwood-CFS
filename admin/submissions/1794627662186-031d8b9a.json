@@ -1,0 +1,49 @@
+{
+  "format": "blackwood-admin-change-package",
+  "version": 1,
+  "source": "Admin v0.9.2",
+  "exportedAt": "2026-11-14T03:41:02.359Z",
+  "changes": [
+    {
+      "op": "update",
+      "id": "BR-0081",
+      "data": {
+        "id": "BR-0081",
+        "appliance": "Blackwood Rescue",
+        "locker": "Locker 6",
+        "section": "",
+        "subsection": "",
+        "item": "BROOM [x2]",
+        "quantity": "",
+        "description": "",
+        "notes": "",
+        "tags": "",
+        "status": "In service"
+      },
+      "photo": null,
+      "removePhoto": false
+    },
+    {
+      "op": "update",
+      "id": "CAFS24-0001",
+      "data": {
+        "id": "CAFS24-0001",
+        "appliance": "CAFS 24",
+        "locker": "Cabin",
+        "section": "Above Driver",
+        "subsection": "",
+        "item": "DRIVERS LOG BOOK",
+        "quantity": "",
+        "description": "CAFS edit",
+        "notes": "",
+        "tags": "",
+        "status": "In service"
+      },
+      "photo": null,
+      "removePhoto": false
+    }
+  ],
+  "submittedBy": "jamesnavaratne",
+  "submittedVia": "blackwood-admin-gateway",
+  "reviewStatus": "proposal-only"
+}
