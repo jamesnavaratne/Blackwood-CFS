@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-15-menu-offline-rc5-beta';
+const CACHE_NAME = 'blackwood-cfs-2026-11-15-live-incidents-beta1-rc6';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -53,10 +53,10 @@ async function migrateLegacyOfflineData() {
 
     // Preserve previously prepared photos/maps while the app shell is replaced.
     for (const request of await legacy.keys()) {
-      if (request.url === OFFLINE_STATUS_URL) continue;
+      if (request.url === OFFLINE_STATUS_URL || !isPreparedMediaRequest(request)) continue;
       if (await offlineCache.match(request)) continue;
       const response = await legacy.match(request);
-      if (response) await offlineCache.put(request, response.clone());
+      if (response && response.ok) await offlineCache.put(request, response.clone());
     }
   }
 
@@ -185,6 +185,31 @@ async function readOfflineStatus() {
   try { return await response.json(); } catch (e) { return null; }
 }
 
+// A saved completion marker is not proof that the files still exist: the browser
+// may evict Cache Storage. Validate every required asset before reporting Ready.
+async function verifyOfflineStatus() {
+  const status = await readOfflineStatus();
+  if (!status || !status.complete) return status;
+  const appCache = await caches.open(CACHE_NAME);
+  const manifestRequest = new URL('./offline-assets.json', self.registration.scope).href;
+  const manifestResponse = await appCache.match(manifestRequest);
+  if (!manifestResponse) return { ...status, complete: false, reason: 'missing-manifest' };
+  let manifest;
+  try { manifest = await manifestResponse.json(); }
+  catch (_) { return { ...status, complete: false, reason: 'invalid-manifest' }; }
+  const expected = normaliseAssetList(manifest.assets);
+  if (!expected.length || status.version !== manifest.version || status.assetCount !== expected.length) {
+    return { ...status, complete: false, reason: 'version-or-list-changed' };
+  }
+  const cache = await caches.open(OFFLINE_CACHE_NAME);
+  let missingCount = 0;
+  for (const url of expected) {
+    if (!(await cache.match(url))) missingCount++;
+  }
+  if (missingCount) return { ...status, complete: false, missingCount, reason: 'missing-cached-assets' };
+  return status;
+}
+
 async function writeOfflineStatus(status) {
   const statusCache = await caches.open(STATUS_CACHE_NAME);
   const response = new Response(JSON.stringify(status), {
@@ -209,9 +234,20 @@ function normaliseAssetList(assets) {
   return output;
 }
 
+let offlinePreparationRunning = false;
 async function prepareOffline(data, port) {
   const urls = normaliseAssetList(data.assets);
   if (!urls.length) throw new Error('No offline assets were supplied.');
+  const appCache = await caches.open(CACHE_NAME);
+  const storedManifest = await appCache.match(new URL('./offline-assets.json', self.registration.scope).href);
+  if (!storedManifest) throw new Error('Current offline asset manifest is unavailable. Refresh the app before preparing.');
+  const installedManifest = await storedManifest.json();
+  const expectedUrls = normaliseAssetList(installedManifest.assets);
+  if (data.version !== installedManifest.version ||
+      urls.length !== expectedUrls.length ||
+      expectedUrls.some((url, index) => url !== urls[index])) {
+    throw new Error('The app has changed since the offline list was loaded. Refresh and try again.');
+  }
 
   const cache = await caches.open(OFFLINE_CACHE_NAME);
   const failed = [];
@@ -235,6 +271,12 @@ async function prepareOffline(data, port) {
       failedCount: failed.length,
       url
     });
+  }
+
+  if (failed.length === 0) {
+    for (const url of urls) {
+      if (!(await cache.match(url))) failed.push({ url, message: 'File missing from local cache after download' });
+    }
   }
 
   if (failed.length === 0) {
@@ -268,15 +310,21 @@ self.addEventListener('message', event => {
   if (!port) return;
 
   if (data.type === 'GET_OFFLINE_STATUS') {
-    event.waitUntil(readOfflineStatus()
+    event.waitUntil(verifyOfflineStatus()
       .then(status => port.postMessage({ type: 'status', status }))
       .catch(error => port.postMessage({ type: 'error', message: error.message || 'Could not read offline status.' })));
     return;
   }
 
   if (data.type === 'PREPARE_OFFLINE') {
+    if (offlinePreparationRunning) {
+      port.postMessage({ type: 'error', message: 'Offline preparation is already running. Please let it finish.' });
+      return;
+    }
+    offlinePreparationRunning = true;
     event.waitUntil(prepareOffline(data, port)
       .then(status => port.postMessage({ type: 'complete', status }))
-      .catch(error => port.postMessage({ type: 'error', message: error.message || 'Offline preparation failed.' })));
+      .catch(error => port.postMessage({ type: 'error', message: error.message || 'Offline preparation failed.' }))
+      .finally(() => { offlinePreparationRunning = false; }));
   }
 });
