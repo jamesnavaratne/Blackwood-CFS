@@ -11,7 +11,12 @@
   function refreshHome(home){
     const modules=home.querySelector('.home-modules'); if (!modules) return;
     const directions=moduleByTitle(modules,'Directions Book');
-    const hydrants=moduleByTitle(modules,'Live Hydrants');
+    const hydrants=moduleByTitle(modules,'Hydrants') || moduleByTitle(modules,'Live Hydrants');
+    if (hydrants) {
+      hydrants.setAttribute('aria-label','Hydrants');
+      const label=hydrants.querySelector('.home-module-label');
+      if (label && label.textContent !== 'Hydrants') label.textContent='Hydrants';
+    }
     let maps=moduleByTitle(modules,'Maps');
     if (!maps && hydrants){
       maps=document.createElement('section');

@@ -7035,6 +7035,7 @@ v2.2 Android cold-start smoothing test:
 
 <section class="v2-appliance-home open v2-static-startup" aria-label="Blackwood CFS system home">
   <div class="v2-appliance-home-card home-redesign">
+    <button type="button" class="menu-btn home-menu-btn" aria-label="Open appliance menu" title="Menu">☰</button>
     <h1>Blackwood CFS</h1>
     <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
     <div class="home-modules">
@@ -7048,7 +7049,7 @@ v2.2 Android cold-start smoothing test:
         <button type="button" class="home-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>Search all equipment</button>
       </section>
       <section class="home-module" aria-label="Directions Book"><button type="button" class="home-module-link home-directions"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></span><span class="home-module-label">Directions Book</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></button></section>
-      <section class="home-module" aria-label="Live Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Live Hydrants</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></a></section>
+      <section class="home-module" aria-label="Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Hydrants</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></a></section>
     </div>
   </div>
 </section>
@@ -9614,6 +9615,12 @@ installNativeLockerSwipe();
   function bindHomeControls(home){
     if (!home || home.dataset.v2HomeBound === "1") return;
     home.dataset.v2HomeBound = "1";
+    // Reuse inventory's existing menu control and drawer event handlers.
+    const homeMenuButton = home.querySelector(".home-menu-btn");
+    if (homeMenuButton) homeMenuButton.addEventListener("click", () => {
+      const inventoryMenuButton = document.getElementById("menuBtn");
+      if (inventoryMenuButton) inventoryMenuButton.click();
+    });
 
     home.querySelectorAll("[data-v2-home-truck]").forEach(btn => {
       btn.addEventListener("click", () => switchToAppliance(appFor(btn.dataset.v2HomeTruck)));
@@ -9631,6 +9638,7 @@ installNativeLockerSwipe();
       home.className = "v2-appliance-home open";
       home.innerHTML = `
 <div class="v2-appliance-home-card home-redesign">
+    <button type="button" class="menu-btn home-menu-btn" aria-label="Open appliance menu" title="Menu">☰</button>
     <h1>Blackwood CFS</h1>
     <p class="home-tagline">Inventory <span aria-hidden="true">|</span> Directions <span aria-hidden="true">|</span> Hydrants</p>
     <div class="home-modules">
@@ -9644,7 +9652,7 @@ installNativeLockerSwipe();
         <button type="button" class="home-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>Search all equipment</button>
       </section>
       <section class="home-module" aria-label="Directions Book"><button type="button" class="home-module-link home-directions"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></span><span class="home-module-label">Directions Book</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></button></section>
-      <section class="home-module" aria-label="Live Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Live Hydrants</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></a></section>
+      <section class="home-module" aria-label="Hydrants"><a class="home-module-link" href="hydrants/index.html"><span class="home-module-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C9.5 6 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-4.5-9-7-13zM8.5 15.5a3.5 3.5 0 0 0 3.5 3.5"/></svg></span><span class="home-module-label">Hydrants</span><span class="home-module-arrow" aria-hidden="true"><svg viewBox="0 0 12 24" aria-hidden="true"><path d="M3 5l6 7-6 7"/></svg></span></a></section>
     </div>
   </div>
         `;
@@ -9665,6 +9673,8 @@ installNativeLockerSwipe();
     Array.from(document.body.children).forEach(child => {
       if (child === home) return;
       if (child.classList && child.classList.contains("primary-bottom-nav")) return;
+      // Home uses the same inventory drawer and backdrop; do not hide them.
+      if (child.id === "drawer" || child.id === "drawerBackdrop") return;
       if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
       child.classList.add("v2-app-hidden-for-home");
     });
@@ -10625,6 +10635,8 @@ installNativeLockerSwipe();
       Array.from(document.body.children).forEach(function(child){
         if (child === home) return;
         if (child.classList && child.classList.contains("primary-bottom-nav")) return;
+      // Home uses the same inventory drawer and backdrop; do not hide them.
+      if (child.id === "drawer" || child.id === "drawerBackdrop") return;
         if (child.tagName === "SCRIPT" || child.tagName === "STYLE") return;
         child.classList.add("v2-app-hidden-for-home");
       });

@@ -98,3 +98,20 @@
   .v2-appliance-home .home-appliance{font-size:12px!important}
   .v2-appliance-home .home-module-heading,.v2-appliance-home .home-module-link{font-size:16px!important}
 }
+
+/* RC7: system home uses the inventory hamburger, with understated positioning. */
+.v2-appliance-home .home-redesign{position:relative!important;}
+.v2-appliance-home .home-menu-btn{
+  position:absolute!important;top:9px!important;left:10px!important;
+  z-index:1;opacity:.64!important;transform:none!important;
+  background:transparent!important;border-color:transparent!important;
+  box-shadow:none!important;color:#9eacba!important;
+  font-size:20px!important;font-weight:400!important;
+}
+.v2-appliance-home .home-menu-btn:hover,
+.v2-appliance-home .home-menu-btn:focus-visible{
+  opacity:1!important;color:#e8f7ff!important;
+  background:rgba(107,220,255,.07)!important;
+}
+.v2-appliance-home .home-menu-btn:focus-visible{outline:2px solid #6bdcff!important;outline-offset:1px!important;}
+@media(max-width:370px){.v2-appliance-home .home-menu-btn{top:5px!important;left:5px!important;}}
