@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-18-home-navigation-rc7';
+const CACHE_NAME = 'blackwood-cfs-2026-11-23-home-hamburger-rc8';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
