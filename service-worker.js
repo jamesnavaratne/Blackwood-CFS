@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-23-consolidation-rc9';
+const CACHE_NAME = 'blackwood-cfs-2026-11-23-performance-rc10';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -141,11 +141,23 @@ async function currentOfflineContentVersion() {
   }
 }
 
+// Coalesce simultaneous media readiness checks (e.g. a locker opening with
+// multiple photographs) into one status/manifest read. The result is NOT held
+// permanently: future groups of requests recheck current status, including
+// browser cache eviction and changes made by Prepare for Offline Use.
+let mediaReadinessInFlight = null;
+function getMediaReadiness() {
+  if (!mediaReadinessInFlight) {
+    mediaReadinessInFlight = Promise.all([
+      readOfflineStatus(),
+      currentOfflineContentVersion()
+    ]).finally(() => { mediaReadinessInFlight = null; });
+  }
+  return mediaReadinessInFlight;
+}
+
 async function preparedMediaFirst(request) {
-  const [status, currentVersion] = await Promise.all([
-    readOfflineStatus(),
-    currentOfflineContentVersion()
-  ]);
+  const [status, currentVersion] = await getMediaReadiness();
 
   // Only prefer device storage after the complete, current offline package has
   // been prepared. A stale or incomplete package stays live-first so updated
