@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-24-inventory-rc13';
+const CACHE_NAME = 'blackwood-cfs-2026-11-24-modal-rc14-15';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
