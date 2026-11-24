@@ -587,7 +587,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 </style>
 <link rel="stylesheet" data-cfs-ribbon-style href="../shared/ribbon.css">
 </head>
-<body>
+<body data-cfs-back-page="hydrants">
   <main class="app-shell">
     <header class="topbar">
       <div class="title-row">
@@ -604,7 +604,7 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
         </div>
       </div>
       <div class="controls">
-        <div class="street-picker" id="streetPicker">
+        <div class="street-picker" id="streetPicker" data-cfs-back-layer>
           <button class="street-picker-button" id="streetPickerButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="streetMenu">
             <span class="selected-street">
               <span class="selected-street-name" id="selectedStreetName">Gorse Avenue</span>
@@ -1187,5 +1187,6 @@ html,body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans
       initialiseMap();
     })();
   </script>
+<script src="../shared/back-navigation.js"></script>
 </body>
 </html>

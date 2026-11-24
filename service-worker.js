@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blackwood-cfs-2026-11-24-modal-rc14-15';
+const CACHE_NAME = 'blackwood-cfs-2026-11-25-back-navigation-rc16';
 const OFFLINE_CACHE_NAME = 'blackwood-cfs-offline-content-v1';
 const STATUS_CACHE_NAME = 'blackwood-cfs-offline-status-v1';
 const CACHE_PREFIX = 'blackwood-cfs-';
@@ -16,6 +16,7 @@ const APP_SHELL = [
   './directions/index.html',
   './shared/ribbon.css',
   './shared/release.js',
+  './shared/back-navigation.js',
   './shared/home-final.css',
   './shared/home-final.js',
   './shared/home-icons.js',

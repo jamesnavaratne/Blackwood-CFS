@@ -1,3 +1,6 @@
+## v2.9.4.42 — Back Navigation RC16 (25 November 2026)
+- Adds shared Back handling for operational overlays; preserves RC14/15 photo loading and offline content. See BACK_NAVIGATION_RC16_CHANGELOG.md for scope and validation limits.
+
 ## v2.9.4.40 — Inventory Startup RC13 (24 November 2026)
 - Coalesced repeated global Inventory locker-caption cleanup work after bursts of clicks; retains the 80 ms trailing delay and the unchanged startup sweeps.
 - Coalesced redundant 34P heading corrections after rapid appliance switching; retains the 120 ms delay and unchanged selector/heading rules.

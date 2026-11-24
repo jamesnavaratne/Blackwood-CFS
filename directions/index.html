@@ -871,7 +871,7 @@ body.modal-open #directionsBackToTop { opacity:0; visibility:hidden; pointer-eve
 
 </style>
 </head>
-<body data-theme="dark">
+<body data-cfs-back-page="directions" data-theme="dark">
 <div class="app">
   <header class="topbar">
     <div class="brandrow">
@@ -914,7 +914,7 @@ body.modal-open #directionsBackToTop { opacity:0; visibility:hidden; pointer-eve
   <span class="offline-banner-copy"><strong>Offline</strong><small id="offlineBannerDetail">Checking saved offline content…</small></span>
   <span class="offline-banner-action" aria-hidden="true">OPTIONS ›</span>
 </button>
-<div class="modal" id="modal" aria-hidden="true">
+<div class="modal" id="modal" data-cfs-back-layer aria-hidden="true">
   <div class="scrim" id="scrim"></div>
   <article class="card" role="dialog" aria-modal="true" aria-labelledby="cardName">
     <div class="card-head">
@@ -938,7 +938,7 @@ body.modal-open #directionsBackToTop { opacity:0; visibility:hidden; pointer-eve
   </article>
 </div>
 
-<div class="modal" id="directionIssueModal" aria-hidden="true">
+<div class="modal" id="directionIssueModal" data-cfs-back-layer aria-hidden="true">
   <div class="scrim" id="directionIssueScrim"></div>
   <article class="card direction-issue-card" role="dialog" aria-modal="true" aria-labelledby="directionIssueTitle">
     <div class="card-head">
@@ -977,7 +977,7 @@ body.modal-open #directionsBackToTop { opacity:0; visibility:hidden; pointer-eve
   </article>
 </div>
 
-<div class="modal" id="mapListModal" aria-hidden="true">
+<div class="modal" id="mapListModal" data-cfs-back-layer aria-hidden="true">
   <div class="scrim" id="mapListScrim"></div>
   <article class="card map-list-card" role="dialog" aria-modal="true" aria-labelledby="mapListTitle">
     <div class="card-head">
@@ -987,7 +987,7 @@ body.modal-open #directionsBackToTop { opacity:0; visibility:hidden; pointer-eve
     <div class="map-list" id="mapList"></div>
   </article>
 </div>
-<div class="modal map-viewer-modal" id="mapViewerModal" aria-hidden="true">
+<div class="modal map-viewer-modal" id="mapViewerModal" data-cfs-back-layer aria-hidden="true">
   <div class="scrim" id="mapViewerScrim"></div>
   <section class="map-viewer-card" role="dialog" aria-modal="true" aria-labelledby="mapViewerTitle">
     <div class="map-viewer-head">
@@ -2056,5 +2056,6 @@ if(restoreEntryId && DIRECTIONS.some(entry => entry.id === restoreEntryId)) requ
   update();
 })();
 </script>
+<script src="../shared/back-navigation.js"></script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+const assert = require('node:assert/strict');
+const {install,selectLayer}=require('../shared/back-navigation.js');
+const handlers={}; let stack=[{page:'previous'},null], cursor=1, pushes=0, backCalls=0;
+const win={location:{pathname:'/index.html'},addEventListener(k,f){handlers[k]=f;},MutationObserver:class{observe(){}},history:{get state(){return stack[cursor]},pushState(s){stack=stack.slice(0,cursor+1);stack.push(s);cursor++;pushes++},back(){backCalls++;if(cursor>0){cursor--;handlers.popstate()}}}};
+const doc={body:{},querySelectorAll(){return []},addEventListener(){}};
+let layers=[];const closed=[];
+const nav=install(win,doc,()=>layers.length?()=>closed.push(layers.pop()):null);
+assert.equal(pushes,0);
+layers=['appliance','item','photo'];nav.sync();nav.sync();assert.equal(pushes,1);
+win.history.back();assert.deepEqual(closed,['photo']);assert.deepEqual(layers,['appliance','item']);
+win.history.back();assert.deepEqual(closed,['photo','item']);
+win.history.back();assert.deepEqual(closed,['photo','item','appliance']);assert.equal(cursor,1);
+layers=['drawer'];nav.sync();layers=[];nav.sync();win.history.back();assert.equal(cursor,0,'manual close should not create an extra Back stop');
+const controls=[];const button={click(){controls.push('photo')}};const modal={classList:{contains(){return false}},querySelector(){return button}};
+const selected=selectLayer({querySelector(s){return s==='#photo.open'?modal:null}},[['#photo.open','#close'],['#item.open','#itemClose']]);selected();assert.deepEqual(controls,['photo']);
+console.log('PASS: nested Back, one guard, manual close, root history and existing close controls');
