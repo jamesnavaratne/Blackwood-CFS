@@ -1,3 +1,10 @@
+## v2.9.4.39 — Inventory Performance RC12 (23 November 2026)
+- Consolidated closely spaced Inventory modal photo-fade scans into one pending 40 ms task.
+- Preserved existing modal image selectors, fade styling, onload handlers and operational navigation.
+- Added automated regression test for rapid-click scheduling and photo-ready binding.
+- Updated app release identifier and service-worker shell cache; offline content version unchanged.
+- No changes to offline cache preference, photos, maps, directions, or CFSScan feed.
+
 # v2.9.4.30 — Menu & Directions RC3 — 15 November 2026
 
 See MENU_DIRECTIONS_RC3_CHANGELOG.md.
